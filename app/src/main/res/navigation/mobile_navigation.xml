@@ -9,23 +9,35 @@
         android:id="@+id/navigation_home"
         android:name="com.example.soundnest_android.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_search2"
+            app:destination="@id/navigation_search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_search"
         android:name="com.example.soundnest_android.ui.search.SearchFragment"
         android:label="@string/title_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_playlists"
+            app:destination="@id/navigation_playlists" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_playlists"
         android:name="com.example.soundnest_android.ui.playlists.PlaylistsFragment"
         android:label="@string/title_playlists"
-        tools:layout="@layout/fragment_playlists" />
+        tools:layout="@layout/fragment_playlists" >
+        <action
+            android:id="@+id/action_navigation_playlists_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.soundnest_android.ui.playlists.PlaylistsFragment"
+        android:name="com.example.soundnest_android.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_playlists" />
+        tools:layout="@layout/fragment_profile" />
 </navigation>
