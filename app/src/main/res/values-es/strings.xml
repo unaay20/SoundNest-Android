@@ -4,4 +4,7 @@
     <string name="title_home">Inicio</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notificaciones</string>
+    <string name="title_search">Buscar</string>
+    <string name="title_playlists">Playlists</string>
+    <string name="title_profile">Perfil</string>
 </resources>

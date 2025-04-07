@@ -12,14 +12,20 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.soundnest_android.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_search"
+        android:name="com.example.soundnest_android.ui.search.SearchFragment"
+        android:label="@string/title_search"
+        tools:layout="@layout/fragment_search" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.soundnest_android.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_playlists"
+        android:name="com.example.soundnest_android.ui.playlists.PlaylistsFragment"
+        android:label="@string/title_playlists"
+        tools:layout="@layout/fragment_playlists" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.soundnest_android.ui.playlists.PlaylistsFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_playlists" />
 </navigation>
