@@ -7,4 +7,9 @@
     <string name="title_search">Buscar</string>
     <string name="title_playlists">Playlists</string>
     <string name="title_profile">Perfil</string>
+
+    <string name="lbl_user">Usuario</string>
+    <string name="lbl_password">Contraseña</string>
+
+    <string name="btn_logout">Cerrar sesión</string>
 </resources>
