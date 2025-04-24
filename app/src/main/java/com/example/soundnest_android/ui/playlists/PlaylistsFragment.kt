@@ -4,35 +4,43 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.soundnest_android.databinding.FragmentPlaylistsBinding
+import com.example.soundnest_android.R
 
 class PlaylistsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistsBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var playlists: MutableList<Playlist>
+    private lateinit var adapter: PlaylistAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val playlistsViewModel =
-            ViewModelProvider(this).get(PlaylistsViewModel::class.java)
-
         _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
 
-        val textView: TextView = binding.navigationPlaylists
-        playlistsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Grid de 2 columnas
+        binding.rvPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
+
+        // Datos de ejemplo
+        playlists = mutableListOf(
+            Playlist("Rock Classics", 48, R.drawable.img_party_background),
+            Playlist("Chill Vibes", 32, R.drawable.img_soundnest_logo_svg)
+            // … más items …
+        )
+
+        adapter = PlaylistAdapter(requireContext(), playlists)
+        binding.rvPlaylists.adapter = adapter
     }
 
     override fun onDestroyView() {
