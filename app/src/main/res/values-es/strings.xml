@@ -7,9 +7,25 @@
     <string name="title_search">Buscar</string>
     <string name="title_playlists">Playlists</string>
     <string name="title_profile">Perfil</string>
+    <string name="title_register">Registrarse</string>
+    <string name="title_create_account">Create account</string>
 
     <string name="lbl_user">Usuario</string>
     <string name="lbl_password">Contraseña</string>
+    <string name="lbl_email">Correo electrónico</string>
+    <string name="lbl_playlists">Tus playlists</string>
+    <string name="lbl_recent_searches">Búsquedas recientes</string>
+    <string name="lbl_mandatory">Obligatorio</string>
+    <string name="lbl_register_success">Registrado exitosamente</string>
+    <string name="lbl_register_error">Error al registrar: %1$s</string>
+    <string name="lbl_invalid_code">Código inválido</string>
 
     <string name="btn_logout">Cerrar sesión</string>
+    <string name="btn_register">Registrarse</string>
+    <string name="btn_cancel">Cancelar</string>
+
+    <string name="hint_code">Código</string>
+    <string name="action_verify">Verificar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="msg_enter_code">Ingrese el código enviado al correo %1$s</string>
 </resources>
