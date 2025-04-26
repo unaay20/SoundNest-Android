@@ -18,7 +18,7 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm by lazy { ViewModelProvider(this).get(LoginViewModel::class.java) }
 
-    private val USE_FAKE_LOGIN = true
+    private val USE_FAKE_LOGIN = false
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -35,6 +35,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:counterMaxLength="20"
             android:layout_marginTop="24dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsername"
@@ -81,6 +82,7 @@
             app:layout_constraintTop_toBottomOf="@id/tilEmail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:counterMaxLength="20"
             android:layout_marginTop="16dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"

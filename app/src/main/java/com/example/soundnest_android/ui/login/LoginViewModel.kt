@@ -2,9 +2,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.network.authService
-import com.example.soundnest_android.network.LoginRequest
-import com.example.soundnest_android.network.LoginResponse
+import com.example.soundnest_android.auth.authService
+import com.example.soundnest_android.models.LoginRequest
+import com.example.soundnest_android.models.LoginResponse
 import kotlinx.coroutines.launch
 
 sealed class LoginState {

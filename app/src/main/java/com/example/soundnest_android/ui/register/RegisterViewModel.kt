@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.network.RegisterRequest
-import com.example.soundnest_android.network.RegisterResponse
-import com.example.soundnest_android.network.authService
+import com.example.soundnest_android.models.RegisterRequest
+import com.example.soundnest_android.models.RegisterResponse
+import com.example.soundnest_android.auth.authService
+
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -26,7 +27,7 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val resp: Response<RegisterResponse> =
-                    authService.register(RegisterRequest(username, email, password))
+                    authService.createUser(RegisterRequest(username, email, password))
 
                 if (resp.isSuccessful && resp.body() != null) {
                     _state.value = RegisterState.Success(resp.body()!!)
