@@ -1,38 +1,36 @@
 package com.example.soundnest_android.ui.home
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import com.example.soundnest_android.R
 import com.example.soundnest_android.databinding.FragmentHomeBinding
+import com.example.soundnest_android.ui.notifications.NotificationsActivity
 
-class HomeFragment : Fragment() {
-
+class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+    private val viewModel: HomeViewModel by viewModels()
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentHomeBinding.bind(view)
+        super.onViewCreated(view, savedInstanceState)
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        // click en el botón
+        binding.btnNotifications.setOnClickListener {
+            viewModel.onNotificationsClicked()
         }
-        return root
+
+        // observa el LiveData para navegar
+        viewModel.navigateToNotifications.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                startActivity(Intent(requireContext(), NotificationsActivity::class.java))
+                viewModel.onNavigated()
+            }
+        }
     }
 
     override fun onDestroyView() {

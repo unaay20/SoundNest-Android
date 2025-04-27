@@ -5,9 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class HomeViewModel : ViewModel() {
+    private val _navigateToNotifications = MutableLiveData<Boolean>()
+    val navigateToNotifications: LiveData<Boolean> = _navigateToNotifications
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    fun onNotificationsClicked() {
+        _navigateToNotifications.value = true
     }
-    val text: LiveData<String> = _text
+
+    fun onNavigated() {
+        _navigateToNotifications.value = false
+    }
 }

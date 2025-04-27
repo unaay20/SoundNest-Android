@@ -18,7 +18,7 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm by lazy { ViewModelProvider(this).get(LoginViewModel::class.java) }
 
-    private val USE_FAKE_LOGIN = false
+    private val USE_FAKE_LOGIN = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,13 +52,9 @@ class LoginFragment : Fragment() {
             }
             if (!valid) return@setOnClickListener
 
-            if (USE_FAKE_LOGIN) {
-                // stub: navega sin API
-                (activity as? LoginActivity)?.goToMain()
-            } else {
-                // real: activa cuando tengas API
-                vm.login(username, password)
-            }
+            //TODO delete this
+            (activity as? LoginActivity)?.goToMain()
+            //vm.login(username, password)
         }
 
         binding.registerButton.setOnClickListener {
