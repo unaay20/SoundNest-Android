@@ -27,4 +27,5 @@
     <string name="action_verify">Verify</string>
     <string name="action_cancel">Cancel</string>
     <string name="msg_enter_code">Enter the code sent to the email %1$s</string>
+    <string name="desc_profile_photo">Profile picture</string>
 </resources>

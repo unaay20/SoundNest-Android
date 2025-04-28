@@ -41,5 +41,10 @@
             android:name=".ui.notifications.NotificationsActivity"
             android:exported="true"
             android:label="@string/app_name"/>
+
+        <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="true"
+            android:label="@string/app_name"/>
     </application>
 </manifest>
