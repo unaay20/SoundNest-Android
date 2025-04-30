@@ -28,4 +28,11 @@
     <string name="action_cancel">Cancel</string>
     <string name="msg_enter_code">Enter the code sent to the email %1$s</string>
     <string name="desc_profile_photo">Profile picture</string>
+    <string name="msg_back">Back</string>
+    <string name="msg_play_pause">Play/Pause</string>
+    <string name="msg_next">Next</string>
+    <string name="msg_download">Download</string>
+    <string name="msg_info">Info</string>
+    <string name="msg_comments">Comments</string>
+    <string name="msg_song_image">Song image</string>>
 </resources>

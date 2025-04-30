@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.glide)
     kapt(libs.compiler)
+    implementation("com.github.King-Navi:SoundNest_LibraryAndroid:V0.0.1-Alpha")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

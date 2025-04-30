@@ -29,4 +29,11 @@
     <string name="action_cancel">Cancelar</string>
     <string name="msg_enter_code">Ingrese el código enviado al correo %1$s</string>
     <string name="desc_profile_photo">Foto de perfil</string>
+    <string name="msg_back">Anterior</string>
+    <string name="msg_play_pause">Reproducir/Pausar</string>
+    <string name="msg_next">Siguiente</string>
+    <string name="msg_download">Descargar</string>
+    <string name="msg_info">Información</string>
+    <string name="msg_comments">Comentarios</string>
+    <string name="msg_song_image">Imagen de la canción</string>>
 </resources>

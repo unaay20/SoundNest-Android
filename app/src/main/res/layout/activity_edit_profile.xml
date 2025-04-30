@@ -9,7 +9,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Foto de perfil editable -->
         <ImageView
             android:id="@+id/ivEditProfilePhoto"
             android:layout_width="120dp"
@@ -20,7 +19,6 @@
             android:background="@drawable/circle_crop"
             android:scaleType="centerCrop" />
 
-        <!-- Campo Nombre de usuario -->
         <EditText
             android:id="@+id/etUsername"
             android:layout_width="match_parent"
@@ -29,7 +27,6 @@
             android:hint="Nombre de usuario"
             android:inputType="textPersonName" />
 
-        <!-- Campo Correo electrónico -->
         <EditText
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
@@ -38,7 +35,6 @@
             android:hint="Correo electrónico"
             android:inputType="textEmailAddress" />
 
-        <!-- Botón Guardar cambios -->
         <Button
             android:id="@+id/btnSaveProfile"
             style="@style/Widget.MaterialComponents.Button"
