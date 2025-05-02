@@ -8,10 +8,4 @@
         android:id="@+id/playIcon"
         android:fillColor="@color/accent_orange"
         android:pathData="M8,5v14l11-7z" />
-
-    <path
-        android:id="@+id/pauseIcon"
-        android:fillColor="@color/accent_orange"
-        android:pathData="M6,19h4V5H6zm8-14h4v14h-4z"
-        android:visibility="gone" />
 </vector>

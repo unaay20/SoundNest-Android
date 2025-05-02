@@ -29,10 +29,8 @@ class PlaylistsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Grid de 2 columnas
         binding.rvPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        // Datos de ejemplo
         playlists = mutableListOf(
             Playlist("Rock Classics", 48, R.drawable.img_party_background),
             Playlist("Chill Vibes", 32, R.drawable.img_soundnest_logo_svg)

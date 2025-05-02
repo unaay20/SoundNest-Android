@@ -25,8 +25,6 @@ class PlaylistAdapter(
         holder.tvName.text = p.name
         holder.tvCount.text = "${p.songCount} canciones"
         holder.ivImage.setImageResource(p.imageResId)
-        // Si usas Glide/Picasso para URL:
-        // Glide.with(context).load(p.imageUrl).into(holder.ivImage)
     }
 
     override fun getItemCount(): Int = items.size

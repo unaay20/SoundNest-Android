@@ -16,7 +16,6 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    // Lista mutable de búsquedas recientes
     private val recentSearches = mutableListOf<String>()
     private lateinit var adapter: RecentSearchAdapter
 
@@ -32,45 +31,37 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ejemplos iniciales (puedes cargar desde SharedPreferences o base de datos)
         recentSearches.addAll(listOf(
             "android retrofit",
             "kotlin coroutines",
             "mvvm ejemplo"
         ))
 
-        // Configurar el RecyclerView
         adapter = RecentSearchAdapter(recentSearches) { query ->
-            // Al tocar un item, volver a ejecutar la búsqueda
             binding.searchView.setQuery(query, true)
+            adapter.addSearch(query)
         }
+
         binding.rvRecentSearches.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@SearchFragment.adapter
         }
 
-        // Escuchar el SearchView
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                // Insertar al inicio y notificar al adapter
-                recentSearches.add(0, query)
-                adapter.notifyItemInserted(0)
-                binding.rvRecentSearches.scrollToPosition(0)
-                // Aquí lanzarías tu lógica real de búsqueda…
+                adapter.addSearch(query)
+                binding.searchView.setQuery("", false)
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean = false
         })
 
         binding.searchView.apply {
-            // Asegúrate de que empieza iconificada:
             isIconified = true
 
-            // Hacer toda la vista clickeable
             setOnClickListener {
-                // Expande el SearchView
                 isIconified = false
-                // Opcional: fuerza el foco y muestra el teclado
+
                 requestFocus()
                 val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE)
                         as InputMethodManager

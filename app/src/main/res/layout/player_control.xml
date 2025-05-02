@@ -64,7 +64,7 @@
         android:layout_height="48dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_play_pause"
-        android:src="@drawable/ic_baseline_play_arrow_24"
+        android:src="@drawable/ic_baseline_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnBack"
         app:layout_constraintTop_toTopOf="parent"
@@ -98,7 +98,7 @@
         android:id="@+id/btnComments"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="76dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_comments"
         android:src="@drawable/ic_baseline_comment_24"
@@ -111,7 +111,7 @@
         android:id="@+id/btnSongInfo"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginStart="44dp"
+        android:layout_marginStart="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_info"
         android:src="@drawable/ic_baseline_info_24"
@@ -119,6 +119,7 @@
         app:layout_constraintStart_toEndOf="@id/btnComments"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

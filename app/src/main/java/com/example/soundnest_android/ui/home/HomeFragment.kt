@@ -19,12 +19,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _binding = FragmentHomeBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
 
-        // click en el botón
         binding.btnNotifications.setOnClickListener {
             viewModel.onNotificationsClicked()
         }
 
-        // observa el LiveData para navegar
         viewModel.navigateToNotifications.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
                 startActivity(Intent(requireContext(), NotificationsActivity::class.java))

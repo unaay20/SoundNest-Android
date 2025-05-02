@@ -21,13 +21,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         _binding = FragmentProfileBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
 
-        // 1) Observa datos de perfil
         viewModel.profile.observe(viewLifecycleOwner) { profile ->
             binding.tvUsername.text = profile.username
             binding.tvEmail.text    = profile.email
             binding.tvRole.text     = profile.role
 
-            // carga foto con Glide, o deja el drawable por defecto si es null
             if (profile.photoUrl.isNullOrBlank()) {
                 binding.ivProfilePhoto.setImageResource(R.drawable.ic_default_avatar)
             } else {
@@ -39,17 +37,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
         }
 
-        // 2) Botón Editar perfil
+
         binding.btnEditProfile.setOnClickListener {
             viewModel.onEditClicked()
         }
         viewModel.editEvent.observe(viewLifecycleOwner) {
-            // TODO: reemplaza EditProfileActivity por tu actividad real
             val intent = Intent(requireContext(), EditProfileActivity::class.java)
             startActivity(intent)
         }
 
-        // 3) Botón Cerrar sesión
         binding.btnLogout.setOnClickListener {
             viewModel.onLogoutClicked()
         }

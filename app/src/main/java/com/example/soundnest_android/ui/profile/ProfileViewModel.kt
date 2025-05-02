@@ -12,8 +12,6 @@ data class UserProfile(
 )
 
 class ProfileViewModel : ViewModel() {
-
-    // Simulamos la carga del perfil; en producción vendría de un repositorio o SharedPreferences
     private val _profile = MutableLiveData<UserProfile>().apply {
         value = UserProfile(
             username = "NombreUsuario",
@@ -24,14 +22,12 @@ class ProfileViewModel : ViewModel() {
     }
     val profile: LiveData<UserProfile> = _profile
 
-    /** Llamar cuando el usuario pulse “Editar perfil” */
     private val _editEvent = MutableLiveData<Unit>()
     val editEvent: LiveData<Unit> = _editEvent
     fun onEditClicked() {
         _editEvent.value = Unit
     }
 
-    /** Llamar cuando el usuario pulse “Cerrar sesión” */
     private val _logoutEvent = MutableLiveData<Unit>()
     val logoutEvent: LiveData<Unit> = _logoutEvent
     fun onLogoutClicked() {

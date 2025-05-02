@@ -18,8 +18,6 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm by lazy { ViewModelProvider(this).get(LoginViewModel::class.java) }
 
-    private val USE_FAKE_LOGIN = true
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,7 +60,6 @@ class LoginFragment : Fragment() {
         }
 
         vm.state.observe(viewLifecycleOwner) { state ->
-            // mientras carga, deshabilita botones
             val enabled = state !is LoginState.Loading
             binding.loginButton.isEnabled = enabled
             binding.registerButton.isEnabled = enabled

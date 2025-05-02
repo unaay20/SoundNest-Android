@@ -14,7 +14,6 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private val vm by lazy { ViewModelProvider(this).get(RegisterViewModel::class.java) }
 
-    // Cambia a false cuando tu API esté lista
     private val USE_FAKE_REGISTER = true
     private val FAKE_CODE = "1234"
 
@@ -48,7 +47,6 @@ class RegisterActivity : AppCompatActivity() {
             if (!valid) return@setOnClickListener
 
             if (USE_FAKE_REGISTER) {
-                // En modo fake primero verifica código
                 showCodeVerificationDialog(email) { codeEntered ->
                     if (codeEntered == FAKE_CODE) {
                         Toast.makeText(this, getString(R.string.lbl_register_success), Toast.LENGTH_SHORT).show()
@@ -58,7 +56,6 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                // Registro real → llama al ViewModel
                 vm.register(user, email, pass)
             }
         }
@@ -74,7 +71,6 @@ class RegisterActivity : AppCompatActivity() {
 
             when (state) {
                 is RegisterState.Success -> {
-                    // Después de registro real, pedimos el código
                     showCodeVerificationDialog(binding.etEmail.text.toString()) { entered ->
                         // TODO: llama a tu endpoint de verificación real aquí
                         Toast.makeText(this, getString(R.string.lbl_register_success), Toast.LENGTH_SHORT).show()

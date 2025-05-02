@@ -57,31 +57,24 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Accede al layout del reproductor (este es el layout que se incluye)
         val playerControl = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.playerControl)
 
-        // Ahora accede a los botones dentro de ese layout
         btnPlayPause = playerControl.findViewById(R.id.btnPlayPause)
         btnBack = playerControl.findViewById(R.id.btnBack)
         btnNext = playerControl.findViewById(R.id.btnNext)
 
-        val playIcon = findViewById<ImageView>(R.id.playIcon)
-        val pauseIcon = findViewById<ImageView>(R.id.pauseIcon)
-
-        // Acciones de los botones
+        btnPlayPause = findViewById(R.id.btnPlayPause)
         btnPlayPause.setOnClickListener {
+            isPlaying = !isPlaying
             if (isPlaying) {
-                playIcon.visibility = View.VISIBLE
-                pauseIcon.visibility = View.GONE
-                // Detener la canción
-                isPlaying = false
+                btnPlayPause.setImageResource(R.drawable.ic_baseline_pause)
+                // comienza la reproducción…
             } else {
-                playIcon.visibility = View.GONE
-                pauseIcon.visibility = View.VISIBLE
-                // Reproducir la canción
-                isPlaying = true
+                btnPlayPause.setImageResource(R.drawable.ic_baseline_play)
+                // pausa la reproducción…
             }
         }
+
 
         btnNext.setOnClickListener {
             // Cambiar a siguiente canción
@@ -100,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     // Función para configurar la canción por defecto
     private fun setDefaultSong() {
         // Configura la imagen por defecto de la canción
-        songImage.setImageResource(R.drawable.img_default_song)  // Usando el icono de nota musical por defecto
+        songImage.setImageResource(R.drawable.img_default_song)
 
         // Configura el título y el artista
         songTitle.text = "19 días y 500 noches"

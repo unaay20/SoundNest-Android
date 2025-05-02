@@ -2,9 +2,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.auth.authService
-import com.example.soundnest_android.models.LoginRequest
-import com.example.soundnest_android.models.LoginResponse
+import soundNest.auth.IAuthService
+import soundNest.models.LoginRequest
+import soundNest.models.LoginResponse
+import com.example.soundnest_android.network.ApiClient
 import kotlinx.coroutines.launch
 
 sealed class LoginState {
@@ -17,6 +18,8 @@ sealed class LoginState {
 class LoginViewModel : ViewModel() {
     private val _state = MutableLiveData<LoginState>(LoginState.Idle)
     val state: LiveData<LoginState> = _state
+
+    val authService: IAuthService = ApiClient.retrofit.create(IAuthService::class.java)
 
     fun login(username: String, password: String) {
         _state.value = LoginState.Loading

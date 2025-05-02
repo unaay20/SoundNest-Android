@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.search
+package com.example.soundnest_android.ui.notifications
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,13 +7,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 
-class RecentSearchAdapter(
+class NotificationsAdapter(
     private val items: MutableList<String>,
     private val onClick: (String) -> Unit
-) : RecyclerView.Adapter<RecentSearchAdapter.SearchVH>() {
+) : RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
 
-    inner class SearchVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tv: TextView = itemView.findViewById(R.id.tvRecentSearch)
+    inner class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tv: TextView = itemView.findViewById(android.R.id.text1)  // Referencia al TextView
 
         init {
             itemView.setOnClickListener {
@@ -29,24 +29,20 @@ class RecentSearchAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchVH {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_recent_search, parent, false)
-        return SearchVH(view)
+            .inflate(android.R.layout.simple_list_item_1, parent, false)
+        return NotificationViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: SearchVH, position: Int) {
+    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
     override fun getItemCount(): Int = items.size
 
     fun addSearch(query: String) {
-        if (items.contains(query)) {
-            items.remove(query)
-            items.add(0, query)
-            notifyItemMoved(items.indexOf(query), 0)
-        } else {
+        if (!items.contains(query)) {
             items.add(0, query)
             notifyItemInserted(0)
         }

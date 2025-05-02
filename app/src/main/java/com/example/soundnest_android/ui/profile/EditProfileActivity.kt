@@ -17,11 +17,10 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Observa los datos del perfil para poblar campos
         viewModel.profile.observe(this) { profile ->
             binding.etUsername.setText(profile.username)
             binding.etEmail.setText(profile.email)
-            // Cargar foto si existe
+
             profile.photoUrl?.let {
                 Glide.with(this)
                     .load(it)
@@ -30,14 +29,12 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Botón para guardar cambios
         binding.btnSaveProfile.setOnClickListener {
             val newUsername = binding.etUsername.text.toString().trim()
             val newEmail = binding.etEmail.text.toString().trim()
             viewModel.onSaveClicked(newUsername, newEmail)
         }
 
-        // Observa resultado de guardado
         viewModel.saveResult.observe(this) { success ->
             if (success) {
                 Toast.makeText(this, "Perfil actualizado", Toast.LENGTH_SHORT).show()
