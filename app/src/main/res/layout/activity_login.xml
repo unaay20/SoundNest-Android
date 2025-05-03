@@ -24,7 +24,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/infoSongImage"
             android:layout_width="278dp"
             android:layout_height="213dp"
             android:layout_marginStart="64dp"
@@ -44,7 +44,7 @@
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusBottomEnd="16dp"
-            app:layout_constraintTop_toBottomOf="@id/imageView2"
+            app:layout_constraintTop_toBottomOf="@id/infoSongImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="80dp"
