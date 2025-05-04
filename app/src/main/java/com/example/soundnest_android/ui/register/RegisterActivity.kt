@@ -9,13 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
 import com.example.soundnest_android.databinding.ActivityRegisterBinding
+import restful.models.user.AdditionalInformation
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private val vm by lazy { ViewModelProvider(this).get(RegisterViewModel::class.java) }
-
-    private val USE_FAKE_REGISTER = true
-    private val FAKE_CODE = "1234"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,87 +22,101 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.btnSend.setOnClickListener {
             val user  = binding.etUsername.text.toString().trim()
-            val email = binding.etEmail.text.toString().trim()
+            val email = binding.etEmail   .text.toString().trim()
             val pass  = binding.etPassword.text.toString()
 
-            // Validación de vacíos...
-            var valid = true
-            if (user.isEmpty()) {
-                binding.tilUsername.error = getString(R.string.lbl_mandatory)
-                valid = false
-            } else binding.tilUsername.error = null
-
-            if (email.isEmpty()) {
-                binding.tilEmail.error = getString(R.string.lbl_mandatory)
-                valid = false
-            } else binding.tilEmail.error = null
-
-            if (pass.isEmpty()) {
-                binding.tilPassword.error = getString(R.string.lbl_mandatory)
-                valid = false
-            } else binding.tilPassword.error = null
-
-            if (!valid) return@setOnClickListener
-
-            if (USE_FAKE_REGISTER) {
-                showCodeVerificationDialog(email) { codeEntered ->
-                    if (codeEntered == FAKE_CODE) {
-                        Toast.makeText(this, getString(R.string.lbl_register_success), Toast.LENGTH_SHORT).show()
-                        finish()
-                    } else {
-                        Toast.makeText(this, R.string.lbl_invalid_code, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                vm.register(user, email, pass)
+            if (user.isEmpty() || email.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(this, "Usuario, email y contraseña son requeridos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val rawInfo = binding.etAdditionalInfo.text.toString().trim()
+            val infoList = rawInfo
+                .split('\n')
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+            val additionalInfo = AdditionalInformation(info = infoList)
+
+            vm.sendCode(email)
         }
 
-        binding.btnCancel.setOnClickListener {
-            finish()
+        vm.sendCodeState.observe(this) { state ->
+            when (state) {
+                SendCodeState.Loading -> {
+                    binding.btnSend.isEnabled = false
+                }
+                is SendCodeState.Success -> {
+                    binding.btnSend.isEnabled = true
+
+                    showCodeDialog { code ->
+                        vm.register(
+                            username              = binding.etUsername.text.toString().trim(),
+                            email                 = binding.etEmail   .text.toString().trim(),
+                            password              = binding.etPassword.text.toString(),
+                            code                  = code,
+                            additionalInformation = AdditionalInformation(
+                                info = binding.etAdditionalInfo.text
+                                    .toString()
+                                    .trim()
+                                    .split('\n')
+                                    .map { it.trim() }
+                                    .filter { it.isNotEmpty() }
+                            )
+                        )
+                    }
+                }
+                is SendCodeState.Error -> {
+                    binding.btnSend.isEnabled = true
+                    Toast.makeText(this, "Error enviando código: ${state.msg}", Toast.LENGTH_LONG).show()
+                }
+                else -> Unit
+            }
         }
 
         vm.state.observe(this) { state ->
-            val enabled = state !is RegisterState.Loading
-            binding.btnSend.isEnabled   = enabled
-            binding.btnCancel.isEnabled = enabled
-
             when (state) {
+                RegisterState.Loading -> {
+                    binding.btnSend.isEnabled = false
+                    binding.btnCancel.isEnabled = false
+                }
                 is RegisterState.Success -> {
-                    showCodeVerificationDialog(binding.etEmail.text.toString()) { entered ->
-                        // TODO: llama a tu endpoint de verificación real aquí
-                        Toast.makeText(this, getString(R.string.lbl_register_success), Toast.LENGTH_SHORT).show()
-                        finish()
-                    }
+                    Toast.makeText(this, getString(R.string.lbl_register_success), Toast.LENGTH_LONG).show()
+                    finish()
                 }
                 is RegisterState.Error -> {
-                    Toast.makeText(this, getString(R.string.lbl_register_error, state.msg), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error registrando: ${state.msg}", Toast.LENGTH_LONG).show()
+                    binding.btnSend.isEnabled = true
+                    binding.btnCancel.isEnabled = true
                 }
-                else -> { /* Idle o Loading */ }
+                else -> {
+                    binding.btnSend.isEnabled = true
+                    binding.btnCancel.isEnabled = true
+                }
             }
         }
+
+        binding.btnCancel.setOnClickListener { finish() }
     }
 
-
-    private fun showCodeVerificationDialog(
-        email: String,
-        onConfirm: (code: String) -> Unit
-    ) {
+    private fun showCodeDialog(onConfirm: (String) -> Unit) {
         val input = EditText(this).apply {
             hint = getString(R.string.hint_code)
             inputType = InputType.TYPE_CLASS_NUMBER
         }
-
         AlertDialog.Builder(this)
             .setTitle(R.string.action_verify)
-            .setMessage(getString(R.string.msg_enter_code, email))
             .setView(input)
-            .setPositiveButton(R.string.action_verify) { dialog, _ ->
-                onConfirm(input.text.toString().trim())
-                dialog.dismiss()
+            .setPositiveButton(R.string.action_verify) { dlg, _ ->
+                val code = input.text.toString().trim()
+                if (code.isBlank()) {
+                    Toast.makeText(this, "Introduce un código válido", Toast.LENGTH_SHORT).show()
+                } else {
+                    onConfirm(code)
+                    dlg.dismiss()
+                }
             }
-            .setNegativeButton(R.string.action_cancel) { dialog, _ ->
-                dialog.dismiss()
+            .setNegativeButton(R.string.action_cancel) { dlg, _ ->
+                dlg.dismiss()
             }
             .setCancelable(false)
             .show()

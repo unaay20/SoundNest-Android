@@ -1,6 +1,5 @@
 package com.example.soundnest_android.ui.login
 
-import LoginViewModel
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -51,8 +50,8 @@ class LoginFragment : Fragment() {
             if (!valid) return@setOnClickListener
 
             //TODO delete this
-            (activity as? LoginActivity)?.goToMain()
-            //vm.login(username, password)
+            //(activity as? LoginActivity)?.goToMain()
+            vm.login(username, password)
         }
 
         binding.registerButton.setOnClickListener {

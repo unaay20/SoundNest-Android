@@ -10,28 +10,32 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 
 class PlaylistAdapter(
-    private val context: Context,
-    private val items: List<Playlist>
+    private val items: List<Playlist>,
+    private val onItemClick: (Playlist) -> Unit   // <-- callback
 ) : RecyclerView.Adapter<PlaylistAdapter.PlaylistVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistVH {
-        val view = LayoutInflater.from(context)
+        val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_playlist, parent, false)
         return PlaylistVH(view)
     }
 
     override fun onBindViewHolder(holder: PlaylistVH, position: Int) {
         val p = items[position]
-        holder.tvName.text = p.name
-        holder.tvCount.text = "${p.songCount} canciones"
+        holder.tvName.text  = p.name
+        holder.tvCount.text = "${p.songs.count()} canciones"
         holder.ivImage.setImageResource(p.imageResId)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(p)
+        }
     }
 
     override fun getItemCount(): Int = items.size
 
     class PlaylistVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ivImage: ImageView = itemView.findViewById(R.id.iv_playlist_image)
-        val tvName: TextView  = itemView.findViewById(R.id.tv_playlist_name)
-        val tvCount: TextView = itemView.findViewById(R.id.tv_song_count)
+        val ivImage: ImageView  = itemView.findViewById(R.id.iv_playlist_image)
+        val tvName:   TextView  = itemView.findViewById(R.id.tv_playlist_name)
+        val tvCount:  TextView  = itemView.findViewById(R.id.tv_song_count)
     }
 }

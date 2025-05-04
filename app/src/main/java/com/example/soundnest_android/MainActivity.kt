@@ -3,6 +3,7 @@ package com.example.soundnest_android
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import com.example.soundnest_android.network.ApiClient
 import com.example.soundnest_android.ui.ViewPagerAdapter
 import com.example.soundnest_android.ui.player.PlayerControlFragment
 import com.example.soundnest_android.ui.player.PlayerManager
@@ -16,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        ApiClient.init(this)
 
         PlayerManager.init(this, R.raw.mi_cancion)
 
@@ -24,7 +26,6 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_player_container, PlayerControlFragment())
             .commit()
 
-        // Configuración del ViewPager y BottomNavigationView
         viewPager = findViewById(R.id.viewPager)
         navView = findViewById(R.id.nav_view)
 

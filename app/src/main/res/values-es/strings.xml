@@ -19,6 +19,7 @@
     <string name="lbl_register_success">Registrado exitosamente</string>
     <string name="lbl_register_error">Error al registrar: %1$s</string>
     <string name="lbl_invalid_code">Código inválido</string>
+    <string name="lbl_additional_info">Información adicional (opcional)</string>
 
     <string name="btn_logout">Cerrar sesión</string>
     <string name="btn_register">Registrarse</string>

@@ -1,5 +1,9 @@
 package com.example.soundnest_android.network
 
+import android.content.Context
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
+import restful.utils.AuthInterceptor
+import restful.utils.TokenProvider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,7 +16,13 @@ import javax.net.ssl.X509TrustManager
 
 
 object ApiClient {
+    const val BASE_URL = "https://192.168.100.42:6969/"
 
+    private lateinit var tokenProvider: TokenProvider
+
+    fun init(context: Context) {
+        tokenProvider = SharedPrefsTokenProvider(context)
+    }
     private fun createUnsafeOkHttpClient(): OkHttpClient {
         val trustAllCerts = arrayOf<TrustManager>(
             object : X509TrustManager {
@@ -21,25 +31,28 @@ object ApiClient {
                 override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
             }
         )
-
-        val sslContext = SSLContext.getInstance("SSL")
-        sslContext.init(null, trustAllCerts, SecureRandom())
-
+        val sslContext = SSLContext.getInstance("SSL").apply {
+            init(null, trustAllCerts, SecureRandom())
+        }
         val sslSocketFactory = sslContext.socketFactory
 
         return OkHttpClient.Builder()
             .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
             .hostnameVerifier { _, _ -> true }
+            // 1) Registro del AuthInterceptor
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            // 2) Luego el interceptor de logging
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .build()
     }
 
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://192.168.100.42:6969/")
-        .client(createUnsafeOkHttpClient())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(createUnsafeOkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 }
-

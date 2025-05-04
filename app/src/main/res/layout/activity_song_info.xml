@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.player.SongInfoActivity">
 
-    <!-- Fondo con blur -->
     <ImageView
         android:id="@+id/img_background_blur"
         android:layout_width="match_parent"
@@ -15,19 +14,16 @@
         android:scaleType="centerCrop"
         android:src="@drawable/img_default_song" />
 
-    <!-- Capa semitransparente oscura -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#CC000000" />
 
-    <!-- Contenido principal -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
 
-        <!-- Carátula grande -->
         <ImageView
             android:id="@+id/infoSongImage"
             android:layout_width="0dp"
@@ -39,7 +35,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Título de la canción -->
         <TextView
             android:id="@+id/infoSongTitle"
             android:layout_width="0dp"
@@ -54,7 +49,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Artista -->
         <TextView
             android:id="@+id/infoArtistName"
             android:layout_width="0dp"
@@ -69,7 +63,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- SeekBar para escala -->
         <SeekBar
             android:id="@+id/sizeSeekBar"
             android:layout_width="0dp"

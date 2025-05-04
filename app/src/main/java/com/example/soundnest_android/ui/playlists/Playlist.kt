@@ -1,7 +1,9 @@
 package com.example.soundnest_android.ui.playlists
 
+import com.example.soundnest_android.ui.songs.Song
+
 data class Playlist(
     val name: String,
-    val songCount: Int,
+    val songs: List<Song>,
     val imageResId: Int // o String si cargas desde URL
 )
