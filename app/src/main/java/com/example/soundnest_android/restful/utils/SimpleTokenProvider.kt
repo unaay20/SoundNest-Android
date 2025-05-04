@@ -1,4 +1,6 @@
-package restful.utils
+package com.example.soundnest_android.restful.utils
+
+import com.example.soundnest_android.restful.utils.TokenProvider
 
 class SimpleTokenProvider : TokenProvider {
     private var token: String? = null

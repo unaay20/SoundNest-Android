@@ -1,6 +1,5 @@
 package com.example.soundnest_android.ui.notifications
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,10 +30,16 @@ class NotificationsViewModel : ViewModel() {
 
     private fun fetchNotificationsFromApi(): List<String> {
         return listOf(
-            "👋 ¡Bienvenido! Estas son tus notificaciones.",
+            "👋 ¡Bienvenido! Estas son tus notificaciones. \uD83D\uDC4B ¡Bienvenido! Estas son tus notificaciones. aadad fefwf ",
             "🔔 Tienes 3 solicitudes de amistad pendientes.",
             "📸 Alguien comentó tu foto."
         )
+    }
+
+    fun addNotification(text: String) {
+        val current = _notifications.value!!.toMutableList()
+        current.add(0, text)
+        _notifications.value = current
     }
 
     fun removeNotification(position: Int) {

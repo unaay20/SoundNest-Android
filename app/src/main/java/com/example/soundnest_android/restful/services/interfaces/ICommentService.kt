@@ -1,8 +1,8 @@
-package restful.services.interfaces
+package com.example.soundnest_android.restful.services.interfaces
 
-import restful.constants.ApiRoutes
-import restful.models.comment.CommentResponse
-import restful.models.comment.CreateCommentRequest
+import com.example.soundnest_android.restful.constants.ApiRoutes
+import com.example.soundnest_android.restful.models.comment.CommentResponse
+import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
 import retrofit2.Response
 import retrofit2.http.*
 

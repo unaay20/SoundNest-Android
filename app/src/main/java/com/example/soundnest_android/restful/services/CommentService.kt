@@ -1,12 +1,12 @@
-package restful.services
+package com.example.soundnest_android.restful.services
 
-import restful.models.comment.CommentResponse
-import restful.models.comment.CreateCommentRequest
-import restful.services.interfaces.ICommentService
-import restful.utils.ApiResult
+import com.example.soundnest_android.restful.models.comment.CommentResponse
+import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
+import com.example.soundnest_android.restful.services.interfaces.ICommentService
+import com.example.soundnest_android.restful.utils.ApiResult
 
 
-class CommentService(baseUrl : String ) : restful.services.BaseService(baseUrl) {
+class CommentService(baseUrl : String ) : BaseService(baseUrl) {
     private val commentService = retrofit.create(ICommentService::class.java)
 
     suspend fun postComment(request: CreateCommentRequest): ApiResult<Unit?> {

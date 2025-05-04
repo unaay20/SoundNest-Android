@@ -64,7 +64,15 @@ class LoginFragment : Fragment() {
             binding.registerButton.isEnabled = enabled
 
             when (state) {
-                is LoginState.Success -> (activity as? LoginActivity)?.goToMain()
+                is LoginState.Success -> {
+                    val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
+                    prefs.edit()
+                        .putString("token", state.data.token)
+                        .putString("username", binding.etUsername.text.toString().trim())
+                        .apply()
+
+                    (activity as? LoginActivity)?.goToMain()
+                }
                 is LoginState.Error   -> Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
                 else                  -> { /* Idle o Loading */ }
             }

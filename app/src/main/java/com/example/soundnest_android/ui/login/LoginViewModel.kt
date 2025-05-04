@@ -5,9 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import restful.models.auth.LoginResponse
-import restful.services.AuthService
-import restful.utils.ApiResult
+import com.example.soundnest_android.restful.models.auth.LoginResponse
+import com.example.soundnest_android.restful.services.AuthService
+import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.network.ApiClient
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import kotlinx.coroutines.launch
@@ -33,6 +33,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 is ApiResult.Success -> {
                     result.data?.let {
                         tokenProvider.saveToken(it.token)
+                        tokenProvider.saveUsername(username)
                         _state.value = LoginState.Success(it)
                     } ?: run {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")

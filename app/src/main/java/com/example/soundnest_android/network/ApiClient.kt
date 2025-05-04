@@ -2,8 +2,8 @@ package com.example.soundnest_android.network
 
 import android.content.Context
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
-import restful.utils.AuthInterceptor
-import restful.utils.TokenProvider
+import com.example.soundnest_android.restful.utils.AuthInterceptor
+import com.example.soundnest_android.restful.utils.TokenProvider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

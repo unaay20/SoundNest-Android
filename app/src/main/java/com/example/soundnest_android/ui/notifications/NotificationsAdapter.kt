@@ -13,7 +13,7 @@ class NotificationsAdapter(
 ) : RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
 
     inner class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tv: TextView = itemView.findViewById(android.R.id.text1)  // Referencia al TextView
+        private val tv: TextView = itemView.findViewById(R.id.tvNotificationText)
 
         init {
             itemView.setOnClickListener {
@@ -31,7 +31,7 @@ class NotificationsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
+            .inflate(R.layout.item_notification, parent, false)
         return NotificationViewHolder(view)
     }
 
@@ -41,10 +41,15 @@ class NotificationsAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    fun addSearch(query: String) {
-        if (!items.contains(query)) {
-            items.add(0, query)
-            notifyItemInserted(0)
-        }
+    fun removeAt(position: Int) {
+        items.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, items.size - position)
+    }
+
+    fun setItems(newItems: List<String>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
     }
 }

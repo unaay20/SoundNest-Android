@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.FragmentProfileBinding
 import com.example.soundnest_android.ui.login.LoginActivity
 
@@ -21,10 +22,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         _binding = FragmentProfileBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
 
+        val prefs = SharedPrefsTokenProvider(requireContext())
+        val username = prefs.getUsername() ?: "Usuario"
+        viewModel.setUsernameFromPrefs(username)
+
         viewModel.profile.observe(viewLifecycleOwner) { profile ->
             binding.tvUsername.text = profile.username
-            binding.tvEmail.text    = profile.email
-            binding.tvRole.text     = profile.role
+            binding.tvEmail.text = profile.email
+            binding.tvRole.text = profile.role
 
             if (profile.photoUrl.isNullOrBlank()) {
                 binding.ivProfilePhoto.setImageResource(R.drawable.ic_default_avatar)
@@ -37,22 +42,25 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
         }
 
-
         binding.btnEditProfile.setOnClickListener {
             viewModel.onEditClicked()
         }
+
         viewModel.editEvent.observe(viewLifecycleOwner) {
-            val intent = Intent(requireContext(), EditProfileActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
 
         binding.btnLogout.setOnClickListener {
             viewModel.onLogoutClicked()
         }
+
         viewModel.logoutEvent.observe(viewLifecycleOwner) {
-            val intent = Intent(requireActivity(), LoginActivity::class.java)
+            SharedPrefsTokenProvider(requireContext()).clearSession()
+
+            val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
             startActivity(intent)
-            requireActivity().finish()
         }
     }
 

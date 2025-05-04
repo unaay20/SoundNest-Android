@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
 import com.example.soundnest_android.databinding.ActivityRegisterBinding
-import restful.models.user.AdditionalInformation
+import com.example.soundnest_android.restful.models.user.AdditionalInformation
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding

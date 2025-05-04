@@ -34,17 +34,16 @@ class PlaylistsFragment : Fragment() {
 
         binding.rvPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        // 1. Definimos las canciones de cada playlist
         val rockSongs = listOf(
-            Song("Bohemian Rhapsody", "Queen",        R.drawable.im_cover_bohemian),
-            Song("Stairway to Heaven", "Led Zeppelin",R.drawable.img_cover_imagine),
-            Song("Hotel California", "Eagles",        R.drawable.img_cover_imagine),
+            Song(1, "Bohemian Rhapsody", "Queen",         R.drawable.im_cover_bohemian),
+            Song(2, "Stairway to Heaven", "Led Zeppelin", R.drawable.img_cover_imagine),
+            Song(3, "Hotel California", "Eagles",         R.drawable.img_cover_imagine),
         )
 
         val chillSongs = listOf(
-            Song("Weightless", "Marconi Union",       R.drawable.img_soundnest_pure_logo_white),
-            Song("Sunset Lover", "Petit Biscuit",     R.drawable.img_soundnest_logo),
-            Song("Night Owl", "Gerry Rafferty",       R.drawable.img_default_song),
+            Song(4, "Weightless", "Marconi Union",        R.drawable.img_soundnest_pure_logo_white),
+            Song(5, "Sunset Lover", "Petit Biscuit",      R.drawable.img_soundnest_logo),
+            Song(6, "Night Owl", "Gerry Rafferty",        R.drawable.img_default_song),
         )
 
         playlists = listOf(

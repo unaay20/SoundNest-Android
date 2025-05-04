@@ -2,10 +2,10 @@ package com.example.soundnest_android.ui.register
 
 import androidx.lifecycle.*
 import com.example.soundnest_android.network.ApiClient
-import restful.models.user.AdditionalInformation
-import restful.services.AuthService
-import restful.services.UserService
-import restful.utils.ApiResult
+import com.example.soundnest_android.restful.models.user.AdditionalInformation
+import com.example.soundnest_android.restful.services.AuthService
+import com.example.soundnest_android.restful.services.UserService
+import com.example.soundnest_android.restful.utils.ApiResult
 import kotlinx.coroutines.launch
 
 sealed class SendCodeState {

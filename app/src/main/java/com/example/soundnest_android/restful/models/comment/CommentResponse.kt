@@ -1,4 +1,4 @@
-package restful.models.comment
+package com.example.soundnest_android.restful.models.comment
 
 import com.squareup.moshi.Json
 

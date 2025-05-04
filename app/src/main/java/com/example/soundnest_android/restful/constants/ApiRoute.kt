@@ -1,4 +1,4 @@
-package restful.constants
+package com.example.soundnest_android.restful.constants
 
 object ApiRoutes {
     const val BASE_URL = "https://localhost:6969"

@@ -1,4 +1,4 @@
-package restful.models.user
+package com.example.soundnest_android.restful.models.user
 
 import com.squareup.moshi.Json
 
@@ -13,5 +13,5 @@ data class EditUserRequest(
     val password: String,
 
     @Json(name = "additionalInformation")
-    val additionalInformation: restful.models.user.AdditionalInformation
+    val additionalInformation: AdditionalInformation
 )

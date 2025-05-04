@@ -1,8 +1,8 @@
-package restful.services.interfaces
+package com.example.soundnest_android.restful.services.interfaces
 
-import restful.constants.ApiRoutes
-import restful.models.user.EditUserRequest
-import restful.models.user.NewUserRequest
+import com.example.soundnest_android.restful.constants.ApiRoutes
+import com.example.soundnest_android.restful.models.user.EditUserRequest
+import com.example.soundnest_android.restful.models.user.NewUserRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.PATCH
@@ -13,5 +13,5 @@ interface IUserService {
     suspend fun createUser(@Body request: NewUserRequest): Response<Unit>
 
     @PATCH(ApiRoutes.USER_EDIT_USER)
-    suspend fun editUser(@Body request: restful.models.user.EditUserRequest): Response<Unit>
+    suspend fun editUser(@Body request: EditUserRequest): Response<Unit>
 }

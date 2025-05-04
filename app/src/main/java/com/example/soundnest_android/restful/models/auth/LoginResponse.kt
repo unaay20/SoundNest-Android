@@ -1,4 +1,4 @@
-package restful.models.auth
+package com.example.soundnest_android.restful.models.auth
 
 import com.squareup.moshi.Json
 

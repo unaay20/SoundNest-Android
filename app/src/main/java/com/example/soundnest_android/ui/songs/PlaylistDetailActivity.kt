@@ -1,10 +1,12 @@
 package com.example.soundnest_android.ui.songs
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
+import com.example.soundnest_android.ui.comments.SongCommentsActivity
 
 class PlaylistDetailActivity : AppCompatActivity() {
 
@@ -19,6 +21,12 @@ class PlaylistDetailActivity : AppCompatActivity() {
         rvSongs.layoutManager = LinearLayoutManager(this)
         rvSongs.setHasFixedSize(true)
 
-        rvSongs.adapter = SongAdapter(songs)
+        val adapter = SongAdapter(songs) { song ->
+            val intent = Intent(this, SongCommentsActivity::class.java).apply {
+                putExtra("EXTRA_SONG_OBJ", song)
+            }
+            startActivity(intent)
+        }
+        rvSongs.adapter = adapter
     }
 }

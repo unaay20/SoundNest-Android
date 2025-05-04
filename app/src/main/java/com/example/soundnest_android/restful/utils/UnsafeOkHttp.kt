@@ -1,4 +1,4 @@
-package restful.utils
+package com.example.soundnest_android.restful.utils
 import okhttp3.OkHttpClient
 
 import java.security.SecureRandom

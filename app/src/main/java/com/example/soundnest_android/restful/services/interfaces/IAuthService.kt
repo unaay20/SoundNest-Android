@@ -1,13 +1,13 @@
-package restful.services.interfaces
+package com.example.soundnest_android.restful.services.interfaces
 
-import restful.constants.ApiRoutes
+import com.example.soundnest_android.restful.constants.ApiRoutes
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
-import restful.models.auth.LoginRequest
-import restful.models.auth.LoginResponse
-import restful.models.auth.SendCodeRequest
-import restful.models.auth.VerifyCodeRequest
+import com.example.soundnest_android.restful.models.auth.LoginRequest
+import com.example.soundnest_android.restful.models.auth.LoginResponse
+import com.example.soundnest_android.restful.models.auth.SendCodeRequest
+import com.example.soundnest_android.restful.models.auth.VerifyCodeRequest
 
 interface IAuthService {
     @POST(ApiRoutes.AUTH_LOGIN)
