@@ -19,7 +19,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         viewModel.profile.observe(this) { profile ->
             binding.etUsername.setText(profile.username)
-            binding.etEmail.setText(profile.email)
+            //binding.etEmail.setText(profile.email)
 
             profile.photoUrl?.let {
                 Glide.with(this)
@@ -31,14 +31,15 @@ class EditProfileActivity : AppCompatActivity() {
 
         binding.btnSaveProfile.setOnClickListener {
             val newUsername = binding.etUsername.text.toString().trim()
-            val newEmail = binding.etEmail.text.toString().trim()
+            val newEmail = "hola"
+                //binding.etEmail.text.toString().trim()
             viewModel.onSaveClicked(newUsername, newEmail)
         }
 
         viewModel.saveResult.observe(this) { success ->
             if (success) {
                 Toast.makeText(this, "Perfil actualizado", Toast.LENGTH_SHORT).show()
-                finish()  // cierra la Activity y regresa
+                finish()
             } else {
                 Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
             }

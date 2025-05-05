@@ -11,7 +11,7 @@
 
     <ImageView
         android:id="@+id/songImage"
-        android:layout_width="55dp"
+        android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:contentDescription="@string/msg_song_image"
@@ -22,8 +22,8 @@
 
     <TextView
         android:id="@+id/artistName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="219dp"
+        android:layout_height="21dp"
         android:layout_marginTop="4dp"
         android:text="Artist Name"
         android:textColor="@android:color/white"
@@ -36,14 +36,14 @@
 
     <TextView
         android:id="@+id/songTitle"
-        android:layout_width="325dp"
-        android:layout_height="25dp"
+        android:layout_width="218dp"
+        android:layout_height="22dp"
         android:layout_marginTop="8dp"
         android:text="Song Title"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.011"
         app:layout_constraintStart_toEndOf="@id/songImage"
         app:layout_constraintTop_toBottomOf="@id/btnPlayPause" />
 
@@ -51,6 +51,7 @@
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginStart="96dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_back"
         android:src="@drawable/ic_baseline_skip_previous_24"
@@ -85,42 +86,27 @@
 
     <ImageButton
         android:id="@+id/btnDownload"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_download"
         android:src="@drawable/ic_baseline_download_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnNext"
+        app:layout_constraintStart_toEndOf="@id/btnComments"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.903" />
 
     <ImageButton
         android:id="@+id/btnComments"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="76dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="56dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_comments"
         android:src="@drawable/ic_baseline_comment_24"
-        app:layout_constraintBottom_toTopOf="@id/songTitle"
-        app:layout_constraintStart_toEndOf="@id/btnDownload"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageButton
-        android:id="@+id/btnSongInfo"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/msg_info"
-        android:src="@drawable/ic_baseline_info_24"
-        app:layout_constraintBottom_toTopOf="@id/songTitle"
-        app:layout_constraintStart_toEndOf="@id/btnComments"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
+        app:layout_constraintStart_toEndOf="@id/songTitle"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,11 +19,13 @@
     <string name="lbl_register_success">Registrado exitosamente</string>
     <string name="lbl_register_error">Error al registrar: %1$s</string>
     <string name="lbl_invalid_code">Código inválido</string>
-    <string name="lbl_additional_info">Información adicional (opcional)</string>
+    <string name="lbl_additional_info">Información adicional</string>
 
     <string name="btn_logout">Cerrar sesión</string>
     <string name="btn_register">Registrarse</string>
     <string name="btn_cancel">Cancelar</string>
+    <string name="btn_save_changes">Guardar cambios</string>
+    <string name="btn_change_password">Cambiar contraseña</string>
 
     <string name="hint_code">Código</string>
     <string name="action_verify">Verificar</string>

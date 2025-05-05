@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,29 +21,79 @@
             android:background="@drawable/circle_crop"
             android:scaleType="centerCrop" />
 
-        <EditText
-            android:id="@+id/etUsername"
-            android:layout_width="match_parent"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilUsername"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="368dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Nombre de usuario"
-            android:inputType="textPersonName" />
+            android:hint="@string/lbl_user"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxStrokeColor="@color/accent_purple"
+            app:counterMaxLength="20">
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsername"
+                android:layout_width="353dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent_orange" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilAdditionalInfo"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="371dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Correo electrónico"
-            android:inputType="textEmailAddress" />
+            android:hint="@string/lbl_additional_info"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxStrokeColor="@color/accent_purple">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAdditionalInfo"
+                android:layout_width="347dp"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:textColor="@color/accent_orange" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnChangePassword"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/accent_purple"
+            android:text="@string/btn_change_password" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="118dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/black"
+            android:text="@string/btn_cancel" />
 
         <Button
             android:id="@+id/btnSaveProfile"
             style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="24dp"
-            android:text="Guardar" />
+            android:textColor="@color/black"
+            android:text="@string/btn_save_changes" />
 
     </LinearLayout>
 </ScrollView>
