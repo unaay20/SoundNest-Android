@@ -37,5 +37,9 @@
     <string name="msg_download">Download</string>
     <string name="msg_info">Info</string>
     <string name="msg_comments">Comments</string>
-    <string name="msg_song_image">Song image</string>>
+    <string name="msg_song_image">Song image</string>
+    <string name="lbl_new_password">New password</string>
+    <string name="lbl_repeat_new_password">Repeat new password</string>
+    <string name="lbl_verification_code">Verification code</string>
+    <string name="lbl_change_password">Change password</string>>
 </resources>
