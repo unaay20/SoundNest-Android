@@ -1,0 +1,51 @@
+syntax = "proto3";
+package song;
+
+option java_package         = "com.example.soundnest_android.song";
+option java_outer_classname = "SongMessagesProto";
+option java_multiple_files  = true;
+
+// Mensajes para upload/download unario
+message SongUploadRequest {
+  string song_name  = 1;
+  bytes  file       = 2;
+  int32  genre_id   = 3;
+  string description= 4;
+}
+message UploadResponse {
+  bool   success = 1;
+  string message = 2;
+}
+message DownloadRequest {
+  string song_id = 1;
+}
+message SongDownloadResponse {
+  string song_name   = 1;
+  bytes  file        = 2;
+  int32  genre_id    = 3;
+  string description= 4;
+}
+
+// Mensajes para streaming
+message UploadStreamRequest {
+  oneof data {
+    Metadata metadata = 1;
+    bytes    chunk    = 2;
+  }
+  message Metadata {
+    string song_name  = 1;
+    int32  genre_id   = 2;
+    string description= 3;
+  }
+}
+message DownloadStreamResponse {
+  oneof data {
+    Metadata metadata = 1;
+    bytes    chunk    = 2;
+  }
+  message Metadata {
+    string song_name  = 1;
+    int32  genre_id   = 2;
+    string description= 3;
+  }
+}

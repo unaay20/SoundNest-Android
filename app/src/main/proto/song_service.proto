@@ -1,0 +1,16 @@
+syntax = "proto3";
+package song;
+
+import "song_messages.proto";
+
+option java_package = "com.example.soundnest_android.song";
+
+// Servicio gRPC
+service SongService {
+  // Unario
+  rpc UploadSong         (SongUploadRequest)    returns (UploadResponse);
+  rpc DownloadSong       (DownloadRequest)      returns (SongDownloadResponse);
+  // Streaming
+  rpc UploadSongStream   (stream UploadStreamRequest)    returns (UploadResponse);
+  rpc DownloadSongStream (DownloadRequest)      returns (stream DownloadStreamResponse);
+}
