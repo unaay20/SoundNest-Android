@@ -41,4 +41,12 @@
     <string name="lbl_verification_code">Código de verificación</string>
     <string name="lbl_change_password">Cambiar contraseña</string>>
     <string name="hello_user">¡Hola %1$s!</string>
+    <string name="desc_add_song">Publicar canción</string>
+    <string name="upload_success">Subida exitosa</string>
+    <string name="btn_accept">Aceptar</string>
+    <string name="publish_song">Publicar canción</string>
+    <string name="hint_song_name">Nombre de la canción</string>
+    <string name="hint_description">Descripción de la canción</string>
+    <string name="hint_genre">Género</string>
+    <string name="select_file">Seleccionar archivo</string>
 </resources>

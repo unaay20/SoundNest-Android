@@ -40,4 +40,12 @@
     <string name="lbl_verification_code">Verification code</string>
     <string name="lbl_change_password">Change password</string>>
     <string name="hello_user">Hello %1$s!</string>
+    <string name="desc_add_song">Publish song</string>
+    <string name="upload_success">Uploaded successfully</string>
+    <string name="btn_accept">Accept</string>
+    <string name="publish_song">Publish song</string>
+    <string name="hint_song_name">Song name</string>
+    <string name="hint_description">Song description</string>
+    <string name="hint_genre">Genre</string>
+    <string name="select_file">Select file</string>
 </resources>

@@ -70,5 +70,10 @@
             android:name=".ui.change_password.ChangePasswordActivity"
             android:exported="true"
             android:label="@string/app_name"/>
+
+        <activity
+            android:name=".ui.upload_song.UploadSongActivity"
+            android:exported="true"
+            android:label="@string/app_name"/>
     </application>
 </manifest>

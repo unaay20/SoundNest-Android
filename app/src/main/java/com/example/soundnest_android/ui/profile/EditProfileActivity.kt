@@ -15,7 +15,6 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditProfileBinding
     private val viewModel: EditProfileViewModel by viewModels()
 
-    // Para leer sesión
     private lateinit var tokenProvider: SharedPrefsTokenProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,21 +22,16 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1) Inicializa el provider y carga username/email
         tokenProvider = SharedPrefsTokenProvider(this)
         val currentUsername = tokenProvider.username.orEmpty()
         val currentEmail    = tokenProvider.email.orEmpty()
 
-        // Pon los valores en los EditText
         binding.etUsername.setText(currentUsername)
         binding.etAdditionalInfo   .setText(currentEmail)
 
-        // También podrías inicializar ViewModel.profile con estos
         viewModel.onLoadInitial( currentUsername, currentEmail )
 
-        // 2) Observa cambios de perfil (si necesitas)
         viewModel.profile.observe(this) { profile ->
-            // Si quieres que la foto venga del profile:
             profile.photoUrl?.let {
                 Glide.with(this)
                     .load(it)
@@ -46,7 +40,6 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
 
-        // 3) Botón Guardar
         binding.btnSaveProfile.setOnClickListener {
             val newUsername = binding.etUsername.text.toString().trim()
             val newEmail    = binding.etAdditionalInfo   .text.toString().trim()
