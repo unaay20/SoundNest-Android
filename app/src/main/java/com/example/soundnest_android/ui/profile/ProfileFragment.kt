@@ -23,8 +23,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
 
         val prefs = SharedPrefsTokenProvider(requireContext())
-        val username = prefs.getUsername() ?: "Usuario"
-        viewModel.setUsernameFromPrefs(username)
+        val username = prefs.username.orEmpty()
+        val email = prefs.email.orEmpty()
+        val role = prefs.role
+
+        viewModel.setUserFromPrefs(username,email,role)
 
         viewModel.profile.observe(viewLifecycleOwner) { profile ->
             binding.tvUsername.text = profile.username

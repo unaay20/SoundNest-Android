@@ -68,6 +68,8 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.63.0")
     implementation("io.grpc:grpc-stub:1.63.0")
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("com.auth0.android:jwtdecode:2.0.1")
+
 
 
     testImplementation(libs.junit)

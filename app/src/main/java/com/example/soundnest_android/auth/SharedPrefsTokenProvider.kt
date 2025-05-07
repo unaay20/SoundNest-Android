@@ -1,14 +1,14 @@
 package com.example.soundnest_android.auth
 
 import android.content.Context
+import com.auth0.android.jwt.JWT
 import com.example.soundnest_android.restful.utils.TokenProvider
 
 class SharedPrefsTokenProvider(context: Context) : TokenProvider {
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-
     private val KEY_TOKEN = "key_token"
-    private val KEY_USERNAME = "key_username"
 
+    // TokenProvider
     override fun getToken(): String? =
         prefs.getString(KEY_TOKEN, null)
 
@@ -19,14 +19,37 @@ class SharedPrefsTokenProvider(context: Context) : TokenProvider {
         prefs.edit().putString(KEY_TOKEN, token).apply()
     }
 
-    fun saveUsername(username: String) {
-        prefs.edit().putString(KEY_USERNAME, username).apply()
-    }
-
-    fun getUsername(): String? =
-        prefs.getString(KEY_USERNAME, null)
-
     fun clearSession() {
-        prefs.edit().clear().apply()
+        prefs.edit().remove(KEY_TOKEN).apply()
     }
+
+    private fun decodeJWT(): JWT? =
+        getToken()?.let { JWT(it) }
+
+    val username: String?
+        get() = decodeJWT()?.getClaim("username")?.asString()
+
+    val email: String?
+        get() = decodeJWT()?.getClaim("email")?.asString()
+
+    val role: String
+        get() {
+            val id = decodeJWT()
+                ?.getClaim("role_id")
+                ?.asInt()
+            return when (id) {
+                1    -> "Escucha"
+                2    -> "Moderador"
+                else -> "Rol desconocido"
+            }
+        }
+
+    val additionalInfo: List<String>
+        get() = decodeJWT()
+            ?.getClaim("info")
+            ?.asList(String::class.java)
+            ?: emptyList()
+
+    fun getAuthHeader(): String? =
+        getToken()?.let { "Bearer $it" }
 }

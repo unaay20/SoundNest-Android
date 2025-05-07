@@ -17,7 +17,7 @@ class ProfileViewModel : ViewModel() {
         value = UserProfile(
             username = "NombreUsuario",
             email = "correo@ejemplo.com",
-            role = "Moderador",
+            role = "Escucha",
             photoUrl = null
         )
     }
@@ -37,7 +37,9 @@ class ProfileViewModel : ViewModel() {
         _logoutEvent.value = Unit
     }
 
-    fun setUsernameFromPrefs(username: String) {
+    fun setUserFromPrefs(username: String, email: String, role: String) {
         _profile.value = _profile.value?.copy(username = username)
+        _profile.value = _profile.value?.copy(email = email)
+        _profile.value = _profile.value?.copy(role = role)
     }
 }

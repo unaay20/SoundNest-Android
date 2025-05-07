@@ -33,7 +33,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 is ApiResult.Success -> {
                     result.data?.let {
                         tokenProvider.saveToken(it.token)
-                        tokenProvider.saveUsername(username)
                         _state.value = LoginState.Success(it)
                     } ?: run {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityLoginBinding
 import com.example.soundnest_android.ui.register.RegisterActivity
 
@@ -16,6 +17,8 @@ class LoginFragment : Fragment() {
     private var _binding: ActivityLoginBinding? = null
     private val binding get() = _binding!!
     private val vm by lazy { ViewModelProvider(this).get(LoginViewModel::class.java) }
+
+    private lateinit var tokenProvider: SharedPrefsTokenProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,10 +32,11 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        tokenProvider = SharedPrefsTokenProvider(requireContext())
+
         binding.loginButton.setOnClickListener {
             val username = binding.etUsername.text.toString().trim()
             val password = binding.etPassword.text.toString()
-
 
             var valid = true
             if (username.isEmpty()) {
@@ -49,8 +53,6 @@ class LoginFragment : Fragment() {
             }
             if (!valid) return@setOnClickListener
 
-            //TODO delete this
-            //(activity as? LoginActivity)?.goToMain()
             vm.login(username, password)
         }
 
@@ -65,16 +67,15 @@ class LoginFragment : Fragment() {
 
             when (state) {
                 is LoginState.Success -> {
-                    val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
-                    prefs.edit()
-                        .putString("token", state.data.token)
-                        .putString("username", binding.etUsername.text.toString().trim())
-                        .apply()
-
+                    tokenProvider.saveToken(state.data.token)
                     (activity as? LoginActivity)?.goToMain()
                 }
-                is LoginState.Error   -> Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
-                else                  -> { /* Idle o Loading */ }
+                is LoginState.Error -> {
+                    Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    // Idle o Loading: no-op
+                }
             }
         }
     }

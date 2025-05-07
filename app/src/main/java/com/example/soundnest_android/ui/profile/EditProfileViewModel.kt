@@ -28,4 +28,10 @@ class EditProfileViewModel : ViewModel() {
         )
         _saveResult.value = true
     }
+    fun onLoadInitial(username: String, email: String) {
+        _profile.value = _profile.value?.copy(
+            username = username,
+            email    = email
+        )
+    }
 }
