@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- ViewPager2 anclado arriba de la nav -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="0dp"
@@ -16,7 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Contenedor del player como FragmentContainerView -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_player_container"
         android:layout_width="0dp"
@@ -27,7 +25,6 @@
         android:name="com.example.soundnest_android.ui.player.PlayerControlFragment"
         tools:layout="@layout/fragment_player_control" />
 
-    <!-- BottomNavigationView -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="0dp"

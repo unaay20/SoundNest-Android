@@ -11,16 +11,18 @@ class HomeViewModel : ViewModel() {
     fun onNotificationsClicked() {
         _navigateToNotifications.value = true
     }
+
     fun onNavigated() {
         _navigateToNotifications.value = false
     }
-    
+
     private val _navigateToUploadSong = MutableLiveData<Boolean>()
     val navigateToUploadSong: LiveData<Boolean> = _navigateToUploadSong
 
     fun onAddSongClicked() {
         _navigateToUploadSong.value = true
     }
+
     fun onAddSongNavigated() {
         _navigateToUploadSong.value = false
     }

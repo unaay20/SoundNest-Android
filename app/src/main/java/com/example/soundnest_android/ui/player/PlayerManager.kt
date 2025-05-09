@@ -8,7 +8,7 @@ import androidx.annotation.RawRes
  * Singleton manager to share a single MediaPlayer instance
  * between the PlayerControlFragment and SongInfoActivity.
  */
-object PlayerManager {
+object  PlayerManager {
     private var mediaPlayer: MediaPlayer? = null
 
     /**

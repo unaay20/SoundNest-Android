@@ -26,17 +26,14 @@ class SongInfoActivity : AppCompatActivity() {
         infoArtistName = findViewById(R.id.infoArtistName)
         sizeSeekBar    = findViewById(R.id.sizeSeekBar)
 
-        // Extras que recibimos
         val title     = intent.getStringExtra("EXTRA_TITLE") ?: ""
         val artist    = intent.getStringExtra("EXTRA_ARTIST") ?: ""
         val imageRes  = intent.getIntExtra("EXTRA_IMAGE_RES", R.drawable.img_default_song)
 
-        // Inicializar datos
         infoSongTitle.text  = title
         infoArtistName.text = artist
         infoSongImage.setImageResource(imageRes)
 
-        // Configurar SeekBar para escalar la imagen
         sizeSeekBar.max = 120        // 120% del tamaño original
         sizeSeekBar.progress = 100   // inicia al 100%
 

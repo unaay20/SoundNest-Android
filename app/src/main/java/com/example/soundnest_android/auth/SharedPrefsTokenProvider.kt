@@ -8,7 +8,6 @@ class SharedPrefsTokenProvider(context: Context) : TokenProvider {
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     private val KEY_TOKEN = "key_token"
 
-    // TokenProvider
     override fun getToken(): String? =
         prefs.getString(KEY_TOKEN, null)
 
@@ -26,6 +25,14 @@ class SharedPrefsTokenProvider(context: Context) : TokenProvider {
     private fun decodeJWT(): JWT? =
         getToken()?.let { JWT(it) }
 
+    fun getAllClaims(): Map<String, Any>? {
+        val decodedJWT = decodeJWT()
+        return decodedJWT?.claims?.mapValues { it.value.asString().toString() }
+    }
+
+    val id: Int?
+        get() = decodeJWT()?.getClaim("id")?.asInt()
+
     val username: String?
         get() = decodeJWT()?.getClaim("username")?.asString()
 
@@ -34,21 +41,16 @@ class SharedPrefsTokenProvider(context: Context) : TokenProvider {
 
     val role: String
         get() {
-            val id = decodeJWT()
-                ?.getClaim("role_id")
-                ?.asInt()
+            val id = decodeJWT()?.getClaim("role")?.asInt()
             return when (id) {
-                1    -> "Escucha"
-                2    -> "Moderador"
+                1 -> "Escucha"
+                2 -> "Moderador"
                 else -> "Rol desconocido"
             }
         }
 
     val additionalInfo: List<String>
-        get() = decodeJWT()
-            ?.getClaim("info")
-            ?.asList(String::class.java)
-            ?: emptyList()
+        get() = decodeJWT()?.getClaim("info")?.asList(String::class.java) ?: emptyList()
 
     fun getAuthHeader(): String? =
         getToken()?.let { "Bearer $it" }

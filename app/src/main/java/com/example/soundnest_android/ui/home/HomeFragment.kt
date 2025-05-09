@@ -22,8 +22,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         tokenProvider = SharedPrefsTokenProvider(requireContext())
-        val nombre = tokenProvider.username ?: getString(R.string.lbl_mandatory)
-        binding.textHome.text = getString(R.string.hello_user, nombre)
+        val name = tokenProvider.username ?: getString(R.string.lbl_mandatory)
+        binding.textHome.text = getString(R.string.hello_user, name)
+
+        val allClaims = tokenProvider.getAllClaims() ?: emptyMap()
+        val claimsText = allClaims.entries.joinToString(separator = "\n") { "${it.key}: ${it.value}" }
+        binding.textHome.append("\n\nClaims:\n$claimsText")
 
         binding.btnNotifications.setOnClickListener {
             viewModel.onNotificationsClicked()
