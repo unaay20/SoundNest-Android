@@ -1,0 +1,13 @@
+syntax = "proto3";
+package user_image;
+
+import "user_image_messages.proto";
+
+option java_package = "com.example.soundnest_android.user_image";
+
+
+service UserImageService {
+    rpc UploadImage (UploadImageRequest) returns (UploadImageResponse);
+    rpc DownloadImage (DownloadImageRequest) returns (DownloadImageResponse);
+  }
+  
