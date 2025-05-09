@@ -62,14 +62,15 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi:1.13.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("com.google.protobuf:protobuf-java:3.21.7")
     implementation("io.grpc:grpc-protobuf:1.63.0")
     implementation("io.grpc:grpc-stub:1.63.0")
+    implementation("io.grpc:grpc-netty-shaded:1.63.0")
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
     implementation("com.auth0.android:jwtdecode:2.0.1")
-
+    implementation("io.grpc:grpc-okhttp:1.63.0")
 
 
     testImplementation(libs.junit)
