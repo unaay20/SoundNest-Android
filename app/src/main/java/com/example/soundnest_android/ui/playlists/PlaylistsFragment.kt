@@ -6,18 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.soundnest_android.databinding.FragmentPlaylistsBinding
 import com.example.soundnest_android.R
 import com.example.soundnest_android.ui.songs.PlaylistDetailActivity
 import com.example.soundnest_android.ui.songs.Song
-
+import com.google.android.material.snackbar.Snackbar
 class PlaylistsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var playlists: MutableList<Playlist>
+    private val viewModel: PlaylistsViewModel by viewModels()
     private lateinit var adapter: PlaylistAdapter
 
     override fun onCreateView(
@@ -34,37 +35,31 @@ class PlaylistsFragment : Fragment() {
 
         binding.rvPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        val rockSongs = listOf(
-            Song(1, "Bohemian Rhapsody", "Queen",         R.drawable.im_cover_bohemian),
-            Song(2, "Stairway to Heaven", "Led Zeppelin", R.drawable.img_cover_imagine),
-            Song(3, "Hotel California", "Eagles",         R.drawable.img_cover_imagine),
-        )
+        viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+            adapter = PlaylistAdapter(playlists.toMutableList(), { playlist ->
+                val intent = Intent(requireContext(), PlaylistDetailActivity::class.java)
+                    .apply {
+                        putExtra("EXTRA_PLAYLIST_NAME", playlist.name)
+                        putExtra("EXTRA_PLAYLIST_IMAGE", playlist.imageUri)
+                        putExtra("EXTRA_PLAYLIST_SONGS", ArrayList(playlist.songs))
+                    }
+                startActivity(intent)
+            }, { playlist ->
+                viewModel.deletePlaylist(playlist)
+                Snackbar.make(binding.root, "Playlist eliminada", Snackbar.LENGTH_SHORT).show()
+                adapter.removeItem(playlist)
+            })
 
-        val chillSongs = listOf(
-            Song(4, "Weightless", "Marconi Union",        R.drawable.img_soundnest_pure_logo_white),
-            Song(5, "Sunset Lover", "Petit Biscuit",      R.drawable.img_soundnest_logo),
-            Song(6, "Night Owl", "Gerry Rafferty",        R.drawable.img_default_song),
-        )
-
-        playlists = listOf(
-            Playlist("Rock Classics", rockSongs, R.drawable.img_party_background),
-            Playlist("Chill Vibes",    chillSongs, R.drawable.img_soundnest_logo_svg)
-        ).toMutableList()
-
-        adapter = PlaylistAdapter(playlists) { playlist ->
-            val intent = Intent(requireContext(), PlaylistDetailActivity::class.java)
-                .apply {
-                    putExtra("EXTRA_PLAYLIST_NAME",  playlist.name)
-                    putExtra("EXTRA_PLAYLIST_IMAGE", playlist.imageResId)
-                    // aquí convertimos la List<Song> a un ArrayList<Song>
-                    putExtra(
-                        "EXTRA_PLAYLIST_SONGS",
-                        ArrayList(playlist.songs)        // <- la magia
-                    )
-                }
-            startActivity(intent)
+            binding.rvPlaylists.adapter = adapter
         }
-        binding.rvPlaylists.adapter = adapter
+
+        binding.fabAddPlaylist.setOnClickListener {
+            val dialog = NewPlaylistDialogFragment()
+            dialog.onPlaylistCreated = { name, description, imageUri ->
+                viewModel.createPlaylist(name, description, imageUri)
+            }
+            dialog.show(parentFragmentManager, "NewPlaylistDialog")
+        }
     }
 
     override fun onDestroyView() {

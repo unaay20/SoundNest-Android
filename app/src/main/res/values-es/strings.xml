@@ -49,4 +49,5 @@
     <string name="hint_description">Descripción de la canción</string>
     <string name="hint_genre">Género</string>
     <string name="select_file">Seleccionar archivo</string>
+    <string name="desc_add_playlist">Crear nueva playlist</string>
 </resources>

@@ -48,4 +48,5 @@
     <string name="hint_description">Song description</string>
     <string name="hint_genre">Genre</string>
     <string name="select_file">Select file</string>
+    <string name="desc_add_playlist">Add playlist</string>
 </resources>
