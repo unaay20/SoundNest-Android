@@ -5,47 +5,75 @@ option java_package         = "com.example.soundnest_android.song";
 option java_outer_classname = "SongMessagesProto";
 option java_multiple_files  = true;
 
-// Mensajes para upload/download unario
+// Simple upload: upload full song in one message
 message SongUploadRequest {
-  string song_name  = 1;
-  bytes  file       = 2;
-  int32  genre_id   = 3;
-  string description= 4;
-}
-message UploadResponse {
-  bool   success = 1;
-  string message = 2;
-}
-message DownloadRequest {
-  string song_id = 1;
-}
-message SongDownloadResponse {
-  string song_name   = 1;
-  bytes  file        = 2;
-  int32  genre_id    = 3;
-  string description= 4;
+  string song_name = 1;
+  bytes file = 2;
+  int32 id_song_genre = 3;
+  string description = 4;
+  string extension = 5;
 }
 
-// Mensajes para streaming
+// Streaming upload: metadata for streaming upload
+message UploadSongMetadata {
+  string song_name = 1;
+  int32 id_song_genre = 2;
+  string description = 3;
+  string extension = 4;
+
+}
+
+// Chunk of the song file for streaming upload
+message UploadSongChunk {
+  bytes chunk_data = 1;
+}
+
+// Request message for uploading songs via streaming
 message UploadStreamRequest {
-  oneof data {
-    Metadata metadata = 1;
-    bytes    chunk    = 2;
-  }
-  message Metadata {
-    string song_name  = 1;
-    int32  genre_id   = 2;
-    string description= 3;
+  oneof payload {
+    UploadSongMetadata metadata = 1;
+    UploadSongChunk chunk = 2;
   }
 }
+
+// Response message for upload operations
+message UploadResponse {
+  bool result = 1;
+  string message = 2;
+}
+
+// Request message for downloading songs
+message DownloadRequest {
+  int32 id_song = 1;
+}
+
+// Metadata for streaming download
+message DownloadSongMetadata {
+  string song_name = 1;
+  int32 id_song_genre = 2;
+  string description = 3;
+  string extension = 4;
+}
+
+// Chunk of the song file for streaming download
+message DownloadSongChunk {
+  bytes chunk_data = 1;
+}
+
+// Response message for streaming download operations
 message DownloadStreamResponse {
-  oneof data {
-    Metadata metadata = 1;
-    bytes    chunk    = 2;
-  }
-  message Metadata {
-    string song_name  = 1;
-    int32  genre_id   = 2;
-    string description= 3;
+  oneof payload {
+    DownloadSongMetadata metadata = 1;
+    DownloadSongChunk chunk = 2;
   }
 }
+
+// Simple download: send full song in one message
+message SongDownloadResponse {
+  string song_name = 1;
+  bytes file = 2;
+  int32 id_song_genre = 3;
+  string description = 4;
+  string extension = 5;
+}
+
