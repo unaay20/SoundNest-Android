@@ -1,6 +1,6 @@
 package com.example.soundnest_android.grpc.constants
 
-object GrpcConstants {
+object GrpcRoutes {
     private var host: String = "10.0.2.2"
     private var port: Int = 50051
 

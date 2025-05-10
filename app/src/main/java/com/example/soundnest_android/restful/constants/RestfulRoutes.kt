@@ -1,7 +1,10 @@
 package com.example.soundnest_android.restful.constants
 
-object ApiRoutes {
-    const val BASE_URL = "http://192.168.100.42/restful/"
+object RestfulRoutes {
+    //http://192.168.100.42/restful/
+    //https://10.0.2.2:6969/
+    //https://localhost:6969/
+    private var baseUrl = "https://10.0.2.2:6969/"
 
     // Auth endpoints
     const val AUTH_LOGIN = "api/auth/login"
@@ -24,4 +27,7 @@ object ApiRoutes {
     const val NOTIFICATION_GET_BY_USER_ID = "api/notifications/getNotifications/{userId}"
     const val NOTIFICATION_DELETE = "api/notifications/delete/{id}"
     const val NOTIFICATION_MARK_AS_READ = "api/notifications/notification/{id}/read"
+
+    fun getBaseUrl(): String = baseUrl
+    fun setBaseUrl(value: String) { baseUrl = value }
 }

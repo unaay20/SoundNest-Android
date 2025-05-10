@@ -2,7 +2,7 @@ package com.example.soundnest_android
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.example.soundnest_android.grpc.constants.GrpcConstants
+import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.grpc.http.GrpcResult
 import kotlinx.coroutines.runBlocking
@@ -13,7 +13,7 @@ import org.junit.Test
 class SongFileGrpcServiceIntegrationTest {
     @Test
     fun uploadSongRealCall() = runBlocking {
-        GrpcConstants.setHost("10.0.2.2")
+        GrpcRoutes.setHost("10.0.2.2")
         val context = ApplicationProvider.getApplicationContext<Context>()
 
         // Precondition: valid file
@@ -26,8 +26,8 @@ class SongFileGrpcServiceIntegrationTest {
         val extension = "mp3"
 
         val service = SongFileGrpcService(
-            GrpcConstants.getHost(),
-            GrpcConstants.getPort()
+            GrpcRoutes.getHost(),
+            GrpcRoutes.getPort()
         ) { "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiIxIiwiZW1haWwiOiJ6czIyMDEzNjk4QGVzdHVkaWFudGVzLnV2Lm14Iiwicm9sZSI6MiwiaWF0IjoxNzQ2ODQzMjk4LCJleHAiOjE3NDY5MjYwOTh9.h7JUvdPxKKFjG-aoku4Ky26PVdyNHVJepsV1SrQ0ZNQ" }  // Si necesitas token de auth
 
         val result = service.uploadSong(

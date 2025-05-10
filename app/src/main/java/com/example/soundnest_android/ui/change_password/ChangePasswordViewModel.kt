@@ -1,7 +1,7 @@
 package com.example.soundnest_android.ui.change_password
 
 import androidx.lifecycle.*
-import com.example.soundnest_android.restful.constants.ApiRoutes.BASE_URL
+import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -29,8 +29,8 @@ class ChangePasswordViewModel : ViewModel() {
     private val _changeState = MutableLiveData<ChangePasswordState>(ChangePasswordState.Idle)
     val changeState: LiveData<ChangePasswordState> = _changeState
 
-    private val authService = AuthService(BASE_URL)
-    private val userService = UserService(BASE_URL)
+    private val authService = AuthService(RestfulRoutes.getBaseUrl())
+    private val userService = UserService(RestfulRoutes.getBaseUrl())
 
     /** Envía el código de verificación al correo */
     fun sendCode(email: String) {

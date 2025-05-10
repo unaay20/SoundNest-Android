@@ -9,7 +9,7 @@ import com.example.soundnest_android.restful.models.auth.LoginResponse
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.network.ApiService
-import com.example.soundnest_android.restful.constants.ApiRoutes.BASE_URL
+import com.example.soundnest_android.restful.constants.RestfulRoutes
 import kotlinx.coroutines.launch
 
 sealed class LoginState {
@@ -24,7 +24,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     val state: LiveData<LoginState> = _state
 
     private val tokenProvider = ApiService.tokenProvider
-    private val authService    = AuthService(BASE_URL)
+    private val authService    = AuthService(RestfulRoutes.getBaseUrl())
 
     fun login(username: String, password: String) {
         _state.value = LoginState.Loading
