@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.ui.songs.Song
+import com.bumptech.glide.Glide
 
 class SongCommentsActivity : AppCompatActivity() {
 
@@ -28,16 +29,13 @@ class SongCommentsActivity : AppCompatActivity() {
             return
         }
 
-        val tvTitle       = findViewById<TextView>(R.id.tvTitle)
-        val tvArtist      = findViewById<TextView>(R.id.tvArtist)
-        val ivArtwork     = findViewById<ImageView>(R.id.ivArtwork)
-        val rvComments    = findViewById<RecyclerView>(R.id.rvComments)
-        val etNewComment  = findViewById<EditText>(R.id.etNewComment)
-        val btnSubmit     = findViewById<Button>(R.id.btnSubmitComment)
+        viewModel.setSongId(song.id)
 
-        tvTitle.text = song.title
-        tvArtist.text = song.artist
-        ivArtwork.setImageResource(song.coverResId)
+        val rvComments = findViewById<RecyclerView>(R.id.rvComments)
+        val ivArtwork = findViewById<ImageView>(R.id.ivArtwork)
+        val tvTitle = findViewById<TextView>(R.id.tvTitle)
+        val tvArtist = findViewById<TextView>(R.id.tvArtist)
+        val etNewComment = findViewById<EditText>(R.id.etNewComment)
 
         commentsAdapter = CommentsAdapter(mutableListOf())
         rvComments.apply {
@@ -55,25 +53,30 @@ class SongCommentsActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.loadComments(song.id)
-        val prefs = SharedPrefsTokenProvider(this)
+        viewModel.loadComments()
 
-        btnSubmit.setOnClickListener {
-            val text = etNewComment.text.toString().trim()
-            if (text.isNotEmpty()) {
-                viewModel.addComment(
-                    songId = song.id,
-                    user = prefs.username.orEmpty(),
-                    text = text
-                )
-                etNewComment.text.clear()
-                etNewComment.clearFocus()
-                hideKeyboard(etNewComment)
+        tvTitle.text = song.title
+        tvArtist.text = song.artist
+
+        Glide.with(this)
+            .load(song.coverResId)
+            .into(ivArtwork)
+
+        findViewById<Button>(R.id.btnSubmitComment).setOnClickListener {
+            val commentText = etNewComment.text.toString()
+            if (commentText.isNotBlank()) {
+                val user = SharedPrefsTokenProvider(this).username
+                if (user != null) {
+                    viewModel.addComment(song.id, user, commentText)
+                    etNewComment.text.clear()
+                    hideKeyboard(etNewComment)
+                } else {
+                    Toast.makeText(this, "No se pudo obtener el usuario", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                Toast.makeText(this, "Escribe un comentario", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor, escribe un comentario", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     private fun hideKeyboard(view: EditText) {

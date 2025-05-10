@@ -1,50 +1,58 @@
 package com.example.soundnest_android.ui.notifications
 
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.soundnest_android.restful.services.NotificationService
+import com.example.soundnest_android.restful.utils.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import restful.models.notification.NotificationResponse
 
+class NotificationsViewModel(private val notificationService: NotificationService) : ViewModel() {
 
-class NotificationsViewModel : ViewModel() {
+    private val _notifications = MutableLiveData<List<NotificationResponse>>()
+    val notifications: LiveData<List<NotificationResponse>> = _notifications
 
-    private val _notifications = MutableLiveData<List<String>?>()
-
-    val notifications: MutableLiveData<List<String>?> = _notifications
-
-    init {
-        loadNotifications()
-    }
-
-    private fun loadNotifications() {
+    fun loadNotifications(userId: Int?) {
         viewModelScope.launch(Dispatchers.IO) {
-            val notificationsFromApi = fetchNotificationsFromApi()
+            if (userId != null) {
+                val result = fetchNotificationsFromApi(userId.toString())
 
-            withContext(Dispatchers.Main) {
-                _notifications.value = notificationsFromApi
+                withContext(Dispatchers.Main) {
+                    handleApiResult(result)
+                }
             }
         }
     }
 
-    private fun fetchNotificationsFromApi(): List<String> {
-        return listOf(
-            "👋 ¡Bienvenido! Estas son tus notificaciones. \uD83D\uDC4B ¡Bienvenido! Estas son tus notificaciones. aadad fefwf ",
-            "🔔 Tienes 3 solicitudes de amistad pendientes.",
-            "📸 Alguien comentó tu foto."
-        )
+    private fun handleApiResult(result: ApiResult<List<NotificationResponse>?>) {
+        when (result) {
+            is ApiResult.Success -> {
+                _notifications.value = result.data ?: emptyList()
+            }
+            is ApiResult.HttpError -> {
+                Log.e("NotificationsViewModel", "HTTP error: ${result.message}")
+            }
+            is ApiResult.NetworkError -> {
+                Log.e("NotificationsViewModel", "Network error: ${result.exception}")
+            }
+            is ApiResult.UnknownError -> {
+                Log.e("NotificationsViewModel", "Unknown error: ${result.exception}")
+            }
+        }
     }
 
-    fun addNotification(text: String) {
-        val current = _notifications.value!!.toMutableList()
-        current.add(0, text)
-        _notifications.value = current
+    private suspend fun fetchNotificationsFromApi(userId: String): ApiResult<List<NotificationResponse>?> {
+        return notificationService.getNotificationsByUserId(userId)
     }
 
     fun removeNotification(position: Int) {
-        val currentNotifications = _notifications.value?.toMutableList()
-        currentNotifications?.removeAt(position)
+        val currentNotifications = _notifications.value?.toMutableList() ?: mutableListOf()
+        currentNotifications.removeAt(position)
         _notifications.value = currentNotifications
     }
 }

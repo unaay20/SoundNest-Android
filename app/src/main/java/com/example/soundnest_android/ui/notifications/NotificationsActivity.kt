@@ -1,5 +1,6 @@
 package com.example.soundnest_android.ui.notifications
 
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -12,22 +13,34 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityNotificationsBinding
+import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.services.NotificationService
 
 class NotificationsActivity : AppCompatActivity() {
+
+    private val viewModel: NotificationsViewModel by viewModels {
+        NotificationsViewModelFactory(NotificationService(RestfulRoutes.getBaseUrl()))
+    }
 
     private var _binding: ActivityNotificationsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: NotificationsViewModel by viewModels()
-
     private lateinit var deleteIcon: Drawable
     private lateinit var background: ColorDrawable
-
     private lateinit var adapter: NotificationsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val preferences = SharedPrefsTokenProvider(this)
+        val userId = preferences.id
+
+        if (userId != -1) {
+            viewModel.loadNotifications(userId)
+        }
+
         _binding = ActivityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -37,18 +50,14 @@ class NotificationsActivity : AppCompatActivity() {
         adapter = NotificationsAdapter(mutableListOf()) { notification ->
             Toast.makeText(this, "Notificación seleccionada: $notification", Toast.LENGTH_SHORT).show()
         }
+
         binding.rvNotifications.adapter = adapter
         binding.rvNotifications.layoutManager = LinearLayoutManager(this)
 
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ) = false
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
@@ -118,4 +127,3 @@ class NotificationsActivity : AppCompatActivity() {
         _binding = null
     }
 }
-

@@ -14,28 +14,34 @@ import kotlinx.coroutines.launch
 class SongCommentsViewModel : ViewModel() {
     private val repo = CommentRepository(CommentService(RestfulRoutes.getBaseUrl()))
 
-    //FIXME:Validate me
+    private var _songId: Int? = null
+
     private val _comments = MutableLiveData<List<Comment>>()
-    //FIXME:Validate me
     val comments: LiveData<List<Comment>> = _comments
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun loadComments(songId: Int) = viewModelScope.launch {
-        when (val result = repo.getCommentsForSong(songId.toString())) {
-            is ApiResult.Success -> {
-                _comments.value = result.data ?: emptyList()
-                _error.value = null
-            }
-            is ApiResult.HttpError -> {
-                _error.value = "Error ${result.code}: ${result.message}"
-            }
-            is ApiResult.NetworkError -> {
-                _error.value = "Fallo de red: ${result.exception.message}"
-            }
-            is ApiResult.UnknownError -> {
-                _error.value = "Error desconocido: ${result.exception.message}"
+    fun setSongId(songId: Int) {
+        _songId = songId
+    }
+
+    fun loadComments() = viewModelScope.launch {
+        _songId?.let { songId ->
+            when (val result = repo.getCommentsForSong(songId.toString())) {
+                is ApiResult.Success -> {
+                    _comments.value = result.data ?: emptyList()
+                    _error.value = null
+                }
+                is ApiResult.HttpError -> {
+                    _error.value = "Error ${result.code}: ${result.message}"
+                }
+                is ApiResult.NetworkError -> {
+                    _error.value = "Fallo de red: ${result.exception.message}"
+                }
+                is ApiResult.UnknownError -> {
+                    _error.value = "Error desconocido: ${result.exception.message}"
+                }
             }
         }
     }
@@ -49,7 +55,7 @@ class SongCommentsViewModel : ViewModel() {
 
         when (val result = repo.createComment(request)) {
             is ApiResult.Success -> {
-                loadComments(songId)
+                loadComments()
                 _error.value = null
             }
             is ApiResult.HttpError -> {
@@ -63,5 +69,25 @@ class SongCommentsViewModel : ViewModel() {
             }
         }
     }
-}
 
+    fun deleteComment(commentId: String) = viewModelScope.launch {
+        when (val result = repo.removeComment(commentId)) {
+            is ApiResult.Success -> {
+                loadComments()
+            }
+            is ApiResult.HttpError -> {
+                _error.value = "Error ${result.code}: ${result.message}"
+            }
+            is ApiResult.NetworkError -> {
+                _error.value = "Fallo de red: ${result.exception.message}"
+            }
+            is ApiResult.UnknownError -> {
+                _error.value = "Error desconocido: ${result.exception.message}"
+            }
+        }
+    }
+
+    fun replyToComment(parentCommentId: String, userId: String, message: String) {
+        // TODO: Implementar lógica para responder a un comentario
+    }
+}

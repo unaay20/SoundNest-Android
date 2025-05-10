@@ -4,7 +4,8 @@ object RestfulRoutes {
     //http://192.168.100.42/restful/
     //https://10.0.2.2:6969/
     //https://localhost:6969/
-    private var baseUrl = "http://192.168.100.42/restful/"
+    //https://allowing-walrus-classic.ngrok-free.app/restful/
+    private var baseUrl = "https://allowing-walrus-classic.ngrok-free.app/restful/"
 
     // Auth endpoints
     const val AUTH_LOGIN = "api/auth/login"

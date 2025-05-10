@@ -1,4 +1,3 @@
-// data/CommentRepository.kt
 package com.example.soundnest_android.data
 
 import com.example.soundnest_android.restful.models.comment.CommentResponse
@@ -6,6 +5,7 @@ import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
 import com.example.soundnest_android.restful.services.CommentService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.comments.Comment
+import java.io.IOException
 
 class CommentRepository(
     private val service: CommentService
@@ -48,7 +48,12 @@ class CommentRepository(
         return service.postComment(request)
     }
 
-    suspend fun deleteComment(id: String): ApiResult<Unit?> {
-        return service.removeComment(id)
+    suspend fun removeComment(commentId: String): ApiResult<Unit?> {
+        return try {
+            service.removeComment(commentId)
+            ApiResult.Success(Unit)
+        } catch (e: IOException) {
+            ApiResult.NetworkError(e)
+        }
     }
 }
