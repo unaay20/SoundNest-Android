@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
+import com.squareup.picasso.Picasso
 
 class PlaylistAdapter(
     private val items: MutableList<Playlist>,
@@ -28,7 +29,9 @@ class PlaylistAdapter(
         holder.tvCount.text = "${playlist.songs.count()} canciones"
 
         val imageUri = Uri.parse(playlist.imageUri)
-        holder.ivImage.setImageURI(imageUri)
+
+        // Usar Picasso para cargar la imagen en el ImageView
+        Picasso.get().load(imageUri).into(holder.ivImage)
 
         holder.itemView.setOnClickListener {
             onItemClick(playlist)
@@ -39,6 +42,7 @@ class PlaylistAdapter(
             true
         }
     }
+
 
     override fun getItemCount(): Int = items.size
 

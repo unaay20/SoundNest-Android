@@ -9,6 +9,7 @@ import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.ui.songs.Song
 
 class SongCommentsActivity : AppCompatActivity() {
@@ -21,14 +22,12 @@ class SongCommentsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_song_comments)
 
-        // Obtener el objeto Song desde el intent
         song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song ?: run {
             Toast.makeText(this, "Canción no encontrada", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        // Referencias UI
         val tvTitle       = findViewById<TextView>(R.id.tvTitle)
         val tvArtist      = findViewById<TextView>(R.id.tvArtist)
         val ivArtwork     = findViewById<ImageView>(R.id.ivArtwork)
@@ -36,19 +35,16 @@ class SongCommentsActivity : AppCompatActivity() {
         val etNewComment  = findViewById<EditText>(R.id.etNewComment)
         val btnSubmit     = findViewById<Button>(R.id.btnSubmitComment)
 
-        // Mostrar información de la canción
         tvTitle.text = song.title
         tvArtist.text = song.artist
         ivArtwork.setImageResource(song.coverResId)
 
-        // Configurar RecyclerView de comentarios
         commentsAdapter = CommentsAdapter(mutableListOf())
         rvComments.apply {
             layoutManager = LinearLayoutManager(this@SongCommentsActivity)
             adapter = commentsAdapter
         }
 
-        // Observadores LiveData
         viewModel.comments.observe(this) { comments ->
             commentsAdapter.setItems(comments)
         }
@@ -59,16 +55,15 @@ class SongCommentsActivity : AppCompatActivity() {
             }
         }
 
-        // Cargar comentarios
         viewModel.loadComments(song.id)
+        val prefs = SharedPrefsTokenProvider(this)
 
-        // Enviar comentario
         btnSubmit.setOnClickListener {
             val text = etNewComment.text.toString().trim()
             if (text.isNotEmpty()) {
                 viewModel.addComment(
                     songId = song.id.toString(),
-                    user = "UsuarioActual", // TODO: Reemplaza con el usuario real
+                    user = prefs.username.orEmpty(),
                     text = text
                 )
                 etNewComment.text.clear()
@@ -80,7 +75,6 @@ class SongCommentsActivity : AppCompatActivity() {
         }
     }
 
-    // Utilidad: ocultar teclado
     private fun hideKeyboard(view: EditText) {
         val imm = getSystemService<InputMethodManager>()
         imm?.hideSoftInputFromWindow(view.windowToken, 0)

@@ -6,4 +6,10 @@
         android:title="Eliminar playlist"
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_edit_playlist"
+        android:title="Editar playlist"
+        android:icon="@android:drawable/ic_menu_edit"
+        app:showAsAction="ifRoom" />
 </menu>

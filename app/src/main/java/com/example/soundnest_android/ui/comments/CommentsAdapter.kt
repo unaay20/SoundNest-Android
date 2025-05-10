@@ -15,8 +15,8 @@ class CommentsAdapter(
         private val authorTv: TextView = v.findViewById(R.id.tvCommentAuthor)
         private val textTv: TextView = v.findViewById(R.id.tvCommentText)
         fun bind(c: Comment) {
-            authorTv.text = c.authorName
-            textTv.text = c.text
+            authorTv.text = c.user
+            textTv.text = c.message
         }
     }
 

@@ -1,7 +1,8 @@
 package com.example.soundnest_android.ui.register
 
 import androidx.lifecycle.*
-import com.example.soundnest_android.network.ApiClient
+import com.example.soundnest_android.network.ApiService
+import com.example.soundnest_android.restful.constants.ApiRoutes.BASE_URL
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
@@ -29,8 +30,8 @@ class RegisterViewModel : ViewModel() {
     private val _state = MutableLiveData<RegisterState>(RegisterState.Idle)
     val state: LiveData<RegisterState> = _state
 
-    private val authService = AuthService(ApiClient.BASE_URL)
-    private val userService = UserService(ApiClient.BASE_URL)
+    private val authService = AuthService(BASE_URL)
+    private val userService = UserService(BASE_URL)
 
     fun sendCode(email: String) {
         _sendCodeState.value = SendCodeState.Loading

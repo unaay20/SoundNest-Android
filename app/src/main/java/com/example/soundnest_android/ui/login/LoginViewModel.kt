@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.restful.models.auth.LoginResponse
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.utils.ApiResult
-import com.example.soundnest_android.network.ApiClient
-import com.example.soundnest_android.auth.SharedPrefsTokenProvider
+import com.example.soundnest_android.network.ApiService
+import com.example.soundnest_android.restful.constants.ApiRoutes.BASE_URL
 import kotlinx.coroutines.launch
 
 sealed class LoginState {
@@ -23,8 +23,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableLiveData<LoginState>(LoginState.Idle)
     val state: LiveData<LoginState> = _state
 
-    private val tokenProvider = SharedPrefsTokenProvider(getApplication())
-    private val authService    = AuthService(ApiClient.BASE_URL)
+    private val tokenProvider = ApiService.tokenProvider
+    private val authService    = AuthService(BASE_URL)
 
     fun login(username: String, password: String) {
         _state.value = LoginState.Loading

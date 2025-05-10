@@ -17,10 +17,9 @@ class CommentRepository(
                 val domainComments = apiResult.data
                     ?.map { resp: CommentResponse ->
                         Comment(
-                            id = resp.id.toInt(),
-                            authorName = resp.user,
-                            text = resp.message,
-                            timestamp = System.currentTimeMillis() // o, si tu API lo retorna, usa ese campo
+                            song_id = resp.id.toInt(),
+                            user = resp.user,
+                            message = resp.message
                         )
                     }
                     ?: emptyList()

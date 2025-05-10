@@ -13,16 +13,14 @@ class InMemorySongRepository : SongRepository {
 
     private val comments = listOf(
         Comment(
-            id = 1,
-            authorName = "User1",
-            text = "¡Me encanta esta canción!",
-            timestamp = 1683004800000L  // e.g. Mon May  2 00:00:00 GMT-06:00 2025
+            song_id = 1,
+            user = "User1",
+            message = "¡Me encanta esta canción!"
         ),
         Comment(
-            id = 2,
-            authorName = "User2",
-            text = "El ritmo es brutal.",
-            timestamp = 1683008400000L  // e.g. Mon May  2 01:00:00 GMT-06:00 2025
+            song_id = 2,
+            user = "User2",
+            message = "El ritmo es brutal."
         )
     )
     private val commentsBySong = mapOf(
