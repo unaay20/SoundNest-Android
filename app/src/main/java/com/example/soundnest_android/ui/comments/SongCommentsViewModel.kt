@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.data.CommentRepository
 import com.example.soundnest_android.restful.constants.RestfulRoutes
-import com.example.soundnest_android.restful.models.comment.CommentResponse
 import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
 import com.example.soundnest_android.restful.services.CommentService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -16,9 +15,9 @@ class SongCommentsViewModel : ViewModel() {
     private val repo = CommentRepository(CommentService(RestfulRoutes.getBaseUrl()))
 
     //FIXME:Validate me
-    private val _comments = MutableLiveData<List<CommentResponse>>()
+    private val _comments = MutableLiveData<List<Comment>>()
     //FIXME:Validate me
-    val comments: LiveData<List<CommentResponse>> = _comments
+    val comments: LiveData<List<Comment>> = _comments
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error

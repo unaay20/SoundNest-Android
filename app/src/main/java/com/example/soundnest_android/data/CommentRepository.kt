@@ -11,15 +11,13 @@ class CommentRepository(
     private val service: CommentService
 ) {
 
-    //FIXME: It wasn't matching swagger's answer.
-    suspend fun getCommentsForSong(songId: String): ApiResult<List<CommentResponse>> {
+    suspend fun getCommentsForSong(songId: String): ApiResult<List<Comment>> {
         return when (val apiResult = service.fetchComments(songId)) {
             is ApiResult.Success -> {
                 val domainComments = apiResult.data
                     ?.map { resp: CommentResponse ->
-                        CommentResponse(
-                            id = resp.id,
-                            songId = resp.songId,
+                        Comment(
+                            song_id = resp.songId,
                             user = resp.user,
                             message = resp.message
                         )

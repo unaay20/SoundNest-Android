@@ -6,17 +6,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
-import com.example.soundnest_android.restful.models.comment.CommentResponse
 
-//FIXME: Validate me
 class CommentsAdapter(
-    private val items: MutableList<CommentResponse>
+    private val items: MutableList<Comment>
 ) : RecyclerView.Adapter<CommentsAdapter.CommentViewHolder>() {
 
     inner class CommentViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         private val authorTv: TextView = v.findViewById(R.id.tvCommentAuthor)
         private val textTv: TextView = v.findViewById(R.id.tvCommentText)
-        fun bind(c: CommentResponse) {
+        fun bind(c: Comment) {
             authorTv.text = c.user
             textTv.text = c.message
         }
@@ -33,7 +31,7 @@ class CommentsAdapter(
 
     override fun getItemCount() = items.size
 
-    fun setItems(newItems: List<CommentResponse>) {
+    fun setItems(newItems: List<Comment>) {
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
