@@ -24,16 +24,15 @@ class InMemorySongRepository : SongRepository {
         )
     )
     private val commentsBySong = mapOf(
-        1L to comments.subList(0,1),
-        2L to comments.subList(0,2)
+        1 to comments.subList(0,1),
+        2 to comments.subList(0,2)
     )
 
-    override suspend fun getSongById(songId: Long): Song {
-        // Aquí podrías lanzar excepción si no existe
+    override suspend fun getSongById(songId: Int): Song {
         return songs.first { it.id == songId }
     }
 
-    override suspend fun getCommentsForSong(songId: Long): List<Comment> {
+    override suspend fun getCommentsForSong(songId: Int): List<Comment> {
         return commentsBySong[songId] ?: emptyList()
     }
 }

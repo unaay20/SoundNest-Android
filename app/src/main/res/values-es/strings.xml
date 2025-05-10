@@ -15,6 +15,7 @@
     <string name="lbl_playlists">Tus playlists</string>
     <string name="lbl_recent_searches">Búsquedas recientes</string>
     <string name="lbl_mandatory">Obligatorio</string>
+    <string name="lbl_comments">Comentarios</string>
     <string name="lbl_register_success">Registrado exitosamente</string>
     <string name="lbl_register_error">Error al registrar: %1$s</string>
     <string name="lbl_invalid_code">Código inválido</string>
@@ -22,8 +23,10 @@
     <string name="btn_logout">Cerrar sesión</string>
     <string name="btn_register">Registrarse</string>
     <string name="btn_cancel">Cancelar</string>
+    <string name="btn_send">Enviar</string>
     <string name="btn_save_changes">Guardar cambios</string>
     <string name="btn_change_password">Cambiar contraseña</string>
+    <string name="btn_edit_profile">Editar perfil</string>
     <string name="hint_code">Código</string>
     <string name="action_verify">Verificar</string>
     <string name="action_cancel">Cancelar</string>
@@ -46,8 +49,14 @@
     <string name="btn_accept">Aceptar</string>
     <string name="publish_song">Publicar canción</string>
     <string name="hint_song_name">Nombre de la canción</string>
-    <string name="hint_description">Descripción de la canción</string>
+    <string name="hint_description_song">Descripción de la canción</string>
+    <string name="hint_playlist_description">Descripción de la playlist</string>
+    <string name="hint_playlist_name">Nombre de la playlist</string>
+    <string name="hint_delete_playlist">Eliminar playlist</string>
+    <string name="hint_edit_playlist">Editar playlist</string>
     <string name="hint_genre">Género</string>
+    <string name="hint_new_comment">Escribe un comentario...</string>
     <string name="select_file">Seleccionar archivo</string>
     <string name="desc_add_playlist">Crear nueva playlist</string>
+    <string name="hint_select_image">Seleccionar imagen...</string>
 </resources>

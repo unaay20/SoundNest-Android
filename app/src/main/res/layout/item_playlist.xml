@@ -56,12 +56,11 @@
             app:layout_constraintEnd_toEndOf="@id/tv_playlist_name"
             android:paddingBottom="8dp"/>
 
-        <!-- TextView for Delete Option -->
         <TextView
             android:id="@+id/tv_delete_playlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Eliminar Playlist"
+            android:text="@string/hint_delete_playlist"
             android:textColor="@android:color/holo_red_light"
             android:textSize="14sp"
             android:visibility="gone"

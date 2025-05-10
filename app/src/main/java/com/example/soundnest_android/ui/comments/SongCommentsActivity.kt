@@ -62,7 +62,7 @@ class SongCommentsActivity : AppCompatActivity() {
             val text = etNewComment.text.toString().trim()
             if (text.isNotEmpty()) {
                 viewModel.addComment(
-                    songId = song.id.toString(),
+                    songId = song.id,
                     user = prefs.username.orEmpty(),
                     text = text
                 )
@@ -73,6 +73,7 @@ class SongCommentsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Escribe un comentario", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     private fun hideKeyboard(view: EditText) {

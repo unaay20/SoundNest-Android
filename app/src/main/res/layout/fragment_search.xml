@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Barra de búsqueda -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
@@ -20,8 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-
-    <!-- Título de búsquedas recientes -->
     <TextView
         android:id="@+id/tv_recent_label"
         android:layout_width="wrap_content"
@@ -34,7 +31,6 @@
         app:layout_constraintTop_toBottomOf="@id/search_view"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Lista de búsquedas recientes -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_recent_searches"
         android:layout_width="0dp"

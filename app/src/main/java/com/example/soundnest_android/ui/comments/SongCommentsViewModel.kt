@@ -20,7 +20,7 @@ class SongCommentsViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun loadComments(songId: Long) = viewModelScope.launch {
+    fun loadComments(songId: Int) = viewModelScope.launch {
         when (val result = repo.getCommentsForSong(songId.toString())) {
             is ApiResult.Success -> {
                 _comments.value = result.data ?: emptyList()
@@ -38,16 +38,16 @@ class SongCommentsViewModel : ViewModel() {
         }
     }
 
-    fun addComment(songId: String, user: String, text: String) = viewModelScope.launch {
+    fun addComment(songId: Int, user: String, text: String) = viewModelScope.launch {
         val request = CreateCommentRequest(
-            songId = songId.toInt(),
+            songId = songId,
             user = user,
             message = text
         )
 
         when (val result = repo.createComment(request)) {
             is ApiResult.Success -> {
-                loadComments(songId.toLong())
+                loadComments(songId)
                 _error.value = null
             }
             is ApiResult.HttpError -> {
@@ -61,6 +61,5 @@ class SongCommentsViewModel : ViewModel() {
             }
         }
     }
-
 }
 

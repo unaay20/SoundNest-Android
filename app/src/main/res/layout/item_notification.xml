@@ -7,17 +7,17 @@
     android:padding="8dp"
     android:background="@drawable/bg_notification_item">
 
-<TextView
-android:id="@+id/tvNotificationText"
-android:layout_width="0dp"
-android:layout_height="wrap_content"
-android:textSize="16sp"
-android:lineSpacingExtra="4dp"
-android:ellipsize="none"
-android:maxLines="10"
-android:padding="12dp"
-app:layout_constraintTop_toTopOf="parent"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintBottom_toBottomOf="parent"/>
+    <TextView
+        android:id="@+id/tvNotificationText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:lineSpacingExtra="4dp"
+        android:ellipsize="none"
+        android:maxLines="10"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

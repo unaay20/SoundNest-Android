@@ -5,27 +5,51 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center">
+    android:gravity="center_vertical">
 
-    <EditText
-        android:id="@+id/editTextPlaylistName"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPlaylistName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre de la playlist"
-        android:inputType="text" />
+        android:hint="@string/hint_playlist_name"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:boxStrokeColor="@color/accent_purple"
+        android:layout_marginTop="8dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPlaylistName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/accent_orange"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/editTextPlaylistDescription"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPlaylistDescription"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descripción"
-        android:inputType="text" />
+        android:hint="@string/hint_playlist_description"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:boxStrokeColor="@color/accent_purple"
+        android:layout_marginTop="8dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPlaylistDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/accent_orange"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/textViewSelectImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Seleccionar imagen"
+        android:text="@string/hint_select_image"
         android:textSize="16sp"
         android:textColor="@android:color/black"
         android:layout_marginTop="16dp"
@@ -40,15 +64,14 @@
         app:cardElevation="4dp"
         android:layout_gravity="center">
 
-        <ImageView
-            android:id="@+id/editTextPlaylistImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:scaleType="centerInside"
-            android:src="@android:drawable/ic_menu_add"
-            android:contentDescription="Seleccionar Imagen"
-            app:tint="@android:color/black" />
+    <ImageView
+        android:id="@+id/editTextPlaylistImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@android:drawable/ic_menu_add"
+        android:contentDescription="@string/hint_select_image"
+        app:tint="@android:color/black" />
     </androidx.cardview.widget.CardView>
-
 </LinearLayout>

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_delete_playlist"
-        android:title="Eliminar playlist"
+        android:title="@string/hint_delete_playlist"
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_edit_playlist"
-        android:title="Editar playlist"
+        android:title="@string/hint_edit_playlist"
         android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="ifRoom" />
 </menu>
