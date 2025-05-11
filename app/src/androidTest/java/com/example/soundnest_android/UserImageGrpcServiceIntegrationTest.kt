@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.Assert.*
 
+
 class UserImageGrpcServiceIntegrationTest {
     @Test
     fun  uploadImageRealCall() = runBlocking {
@@ -21,7 +22,7 @@ class UserImageGrpcServiceIntegrationTest {
         val extension = "jpg"
         val userId = 1
 
-        val service = UserImageGrpcService(GrpcRoutes.getHost(), GrpcRoutes.getPort()) { "mi-token" }
+        val service = UserImageGrpcService(GrpcRoutes.getHost(), GrpcRoutes.getPort()) { TOKEN_JWT }
         val result = service.uploadImage(userId, imageData, extension)
 
         println("Resultado: $result")
@@ -31,7 +32,7 @@ class UserImageGrpcServiceIntegrationTest {
     @Test
     fun downloadImageRealCall() = runBlocking {
         GrpcRoutes.setHost("10.0.2.2")
-        val service = UserImageGrpcService(GrpcRoutes.getHost(), GrpcRoutes.getPort()) { "mi-token" }
+        val service = UserImageGrpcService(GrpcRoutes.getHost(), GrpcRoutes.getPort()) { TOKEN_JWT }
 
         val result = service.downloadImage(1)
         assertTrue(result is com.example.soundnest_android.grpc.http.GrpcResult.Success)

@@ -13,10 +13,13 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="uploadSongRealCall()">
+      <SelectionState runConfigName="downloadSongSimple_shouldReturnMetadataAndData()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="uploadImageRealCall()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="downloadSongStreamTo_shouldCollectDataAndMetadata()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

@@ -83,11 +83,13 @@ class SongFileGrpcService(
         }
     }
     suspend fun downloadSongSimple(songId: Int): GrpcResult<Pair<DownloadSongData, ByteArray>?> {
+        println("Valor que recibo como songId: $songId")
         return safeCall {
             val request = DownloadSongRequest.newBuilder()
                 .setIdSong(songId)
                 .build()
 
+            println("Request generado: $request")
             val response = stub.downloadSong(request)
 
             val songBytes = response.file.toByteArray()

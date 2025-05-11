@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 
-const val TOKEN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiIxIiwiZW1haWwiOiJ6czIyMDEzNjk4QGVzdHVkaWFudGVzLnV2Lm14Iiwicm9sZSI6MiwiaWF0IjoxNzQ2OTMzNDI3LCJleHAiOjE3NDcwMTYyMjd9.Pz3j6bcJ0H7BoKjVO5A1L3uJ0U1MA2AAsu9Z7nWN1Qk"
+const val TOKEN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiIxIiwiZW1haWwiOiJ6czIyMDEzNjk4QGVzdHVkaWFudGVzLnV2Lm14Iiwicm9sZSI6MiwiaWF0IjoxNzQ2OTQ3MjM1LCJleHAiOjE3NDcwMzAwMzV9.Jjv3xlGUSj9xPGY49KlQ83jDseCcd-ROyBwLbnnD23w"
 
 class SongFileGrpcServiceIntegrationTest {
     @Test
