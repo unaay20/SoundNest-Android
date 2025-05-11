@@ -6,7 +6,7 @@ option java_outer_classname = "SongMessagesProto";
 option java_multiple_files  = true;
 
 // Simple upload: upload full song in one message
-message SongUploadRequest {
+message Song {
   string song_name = 1;
   bytes file = 2;
   int32 id_song_genre = 3;
@@ -29,7 +29,7 @@ message UploadSongChunk {
 }
 
 // Request message for uploading songs via streaming
-message UploadStreamRequest {
+message UploadSongRequest {
   oneof payload {
     UploadSongMetadata metadata = 1;
     UploadSongChunk chunk = 2;
@@ -37,13 +37,13 @@ message UploadStreamRequest {
 }
 
 // Response message for upload operations
-message UploadResponse {
+message UploadSongResponse {
   bool result = 1;
   string message = 2;
 }
 
 // Request message for downloading songs
-message DownloadRequest {
+message DownloadSongRequest {
   int32 id_song = 1;
 }
 
@@ -69,7 +69,7 @@ message DownloadStreamResponse {
 }
 
 // Simple download: send full song in one message
-message SongDownloadResponse {
+message DownloadSongData {
   string song_name = 1;
   bytes file = 2;
   int32 id_song_genre = 3;

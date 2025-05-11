@@ -7,9 +7,9 @@ option java_package = "com.example.soundnest_android.song";
 // gRPC service
 service SongService {
   // Unary
-  rpc UploadSong         (SongUploadRequest)    returns (UploadResponse);
-  rpc DownloadSong       (DownloadRequest)      returns (SongDownloadResponse);
+  rpc UploadSong         (Song)    returns (UploadSongResponse);
+  rpc DownloadSong       (DownloadSongRequest)      returns (DownloadSongData);
   // Streaming
-  rpc UploadSongStream   (stream UploadStreamRequest)    returns (UploadResponse);
-  rpc DownloadSongStream (DownloadRequest)      returns (stream DownloadStreamResponse);
+  rpc UploadSongStream   (stream UploadSongRequest)    returns (UploadSongResponse);
+  rpc DownloadSongStream (DownloadSongRequest)      returns (stream DownloadStreamResponse);
 }

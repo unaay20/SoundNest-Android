@@ -26,6 +26,7 @@ open class BaseGrpcService(
 
         val builder = OkHttpChannelBuilder.forAddress(host, port)
             .usePlaintext()
+            .maxInboundMessageSize(100* 1024 *1024)
 
         channel = builder
             .intercept(interceptor)
