@@ -11,7 +11,7 @@ class EditProfileViewModel : ViewModel() {
             username = "NombreUsuario",
             email    = "correo@ejemplo.com",
             role     = "Escucha",
-            photoUrl = null
+            photoUrl = ""
         )
     }
     val profile: LiveData<UserProfile> = _profile

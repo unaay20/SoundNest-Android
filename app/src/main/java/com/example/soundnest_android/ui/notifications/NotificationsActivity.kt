@@ -122,6 +122,13 @@ class NotificationsActivity : AppCompatActivity() {
             .show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val preferences = SharedPrefsTokenProvider(this)
+        val userId = preferences.id
+        viewModel.loadNotifications(userId)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

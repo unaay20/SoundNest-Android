@@ -1,45 +1,62 @@
 package com.example.soundnest_android.ui.profile
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
+import com.example.soundnest_android.grpc.services.UserImageGrpcService
+import com.example.soundnest_android.grpc.constants.GrpcRoutes
+import com.example.soundnest_android.grpc.http.GrpcResult
+import kotlinx.coroutines.launch
 
-data class UserProfile(
-    val username: String,
-    val email: String,
-    val role: String,
-    val photoUrl: String? = null
-)
+class ProfileViewModel(
+    private val prefs: SharedPrefsTokenProvider,
+    private val tokenProvider: () -> String?
+) : ViewModel() {
 
-class ProfileViewModel : ViewModel() {
+    private val imageService by lazy {
+        UserImageGrpcService(
+            GrpcRoutes.getHost(),
+            GrpcRoutes.getPort(),
+            tokenProvider
+        )
+    }
 
     private val _profile = MutableLiveData<UserProfile>().apply {
         value = UserProfile(
-            username = "NombreUsuario",
-            email = "correo@ejemplo.com",
-            role = "Escucha",
-            photoUrl = null
+            username = prefs.username.orEmpty(),
+            email    = prefs.email.orEmpty(),
+            role     = prefs.role,
+            photoUrl = ""
         )
     }
     val profile: LiveData<UserProfile> = _profile
 
-    private val _editEvent = MutableLiveData<Unit>()
-    val editEvent: LiveData<Unit> = _editEvent
+    private val _photoBytes = MutableLiveData<ByteArray?>()
+    val photoBytes: LiveData<ByteArray?> = _photoBytes
 
-    private val _logoutEvent = MutableLiveData<Unit>()
-    val logoutEvent: LiveData<Unit> = _logoutEvent
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
 
-    fun onEditClicked() {
-        _editEvent.value = Unit
+    fun loadProfileImage(userId: Int) = viewModelScope.launch {
+        when (val res = imageService.downloadImage(userId)) {
+            is GrpcResult.Success    -> _photoBytes.value = res.data?.imageData?.toByteArray()
+            is GrpcResult.GrpcError  -> _error.value = "gRPC error: ${res.message}"
+            is GrpcResult.NetworkError-> _error.value = "Network error: ${res.exception.message}"
+            is GrpcResult.UnknownError-> _error.value = "Unknown: ${res.exception.message}"
+        }
     }
 
-    fun onLogoutClicked() {
-        _logoutEvent.value = Unit
+    fun uploadProfileImage(userId: Int, bytes: ByteArray, ext: String) = viewModelScope.launch {
+        when (val res = imageService.uploadImage(userId, bytes, ext)) {
+            is GrpcResult.Success    -> loadProfileImage(userId)
+            is GrpcResult.GrpcError  -> _error.value = "gRPC error: ${res.message}"
+            is GrpcResult.NetworkError-> _error.value = "Network error: ${res.exception.message}"
+            is GrpcResult.UnknownError-> _error.value = "Unknown: ${res.exception.message}"
+        }
     }
 
-    fun setUserFromPrefs(username: String, email: String, role: String) {
-        _profile.value = _profile.value?.copy(username = username)
-        _profile.value = _profile.value?.copy(email = email)
-        _profile.value = _profile.value?.copy(role = role)
+    override fun onCleared() {
+        super.onCleared()
+        imageService.close()
     }
 }

@@ -52,7 +52,7 @@ class ChangePasswordActivity : AppCompatActivity() {
                     Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
                 newPass != repeat ->
                     Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
-                //else -> vm.changePassword(email, code, newPass)
+                else -> vm.changePassword(email, code, newPass)
             }
         }
 
