@@ -1,6 +1,7 @@
 package com.example.soundnest_android.ui.comments
 
 import android.os.Bundle
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
@@ -21,6 +22,10 @@ class SongCommentsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        )
         setContentView(R.layout.activity_song_comments)
 
         song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song ?: run {

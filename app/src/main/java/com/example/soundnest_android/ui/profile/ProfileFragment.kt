@@ -71,7 +71,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         userId?.let { viewModel.loadProfileImage(it) }
             ?: Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
 
-        binding.ivProfilePhoto.setOnClickListener {
+        binding.fabEditProfile.setOnClickListener {
             userId?.let {
                 val intent = Intent(
                     Intent.ACTION_PICK,

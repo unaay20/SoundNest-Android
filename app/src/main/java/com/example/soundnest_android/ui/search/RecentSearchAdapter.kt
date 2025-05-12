@@ -42,10 +42,11 @@ class RecentSearchAdapter(
     override fun getItemCount(): Int = items.size
 
     fun addSearch(query: String) {
-        if (items.contains(query)) {
-            items.remove(query)
+        val oldIndex = items.indexOf(query)
+        if (oldIndex != -1) {
+            items.removeAt(oldIndex)
             items.add(0, query)
-            notifyItemMoved(items.indexOf(query), 0)
+            notifyItemMoved(oldIndex, 0)
         } else {
             items.add(0, query)
             notifyItemInserted(0)

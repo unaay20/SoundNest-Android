@@ -69,35 +69,35 @@
         app:layout_constraintVertical_bias="0.225"
         tools:ignore="UnknownId" />
 
-    <EditText
-        android:id="@+id/etNewComment"
+    <LinearLayout
+        android:id="@+id/comment_input_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/bg_comment_input"
-        android:gravity="top|start"
-        android:hint="@string/hint_new_comment"
-        android:textColorHint="@color/black"
-        android:inputType="textMultiLine"
-        android:textColor="@color/black"
-        android:minLines="2"
-        android:padding="12dp"
+        android:orientation="horizontal"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnSubmitComment"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvComments"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/btnSubmitComment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_send"
-        android:textColor="@color/black"
-        app:layout_constraintTop_toTopOf="@+id/etNewComment"
-        app:layout_constraintBottom_toBottomOf="@+id/etNewComment"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="8dp"/>
+        <EditText
+            android:id="@+id/etNewComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minLines="2"
+            android:textColorHint="@color/black"
+            android:hint="@string/hint_new_comment"
+            android:background="@drawable/bg_comment_input"
+            android:padding="12dp"
+            android:inputType="textMultiLine"/>
+
+        <Button
+            android:id="@+id/btnSubmitComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_send"
+            android:textColor="@color/black"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

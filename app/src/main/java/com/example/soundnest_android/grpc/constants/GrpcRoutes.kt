@@ -1,7 +1,7 @@
 package com.example.soundnest_android.grpc.constants
 
 object GrpcRoutes {
-    private var host: String = "192.168.100.42"
+    private var host: String = "100.65.158.22"
     private var port: Int = 50051
 
     fun getHost(): String = host

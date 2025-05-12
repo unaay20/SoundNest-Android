@@ -5,6 +5,7 @@ object RestfulRoutes {
     //https://10.0.2.2:6969/
     //https://localhost:6969/
     //https://allowing-walrus-classic.ngrok-free.app/restful/
+    //https://100.65.158.22/restful/
     private var baseUrl = "https://allowing-walrus-classic.ngrok-free.app/restful/"
 
     // Auth endpoints

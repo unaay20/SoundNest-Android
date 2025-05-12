@@ -67,7 +67,8 @@
         <activity
             android:name=".ui.comments.SongCommentsActivity"
             android:exported="true"
-            android:label="@string/app_name"/>
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <activity
             android:name=".ui.change_password.ChangePasswordActivity"

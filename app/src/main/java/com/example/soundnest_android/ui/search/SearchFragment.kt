@@ -1,5 +1,6 @@
 package com.example.soundnest_android.ui.search
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("RestrictedApi", "ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -57,17 +59,40 @@ class SearchFragment : Fragment() {
         })
 
         binding.searchView.apply {
+            setIconifiedByDefault(true)
             isIconified = true
 
-            setOnClickListener {
-                isIconified = false
+            val searchAutoComplete = findViewById<SearchView.SearchAutoComplete>(
+                androidx.appcompat.R.id.search_src_text
+            ).apply {
+                isFocusable = true
+                isFocusableInTouchMode = true
+            }
 
-                requestFocus()
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE)
-                        as InputMethodManager
-                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+            setOnTouchListener { _, event ->
+                if (isIconified) {
+                    isIconified = false
+                    post {
+                        searchAutoComplete.requestFocus()
+                        val imm = requireContext().getSystemService(
+                            Context.INPUT_METHOD_SERVICE
+                        ) as InputMethodManager
+                        imm.showSoftInput(
+                            searchAutoComplete,
+                            InputMethodManager.SHOW_IMPLICIT
+                        )
+                    }
+                    return@setOnTouchListener true
+                }
+                false
+            }
+
+            // 4) Si pierde foco, opcionalmente lo cierras de nuevo
+            setOnQueryTextFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) isIconified = true
             }
         }
+
     }
 
     override fun onDestroyView() {
