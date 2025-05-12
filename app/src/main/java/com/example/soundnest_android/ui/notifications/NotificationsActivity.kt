@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -13,15 +14,18 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityNotificationsBinding
+import com.example.soundnest_android.network.ApiService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.models.notification.NotificationResponse
 import com.example.soundnest_android.restful.services.NotificationService
 
 class NotificationsActivity : AppCompatActivity() {
 
     private val viewModel: NotificationsViewModel by viewModels {
-        NotificationsViewModelFactory(NotificationService(RestfulRoutes.getBaseUrl()))
+        NotificationsViewModelFactory(NotificationService(RestfulRoutes.getBaseUrl(),ApiService.tokenProvider))
     }
 
     private var _binding: ActivityNotificationsBinding? = null
@@ -48,7 +52,7 @@ class NotificationsActivity : AppCompatActivity() {
         background = ColorDrawable(ContextCompat.getColor(this, android.R.color.holo_red_light))
 
         adapter = NotificationsAdapter(mutableListOf()) { notification ->
-            Toast.makeText(this, "Notificación seleccionada: $notification", Toast.LENGTH_SHORT).show()
+            showNotificationDetail(notification)
         }
 
         binding.rvNotifications.adapter = adapter
@@ -120,6 +124,28 @@ class NotificationsActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .show()
+    }
+
+    private fun showNotificationDetail(n: NotificationResponse) {
+        val frag = NotificationDetailDialogFragment.newInstance(
+            title     = n.title,
+            body      = n.notification ?: "",
+            sender    = n.sender ?: "Unknown",
+            relevance = n.relevance,
+            date      = n.createdAt ?: ""
+        )
+        frag.show(supportFragmentManager, "NotificationDetail")
+    }
+
+
+
+    override fun onBackPressed() {
+        if (binding.notificationDetailContainer.visibility == View.VISIBLE) {
+            binding.notificationDetailContainer.visibility = View.GONE
+            binding.rvNotifications.visibility = View.VISIBLE
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onResume() {

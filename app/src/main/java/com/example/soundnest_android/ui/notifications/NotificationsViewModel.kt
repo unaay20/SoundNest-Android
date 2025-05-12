@@ -10,7 +10,7 @@ import com.example.soundnest_android.restful.utils.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import restful.models.notification.NotificationResponse
+import com.example.soundnest_android.restful.models.notification.NotificationResponse
 
 class NotificationsViewModel(private val notificationService: NotificationService) : ViewModel() {
 

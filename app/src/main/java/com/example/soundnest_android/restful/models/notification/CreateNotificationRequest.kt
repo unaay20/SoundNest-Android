@@ -1,9 +1,11 @@
 package com.example.soundnest_android.restful.models.notification
 
 import com.squareup.moshi.Json
-import restful.models.notification.Relevance
 
 data class CreateNotificationRequest(
+    @Json(name = "title")
+    val title: String,
+
     @Json(name = "sender")
     val sender: String,
 

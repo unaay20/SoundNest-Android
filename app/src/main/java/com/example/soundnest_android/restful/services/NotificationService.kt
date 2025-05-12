@@ -1,11 +1,15 @@
 package com.example.soundnest_android.restful.services
 
 import com.example.soundnest_android.restful.models.notification.CreateNotificationRequest
-import restful.models.notification.NotificationResponse
+import com.example.soundnest_android.restful.models.notification.NotificationResponse
 import com.example.soundnest_android.restful.services.interfaces.INotificationService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.restful.utils.TokenProvider
 
-class NotificationService(baseUrl: String) : BaseService(baseUrl) {
+class NotificationService(
+    baseUrl: String,
+    tokenProvider: TokenProvider
+) : BaseService(baseUrl, tokenProvider) {
     private val api = retrofit.create(INotificationService::class.java)
 
     suspend fun createNotification(request: CreateNotificationRequest): ApiResult<Unit?> {

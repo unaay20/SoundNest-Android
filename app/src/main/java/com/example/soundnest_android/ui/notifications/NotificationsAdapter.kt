@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
-import restful.models.notification.NotificationResponse
+import com.example.soundnest_android.restful.models.notification.NotificationResponse
 
 class NotificationsAdapter(
     private val items: MutableList<NotificationResponse>,
@@ -28,7 +28,8 @@ class NotificationsAdapter(
         }
 
         fun bind(notification: NotificationResponse) {
-            tv.text = notification.notification
+            tv.text = notification.title?.takeIf { it.isNotBlank() }
+                ?: "New notification"
 
             when (notification.relevance) {
                 "low" -> container.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.purple_200))

@@ -1,6 +1,7 @@
 package com.example.soundnest_android.ui.login
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -33,6 +34,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 is ApiResult.Success -> {
                     result.data?.let {
                         tokenProvider.saveToken(it.token)
+                        val TAG = "LoginViewModel"
+                        tokenProvider.getToken()?.let { it1 -> Log.d(TAG, it1) }
                         _state.value = LoginState.Success(it)
                     } ?: run {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")

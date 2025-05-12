@@ -9,7 +9,7 @@ import com.example.soundnest_android.restful.utils.ApiResult
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import restful.models.notification.Relevance
+import com.example.soundnest_android.restful.models.notification.Relevance
 
 class NotificationServiceTest {
     @Before

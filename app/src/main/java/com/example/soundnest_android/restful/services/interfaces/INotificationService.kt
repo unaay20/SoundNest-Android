@@ -2,7 +2,7 @@ package com.example.soundnest_android.restful.services.interfaces
 
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.notification.CreateNotificationRequest
-import restful.models.notification.NotificationResponse
+import com.example.soundnest_android.restful.models.notification.NotificationResponse
 import retrofit2.Response
 import retrofit2.http.*
 
