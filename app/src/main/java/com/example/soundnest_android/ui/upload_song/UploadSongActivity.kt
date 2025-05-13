@@ -3,7 +3,6 @@ package com.example.soundnest_android.ui.upload_song
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -35,12 +34,18 @@ class UploadSongActivity : AppCompatActivity() {
         }
 
         binding.btnUpload.setOnClickListener {
+            val name = binding.etSongName.text.toString()
+            val desc = binding.etDescription.text.toString()
+            val genre = binding.spinnerGenre.selectedItem as String
+
             viewModel.onUploadClicked(
-                binding.etSongName.text.toString(),
-                binding.etDescription.text.toString(),
-                binding.spinnerGenre.selectedItem.toString()
+                this,
+                name,
+                desc,
+                genre
             )
         }
+
 
         viewModel.fileUri.observe(this) { uri ->
             uri?.let {

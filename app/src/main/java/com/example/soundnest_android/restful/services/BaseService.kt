@@ -41,7 +41,7 @@ open class BaseService(baseUrl : String, tokenProvider: TokenProvider? = null) {
                 ApiResult.Success(response.body())
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorBody(errorBody) ?: "HTTP ${response.code()} - No error body"
+                val errorMessage = parseErrorBody(errorBody) ?: "HTTP ${response.code()} - ${response.errorBody()}"
                 ApiResult.HttpError(response.code(), errorMessage)
             }
         } catch (e: IOException) {
