@@ -58,4 +58,11 @@
     <string name="select_file">Select file</string>
     <string name="desc_add_playlist">Add playlist</string>
     <string name="hint_select_image">Select image...</string>
+    <string name="msg_exit_change_password">Password changed successfully</string>
+    <string name="msg_error_change_password">There was an error changing the password</string>
+    <string name="msg_code_sent">Code sent to %1$s</string>
+    <string name="msg_code_error">There was an error sending the code</string>
+    <string name="msg_enter_a_code">Enter a valid code</string>
+    <string name="msg_password_too_weak">The password must have at least 6 characters</string>
+    <string name="msg_password_match">The passwords must match</string>
 </resources>

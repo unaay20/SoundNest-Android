@@ -1,10 +1,13 @@
 package com.example.soundnest_android.ui.change_password
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.soundnest_android.R
 import com.example.soundnest_android.databinding.ActivityChangePasswordBinding
+import com.example.soundnest_android.utils.Constants
 
 class ChangePasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChangePasswordBinding
@@ -20,7 +23,6 @@ class ChangePasswordActivity : AppCompatActivity() {
         binding = ActivityChangePasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1) Enviar código al iniciar
         vm.sendCode(email)
 
         vm.sendCodeState.observe(this) { state ->
@@ -30,11 +32,13 @@ class ChangePasswordActivity : AppCompatActivity() {
                 }
                 is SendCodeState.Success -> {
                     binding.btnChangePassword.isEnabled = true
-                    Toast.makeText(this, "Código enviado a $email", Toast.LENGTH_LONG).show()
+                    val message = getString(R.string.msg_code_sent, email)
+                    Toast.makeText(this, (message), Toast.LENGTH_LONG).show()
                 }
                 is SendCodeState.Error -> {
                     binding.btnChangePassword.isEnabled = true
-                    Toast.makeText(this, "Error enviando código: ${state.msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.msg_code_error, Toast.LENGTH_LONG).show()
+                    Log.d(Constants.CHANGE_PASSWORD_ACTIVITY, state.msg)
                 }
                 else -> Unit
             }
@@ -47,11 +51,11 @@ class ChangePasswordActivity : AppCompatActivity() {
 
             when {
                 code.isEmpty() ->
-                    Toast.makeText(this, "Introduce el código", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.msg_enter_code, Toast.LENGTH_SHORT).show()
                 newPass.length < 6 ->
-                    Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.msg_password_too_weak, Toast.LENGTH_SHORT).show()
                 newPass != repeat ->
-                    Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.msg_password_match, Toast.LENGTH_SHORT).show()
                 else -> vm.changePassword(email, code, newPass)
             }
         }
@@ -63,11 +67,12 @@ class ChangePasswordActivity : AppCompatActivity() {
                     binding.btnCancel.isEnabled = false
                 }
                 is ChangePasswordState.Success -> {
-                    Toast.makeText(this, "Contraseña cambiada con éxito", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.msg_exit_change_password, Toast.LENGTH_LONG).show()
                     finish()
                 }
                 is ChangePasswordState.Error -> {
-                    Toast.makeText(this, "Error cambiando contraseña: ${state.msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.msg_error_change_password, Toast.LENGTH_LONG).show()
+                    Log.d(Constants.CHANGE_PASSWORD_ACTIVITY, state.msg)
                     binding.btnChangePassword.isEnabled = true
                     binding.btnCancel.isEnabled = true
                 }

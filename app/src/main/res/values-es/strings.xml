@@ -59,4 +59,11 @@
     <string name="select_file">Seleccionar archivo</string>
     <string name="desc_add_playlist">Crear nueva playlist</string>
     <string name="hint_select_image">Seleccionar imagen...</string>
+    <string name="msg_exit_change_password">Contraseña cambiada con éxito</string>
+    <string name="msg_error_change_password">Error cambiando contraseña</string>
+    <string name="msg_code_sent">Código enviado a %1$s</string>
+    <string name="msg_code_error">Hubo un error al enviar el código</string>
+    <string name="msg_enter_a_code">Introduce un código válido</string>
+    <string name="msg_password_too_weak">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="msg_password_match">Las contraseñas deben coincidir</string>
 </resources>

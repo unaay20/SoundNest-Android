@@ -48,7 +48,6 @@ class ChangePasswordViewModel : ViewModel() {
         _changeState.value = ChangePasswordState.Loading
         viewModelScope.launch {
             //TODO code have to be used in the request to indicate that is a changePassword request
-            //TODO
             val result = userService.editUser(
                 username = email,
                 email = email,

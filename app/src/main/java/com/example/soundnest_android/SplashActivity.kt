@@ -15,13 +15,11 @@ class SplashActivity : AppCompatActivity() {
         val tokenProvider = SharedPrefsTokenProvider(this)
 
         if (tokenProvider.shouldAttachToken()) {
-            // Ya hay sesión iniciada, vamos directo a MainActivity
             startActivity(Intent(this, MainActivity::class.java))
         } else {
-            // No hay token, mostrar pantalla de login
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
-        finish() // Cerramos el Splash
+        finish()
     }
 }
