@@ -65,7 +65,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
         viewModel.error.observe(viewLifecycleOwner) { msg ->
             Log.e("ProfileFrag", "error: $msg")
-            msg?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+            msg?.let {
+                val messageToShow = if (it.contains("No image found")) {
+                    R.string.msg_no_pfp
+                } else {
+                    R.string.msg_unable_load_pfp
+                }
+                Toast.makeText(requireContext(), messageToShow, Toast.LENGTH_SHORT).show()
+            }
         }
 
         userId?.let { viewModel.loadProfileImage(it) }

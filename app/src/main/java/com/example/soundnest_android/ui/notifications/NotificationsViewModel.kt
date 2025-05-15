@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.soundnest_android.restful.models.notification.NotificationResponse
+import com.example.soundnest_android.utils.Constants
 
 class NotificationsViewModel(private val notificationService: NotificationService) : ViewModel() {
 
@@ -35,13 +36,16 @@ class NotificationsViewModel(private val notificationService: NotificationServic
                 _notifications.value = result.data ?: emptyList()
             }
             is ApiResult.HttpError -> {
-                Log.e("NotificationsViewModel", "HTTP error: ${result.message}")
+                Log.e(Constants.NOTIFICATIONS_ACTIVITY, "HTTP error: ${result.message}")
+
             }
             is ApiResult.NetworkError -> {
-                Log.e("NotificationsViewModel", "Network error: ${result.exception}")
+                Log.e(Constants.NOTIFICATIONS_ACTIVITY, "Network error: ${result.exception}")
+
             }
             is ApiResult.UnknownError -> {
-                Log.e("NotificationsViewModel", "Unknown error: ${result.exception}")
+                Log.e(Constants.NOTIFICATIONS_ACTIVITY, "Unknown error: ${result.exception}")
+
             }
         }
     }

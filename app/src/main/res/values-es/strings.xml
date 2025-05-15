@@ -66,4 +66,18 @@
     <string name="msg_enter_a_code">Introduce un código válido</string>
     <string name="msg_password_too_weak">La contraseña debe tener al menos 6 caracteres</string>
     <string name="msg_password_match">Las contraseñas deben coincidir</string>
+    <string name="lbl_rol_listener">Escucha</string>
+    <string name="lbl_rol_moderator">Moderador</string>
+    <string name="lbl_rol_unknown">Rol desconocido</string>
+    <string name="msg_error_login">Hubo un error al iniciar sesión, intente de nuevo más tarde</string>
+    <string name="msg_credentials_login">Credenciales inválidas</string>
+    <string name="lbl_delete_notification">Eliminar notificación</string>
+    <string name="msg_delete_notification">¿Estás seguro de eliminar esta notificación?</string>
+    <string name="msg_unable_load_pfp">No ha sido posible cargar tu foto de perfil</string>
+    <string name="msg_no_pfp">Aún no has seleccionado una foto de perfil</string>
+    <string name="msg_login_error">Hubo un error al iniciar sesión</string>
+    <string name="msg_server_error">Hubo un error al comunicarse con el servidor</string>
+    <string name="lbl_invalid_credentials">Invalid credentials</string>
+    <string name="lbl_user_not_found">User not found</string>
+    <string name="lbl_failed_to_connect">failed to connect</string>
 </resources>

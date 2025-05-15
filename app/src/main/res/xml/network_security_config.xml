@@ -4,5 +4,6 @@
         <domain includeSubdomains="true">192.168.100.42</domain>
         <domain includeSubdomains="true">allowing-walrus-classic.ngrok-free.app</domain>
         <domain includeSubdomains="true">expert-snake-moved.ngrok-free.app</domain>
+        <domain includeSubdomains="true">100.65.158.22</domain>
     </domain-config>
 </network-security-config>

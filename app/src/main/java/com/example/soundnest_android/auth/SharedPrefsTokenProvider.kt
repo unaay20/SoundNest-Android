@@ -2,9 +2,10 @@ package com.example.soundnest_android.auth
 
 import android.content.Context
 import com.auth0.android.jwt.JWT
+import com.example.soundnest_android.R
 import com.example.soundnest_android.restful.utils.TokenProvider
 
-class SharedPrefsTokenProvider(context: Context) : TokenProvider {
+class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     private val KEY_TOKEN = "key_token"
 
@@ -42,10 +43,14 @@ class SharedPrefsTokenProvider(context: Context) : TokenProvider {
     val role: String
         get() {
             val id = decodeJWT()?.getClaim("role")?.asInt()
+            val rolListener = context.getString(R.string.lbl_rol_listener)
+            val rolModerator = context.getString(R.string.lbl_rol_moderator)
+            val rolUnknown = context.getString(R.string.lbl_rol_unknown)
+
             return when (id) {
-                1 -> "Escucha"
-                2 -> "Moderador"
-                else -> "Rol desconocido"
+                1 -> rolListener
+                2 -> rolModerator
+                else -> rolUnknown
             }
         }
 

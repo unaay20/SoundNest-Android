@@ -11,6 +11,7 @@ import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.network.ApiService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.utils.Constants
 import kotlinx.coroutines.launch
 
 sealed class LoginState {
@@ -34,19 +35,24 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 is ApiResult.Success -> {
                     result.data?.let {
                         tokenProvider.saveToken(it.token)
-                        val TAG = "LoginViewModel"
-                        tokenProvider.getToken()?.let { it1 -> Log.d(TAG, it1) }
+                        tokenProvider.getToken()?.let { it1 -> Log.d(Constants.LOGIN_ACTIVITY, it1) }
                         _state.value = LoginState.Success(it)
                     } ?: run {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")
                     }
                 }
-                is ApiResult.HttpError    ->
-                    _state.value = LoginState.Error("HTTP ${result.code}: ${result.message}")
-                is ApiResult.NetworkError ->
-                    _state.value = LoginState.Error("Red: ${result.exception.message}")
-                is ApiResult.UnknownError ->
-                    _state.value = LoginState.Error("Desconocido: ${result.exception.message}")
+                is ApiResult.HttpError    -> {
+                    _state.value = LoginState.Error(result.message)
+                    Log.d(Constants.LOGIN_ACTIVITY, "HTTP ${result.code}: ${result.message}")
+                }
+                is ApiResult.NetworkError -> {
+                    _state.value = result.exception.message?.let { LoginState.Error(it) }
+                    Log.d(Constants.LOGIN_ACTIVITY, "Red: ${result.exception.message}")
+                }
+                is ApiResult.UnknownError -> {
+                    _state.value = result.exception.message?.let { LoginState.Error(it) }
+                    Log.d(Constants.LOGIN_ACTIVITY, "Desconocido: ${result.exception.message}")
+                }
             }
         }
     }

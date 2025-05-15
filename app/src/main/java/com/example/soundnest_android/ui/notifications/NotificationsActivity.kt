@@ -111,14 +111,14 @@ class NotificationsActivity : AppCompatActivity() {
 
     private fun showDeleteConfirmation(position: Int) {
         AlertDialog.Builder(this)
-            .setTitle("Eliminar notificación")
-            .setMessage("¿Estás seguro de eliminar esta notificación?")
-            .setPositiveButton("Eliminar") { dialog, _ ->
+            .setTitle(R.string.lbl_delete_notification)
+            .setMessage(R.string.msg_delete_notification)
+            .setPositiveButton(R.string.btn_accept) { dialog, _ ->
                 adapter.removeAt(position)
                 viewModel.removeNotification(position)
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancelar") { dialog, _ ->
+            .setNegativeButton(R.string.btn_cancel) { dialog, _ ->
                 adapter.notifyItemChanged(position)
                 dialog.dismiss()
             }
