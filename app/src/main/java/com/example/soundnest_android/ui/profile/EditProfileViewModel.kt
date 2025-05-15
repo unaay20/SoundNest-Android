@@ -20,8 +20,6 @@ class EditProfileViewModel : ViewModel() {
     val saveResult: LiveData<Boolean> = _saveResult
 
     fun onSaveClicked(newUsername: String, newEmail: String) {
-        // Aquí llamarías a tu repositorio para guardar cambios
-        // Simulamos un guardado exitoso:
         _profile.value = _profile.value?.copy(
             username = newUsername,
             email = newEmail

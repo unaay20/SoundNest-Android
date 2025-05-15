@@ -17,24 +17,20 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Vistas
         val songImage   = view.findViewById<ImageView>(R.id.songImage)
         val songTitle   = view.findViewById<TextView>(R.id.songTitle)
         val artistName  = view.findViewById<TextView>(R.id.artistName)
 
-        // Botones
         val btnBack      = view.findViewById<ImageButton>(R.id.btnBack)
         val btnPlayPause = view.findViewById<ImageButton>(R.id.btnPlayPause)
         val btnNext      = view.findViewById<ImageButton>(R.id.btnNext)
         val btnDownload  = view.findViewById<ImageButton>(R.id.btnDownload)
         val btnComments  = view.findViewById<ImageButton>(R.id.btnComments)
 
-        // Datos iniciales
         songImage.setImageResource(R.drawable.img_default_song)
         songTitle.text  = "19 días y 500 noches"
         artistName.text = "Joaquín Sabina"
 
-        // Toda la vista clicable para abrir SongInfoActivity
         view.setOnClickListener {
             Intent(requireContext(), SongInfoActivity::class.java).also { intent ->
                 intent.putExtra("EXTRA_TITLE", songTitle.text.toString())
@@ -44,7 +40,6 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control) {
             }
         }
 
-        // Controles de reproducción
         btnPlayPause.setOnClickListener {
             val isPlaying = PlayerManager.togglePlayPause()
             btnPlayPause.setImageResource(
@@ -54,7 +49,6 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control) {
         btnBack.setOnClickListener { /* lógica de retroceso */ }
         btnNext.setOnClickListener { /* lógica de siguiente */ }
 
-        // Otros botones (download, comments) pueden seguir con su lógica
         btnDownload.setOnClickListener { /* lógica de descarga */ }
         btnComments.setOnClickListener { /* lógica de comentarios */ }
     }

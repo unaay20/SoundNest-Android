@@ -26,7 +26,7 @@ class RegisterActivity : AppCompatActivity() {
             val pass  = binding.etPassword.text.toString()
 
             if (user.isEmpty() || email.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(this, "Usuario, email y contraseña son requeridos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.msg_fields_required, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -67,7 +67,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
                 is SendCodeState.Error -> {
                     binding.btnSend.isEnabled = true
-                    Toast.makeText(this, "Error enviando código: ${state.msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error sending code: ${state.msg}", Toast.LENGTH_LONG).show()
                 }
                 else -> Unit
             }
@@ -84,7 +84,7 @@ class RegisterActivity : AppCompatActivity() {
                     finish()
                 }
                 is RegisterState.Error -> {
-                    Toast.makeText(this, "Error registrando: ${state.msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error registering: ${state.msg}", Toast.LENGTH_LONG).show()
                     binding.btnSend.isEnabled = true
                     binding.btnCancel.isEnabled = true
                 }

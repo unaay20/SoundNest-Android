@@ -26,11 +26,10 @@ class PlaylistAdapter(
     override fun onBindViewHolder(holder: PlaylistVH, position: Int) {
         val playlist = items[position]
         holder.tvName.text = playlist.name
-        holder.tvCount.text = "${playlist.songs.count()} canciones"
+        holder.tvCount.text = "${playlist.songs.count()} songs"
 
         val imageUri = Uri.parse(playlist.imageUri)
 
-        // Usar Picasso para cargar la imagen en el ImageView
         Picasso.get().load(imageUri).into(holder.ivImage)
 
         holder.itemView.setOnClickListener {

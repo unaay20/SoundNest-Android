@@ -31,8 +31,8 @@ class NewPlaylistDialogFragment : DialogFragment() {
         }
 
         builder.setView(view)
-            .setTitle("Crear Nueva Playlist")
-            .setPositiveButton("Crear") { dialog, id ->
+            .setTitle(R.string.lbl_create_playlist)
+            .setPositiveButton(R.string.btn_create) { dialog, id ->
                 val name = playlistNameEditText.text.toString()
                 val description = playlistDescriptionEditText.text.toString()
 
@@ -40,7 +40,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
 
                 onPlaylistCreated?.invoke(name, description, imageUri)
             }
-            .setNegativeButton("Cancelar") { dialog, id ->
+            .setNegativeButton(R.string.btn_cancel) { dialog, id ->
                 dialog.dismiss()
             }
 
@@ -57,7 +57,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == -1 && requestCode == PICK_IMAGE_REQUEST) {
-            selectedImageUri = data?.data  // Obtener la URI seleccionada
+            selectedImageUri = data?.data
 
             if (selectedImageUri != null) {
                 playlistImageView.setImageURI(selectedImageUri)

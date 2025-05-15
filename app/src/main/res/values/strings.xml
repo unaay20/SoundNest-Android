@@ -79,4 +79,10 @@
     <string name="lbl_invalid_credentials">Invalid credentials</string>
     <string name="lbl_user_not_found">User not found</string>
     <string name="lbl_failed_to_connect">failed to connect</string>
+    <string name="error_loading_notifications">There was an error loading your notifications</string>
+    <string name="btn_create">Create</string>
+    <string name="lbl_create_playlist">Create new playlist</string>
+    <string name="msg_profile_saved">Profile information updated</string>
+    <string name="error_saving_profile">There was an error saving the information</string>
+    <string name="msg_fields_required">Username, email and password are required</string>
 </resources>

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityEditProfileBinding
 import com.example.soundnest_android.ui.change_password.ChangePasswordActivity
@@ -48,16 +49,14 @@ class EditProfileActivity : AppCompatActivity() {
 
         viewModel.saveResult.observe(this) { success ->
             if (success) {
-                Toast.makeText(this, "Perfil actualizado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.msg_profile_saved, Toast.LENGTH_SHORT).show()
                 finish()
             } else {
-                Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_saving_profile, Toast.LENGTH_SHORT).show()
             }
         }
 
-        // 4) Botón Change Password
         binding.btnChangePassword.setOnClickListener {
-            // Lanza ChangePasswordActivity pasando el email actual
             val intent = Intent(this, ChangePasswordActivity::class.java)
                 .putExtra(ChangePasswordActivity.EXTRA_EMAIL, currentEmail)
             startActivity(intent)

@@ -87,7 +87,6 @@ class SearchFragment : Fragment() {
                 false
             }
 
-            // 4) Si pierde foco, opcionalmente lo cierras de nuevo
             setOnQueryTextFocusChangeListener { _, hasFocus ->
                 if (!hasFocus) isIconified = true
             }

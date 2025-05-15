@@ -46,7 +46,7 @@ class PlaylistsFragment : Fragment() {
                 startActivity(intent)
             }, { playlist ->
                 viewModel.deletePlaylist(playlist)
-                Snackbar.make(binding.root, "Playlist eliminada", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Playlist deleted", Snackbar.LENGTH_SHORT).show()
                 adapter.removeItem(playlist)
             })
 

@@ -9,7 +9,7 @@ import com.example.soundnest_android.R
 
 class SongAdapter(
     private val items: List<Song>,
-    private val onSongClick: (Song) -> Unit   // ← ahora recibe Song
+    private val onSongClick: (Song) -> Unit
 ) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
