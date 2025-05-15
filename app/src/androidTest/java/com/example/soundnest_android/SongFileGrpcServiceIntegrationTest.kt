@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 
-const val TOKEN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiIxIiwiZW1haWwiOiJ6czIyMDEzNjk4QGVzdHVkaWFudGVzLnV2Lm14Iiwicm9sZSI6MiwiaWF0IjoxNzQ2OTQ3MjM1LCJleHAiOjE3NDcwMzAwMzV9.Jjv3xlGUSj9xPGY49KlQ83jDseCcd-ROyBwLbnnD23w"
+const val TOKEN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiIyIiwiZW1haWwiOiJ6czIyMDEzNjk4YWFAZXN0dWRpYW50ZXMudXYubXgiLCJyb2xlIjoyLCJpYXQiOjE3NDczMzg5MTgsImV4cCI6MTc0NzQyMTcxOH0.EiMrrlIka26PcID1J72R6RN32ExPsMRVvEaKjcx7pKQ"
 
 class SongFileGrpcServiceIntegrationTest {
     @Test
@@ -38,12 +38,21 @@ class SongFileGrpcServiceIntegrationTest {
             extension = extension,
             fileData = songData
         )
+        println("----------RESULTADO----------")
+        when (result) {
+            is GrpcResult.Success -> {
+                println("Nice")
 
-        println("Resultado upload: $result")
-
+            }
+            is GrpcResult.GrpcError -> fail("HTTP error: ${result.statusCode} - ${result.message}")
+            is GrpcResult.NetworkError -> fail("Network error: ${result.exception.message}")
+            is GrpcResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
+        }
         assertTrue(result is GrpcResult.Success)
 
         val uploadResponse = (result as GrpcResult.Success).data
+        println("Upload result: ${uploadResponse?.result}, message: ${uploadResponse?.message}")
+
         assertNotNull(uploadResponse)
         assertTrue(uploadResponse!!.result)
     }
@@ -74,8 +83,14 @@ class SongFileGrpcServiceIntegrationTest {
             fileData = songData
         )
 
-        println("Resultado uploadSongSimple: $result")
-
+        when (result) {
+            is GrpcResult.Success -> {
+                println("Nice")
+            }
+            is GrpcResult.GrpcError -> fail("HTTP error: ${result.statusCode} - ${result.message}")
+            is GrpcResult.NetworkError -> fail("Network error: ${result.exception.message}")
+            is GrpcResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
+        }
         assertTrue(result is GrpcResult.Success)
 
         val uploadResponse = (result as GrpcResult.Success).data
