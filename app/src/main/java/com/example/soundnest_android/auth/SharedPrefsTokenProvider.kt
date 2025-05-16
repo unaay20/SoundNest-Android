@@ -3,6 +3,8 @@ package com.example.soundnest_android.auth
 import android.content.Context
 import com.auth0.android.jwt.JWT
 import com.example.soundnest_android.R
+import android.util.Base64
+import org.json.JSONObject
 import com.example.soundnest_android.restful.utils.TokenProvider
 
 class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
@@ -37,6 +39,12 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     val username: String?
         get() = decodeJWT()?.getClaim("username")?.asString()
 
+    fun setUserName(username: String) {
+        val claims = getAllClaims()?.toMutableMap() ?: mutableMapOf()
+        claims["username"] = username
+        saveClaims(claims)
+    }
+
     val email: String?
         get() = decodeJWT()?.getClaim("email")?.asString()
 
@@ -56,6 +64,31 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
 
     val additionalInfo: List<String>
         get() = decodeJWT()?.getClaim("info")?.asList(String::class.java) ?: emptyList()
+
+
+    fun saveClaims(claims: Map<String, Any>) {
+        val headerJson = JSONObject(mapOf(
+            "alg" to "none",
+            "typ" to "JWT"
+        )).toString()
+
+        val payloadJson = JSONObject(claims).toString()
+
+        val headerB64 = Base64.encodeToString(
+            headerJson.toByteArray(Charsets.UTF_8),
+            Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP
+        )
+        val payloadB64 = Base64.encodeToString(
+            payloadJson.toByteArray(Charsets.UTF_8),
+            Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP
+        )
+
+        val newToken = "$headerB64.$payloadB64."
+
+        prefs.edit()
+            .putString(KEY_TOKEN, newToken)
+            .apply()
+    }
 
     fun getAuthHeader(): String? =
         getToken()?.let { "Bearer $it" }

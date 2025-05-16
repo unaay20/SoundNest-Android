@@ -105,7 +105,15 @@ class NotificationsActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(binding.rvNotifications)
 
         viewModel.notifications.observe(this) { list ->
-            list?.let { adapter.setItems(it) }
+            binding.tvNoNotifications.visibility = View.GONE
+            binding.rvNotifications.visibility = View.VISIBLE
+
+            if (list.isNullOrEmpty()) {
+                binding.tvNoNotifications.visibility = View.VISIBLE
+                binding.rvNotifications.visibility = View.GONE
+            } else {
+                adapter.setItems(list)
+            }
         }
     }
 
@@ -136,8 +144,6 @@ class NotificationsActivity : AppCompatActivity() {
         )
         frag.show(supportFragmentManager, "NotificationDetail")
     }
-
-
 
     override fun onBackPressed() {
         if (binding.notificationDetailContainer.visibility == View.VISIBLE) {

@@ -26,7 +26,7 @@ class ProfileViewModel(
             username = prefs.username.orEmpty(),
             email    = prefs.email.orEmpty(),
             role     = prefs.role,
-            photoUrl = ""
+            additionalInformation = prefs.additionalInfo
         )
     }
     val profile: LiveData<UserProfile> = _profile

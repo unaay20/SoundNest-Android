@@ -4,5 +4,5 @@ data class UserProfile(
     val username: String,
     val email: String,
     val role: String,
-    val photoUrl: String
+    val additionalInformation: List<String>,
 )

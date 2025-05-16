@@ -30,6 +30,11 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (pass.length < 6) {
+                Toast.makeText(this, R.string.msg_password_too_weak, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val rawInfo = binding.etAdditionalInfo.text.toString().trim()
             val infoList = rawInfo
                 .split('\n')
@@ -101,7 +106,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun showCodeDialog(onConfirm: (String) -> Unit) {
         val input = EditText(this).apply {
             hint = getString(R.string.hint_code)
-            inputType = InputType.TYPE_CLASS_NUMBER
+            inputType = InputType.TYPE_CLASS_TEXT
         }
         AlertDialog.Builder(this)
             .setTitle(R.string.action_verify)

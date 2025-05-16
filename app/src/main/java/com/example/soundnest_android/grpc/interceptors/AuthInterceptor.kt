@@ -11,7 +11,7 @@ import io.grpc.MethodDescriptor
 class AuthInterceptor(private val tokenProvider: () -> String?) : ClientInterceptor {
     companion object {
         private val AUTHORIZATION_METADATA_KEY: Metadata.Key<String> =
-            Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER)
+            Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER)
     }
 
     override fun <ReqT, RespT> interceptCall(

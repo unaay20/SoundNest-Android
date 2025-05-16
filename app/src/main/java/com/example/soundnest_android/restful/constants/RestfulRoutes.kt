@@ -31,6 +31,15 @@ object RestfulRoutes {
     const val NOTIFICATION_DELETE = "api/notifications/delete/{id}"
     const val NOTIFICATION_MARK_AS_READ = "api/notifications/notification/{id}/read"
 
+    //Song endpoints
+    const val SONG_GET_POPULAR_SONGS = "api/songs/{amount}/popular/{year}/{month}"
+    const val SONG_GET_RECENT_SONGS = "api/songs/{amount}/recent"
+    const val SONG_GET_RANDOM_SONGS = "api/songs/{amount}/random"
+    const val SONG_GET_BY_ID = "api/songs/{idsong}/song"
+    const val SONG_GET_GENRES = "api/songs/genres"
+    const val SONG_GET_EXTENSIONS = "songs/extensions"
+
+
     fun getBaseUrl(): String = baseUrl
     fun setBaseUrl(value: String) { baseUrl = value }
 }

@@ -1,35 +1,31 @@
 package com.example.soundnest_android.grpc.services
 
-import android.content.Context
-import com.example.soundnest_android.R
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.interceptors.AuthInterceptor
 import io.grpc.ManagedChannel
 import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
+import io.grpc.okhttp.OkHttpChannelBuilder
 import java.io.Closeable
 import java.io.IOException
-import java.io.InputStream
-import io.grpc.okhttp.OkHttpChannelBuilder
 
 open class BaseGrpcService(
     host: String,
     port: Int,
-    private val tokenProvider: () -> String?
+    tokenProvider: () -> String?
 ) : Closeable {
+
     protected val channel: ManagedChannel
 
     init {
-        val interceptor = AuthInterceptor(tokenProvider)
 
+        val authInterceptor = AuthInterceptor(tokenProvider)
 
-        val builder = OkHttpChannelBuilder.forAddress(host, port)
+        channel = OkHttpChannelBuilder
+            .forAddress(host, port)
             .usePlaintext()
-            .maxInboundMessageSize(100* 1024 *1024)
-
-        channel = builder
-            .intercept(interceptor)
+            .maxInboundMessageSize(100 * 1024 * 1024)
+            .intercept(authInterceptor)
             .build()
     }
 

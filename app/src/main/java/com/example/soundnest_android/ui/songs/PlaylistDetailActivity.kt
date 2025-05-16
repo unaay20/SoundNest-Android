@@ -16,23 +16,25 @@ class PlaylistDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_playlist_detail)
 
         val playlistName = intent.getStringExtra("EXTRA_PLAYLIST_NAME")
+        findViewById<TextView>(R.id.tvPlaylistName).text = playlistName
 
-        val tvPlaylistName: TextView = findViewById(R.id.tvPlaylistName)
-        tvPlaylistName.text = playlistName
+        val songs = intent
+            .getSerializableExtra("EXTRA_PLAYLIST_SONGS")
+                as? ArrayList<Song>
+            ?: arrayListOf()
 
-        val songs = intent.getSerializableExtra("EXTRA_PLAYLIST_SONGS")
-                as? ArrayList<Song> ?: arrayListOf()
-
-        val rvSongs: RecyclerView = findViewById(R.id.rvSongs)
+        val rvSongs = findViewById<RecyclerView>(R.id.rvSongs)
         rvSongs.layoutManager = LinearLayoutManager(this)
         rvSongs.setHasFixedSize(true)
 
-        val adapter = SongAdapter(songs) { song ->
-            val intent = Intent(this, SongCommentsActivity::class.java).apply {
-                putExtra("EXTRA_SONG_OBJ", song)
-            }
+        val adapter = SongAdapter { song ->
+            val intent = Intent(this, SongCommentsActivity::class.java)
+                .putExtra("EXTRA_SONG_OBJ", song)
             startActivity(intent)
         }
+
+        adapter.submitList(songs)
+
         rvSongs.adapter = adapter
     }
 }
