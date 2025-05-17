@@ -2,11 +2,16 @@ package com.example.soundnest_android.restful.services
 
 import com.example.soundnest_android.restful.models.comment.CommentResponse
 import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
+import com.example.soundnest_android.restful.models.comment.RespondCommentRequest
 import com.example.soundnest_android.restful.services.interfaces.ICommentService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.restful.utils.TokenProvider
 
 
-class CommentService(baseUrl : String ) : BaseService(baseUrl) {
+class CommentService(
+    baseUrl: String,
+    tokenProvider: TokenProvider
+) : BaseService(baseUrl, tokenProvider) {
     private val commentService = retrofit.create(ICommentService::class.java)
 
     suspend fun postComment(request: CreateCommentRequest): ApiResult<Unit?> {
@@ -23,5 +28,10 @@ class CommentService(baseUrl : String ) : BaseService(baseUrl) {
 
     suspend fun removeComment(id: String): ApiResult<Unit?> {
         return safeCall { commentService.deleteComment(id) }
+    }
+
+    suspend fun respondComment(commentId: String, message: String): ApiResult<Unit?> {
+        val req = RespondCommentRequest(message)
+        return safeCall { commentService.respondComment(commentId, req) }
     }
 }

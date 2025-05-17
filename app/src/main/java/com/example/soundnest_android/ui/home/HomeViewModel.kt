@@ -7,9 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.restful.models.song.GetPopularSongRequest
 import com.example.soundnest_android.restful.models.song.GetPopularSongResponse
-import com.example.soundnest_android.restful.models.song.GetRecentSongRequest
 import com.example.soundnest_android.restful.models.song.GetRecentSongResponse
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -45,7 +43,6 @@ class HomeViewModel (private val songService: SongService,
         viewModelScope.launch {
             val now = LocalDate.now()
 
-            // — Populares —
             when (val r = songService.getPopularByMonth(5, now.year, now.monthValue)) {
                 is ApiResult.Success<List<GetPopularSongResponse>?> -> {
                     val list = r.data.orEmpty()
@@ -66,7 +63,6 @@ class HomeViewModel (private val songService: SongService,
                 }
             }
 
-            // — Recientes —
             when (val r = songService.getRecent(10)) {
                 is ApiResult.Success<List<GetRecentSongResponse>?> -> {
                     val list = r.data.orEmpty()

@@ -9,6 +9,7 @@ import com.example.soundnest_android.restful.utils.createUnsafeOkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 
 open class BaseService(baseUrl : String, tokenProvider: TokenProvider? = null) {
@@ -16,12 +17,16 @@ open class BaseService(baseUrl : String, tokenProvider: TokenProvider? = null) {
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     private val errorAdapter = moshi.adapter(ErrorResponse::class.java)
     data class ErrorResponse(val message: String)
+    val logging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
 
     init {
         val authInterceptor = AuthInterceptor(tokenProvider)
         val client = createUnsafeOkHttpClient()
             .newBuilder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(logging)
             .build()
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())

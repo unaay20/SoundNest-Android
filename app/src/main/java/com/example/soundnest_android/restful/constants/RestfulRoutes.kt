@@ -24,6 +24,7 @@ object RestfulRoutes {
     const val COMMENT_GET_BY_SONG_ID = "api/comment/getComment/{song_id}"
     const val COMMENT_GET_BY_ID = "api/comment/getComment/comment/{id}"
     const val COMMENT_DELETE = "api/comment/delete/{id}"
+    const val COMMENT_RESPOND = "api/comment/{commentId}/respondComment"
 
     // Notification endpoints
     const val NOTIFICATION_CREATE = "api/notifications/createNotification"

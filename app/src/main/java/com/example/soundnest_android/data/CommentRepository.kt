@@ -5,7 +5,6 @@ import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
 import com.example.soundnest_android.restful.services.CommentService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.comments.Comment
-import java.io.IOException
 
 class CommentRepository(
     private val service: CommentService
@@ -15,32 +14,13 @@ class CommentRepository(
         return when (val apiResult = service.fetchComments(songId)) {
             is ApiResult.Success -> {
                 val domainComments = apiResult.data
-                    ?.map { resp: CommentResponse ->
-                        Comment(
-                            song_id = resp.songId,
-                            user = resp.user,
-                            message = resp.message
-                        )
-                    }
+                    ?.map { it.toDomain() }
                     ?: emptyList()
                 ApiResult.Success(domainComments)
             }
-            is ApiResult.HttpError -> {
-                ApiResult.HttpError(
-                    code    = apiResult.code,
-                    message = apiResult.message
-                )
-            }
-            is ApiResult.NetworkError -> {
-                ApiResult.NetworkError(
-                    exception = apiResult.exception
-                )
-            }
-            is ApiResult.UnknownError -> {
-                ApiResult.UnknownError(
-                    exception = apiResult.exception
-                )
-            }
+            is ApiResult.HttpError   -> ApiResult.HttpError(apiResult.code, apiResult.message)
+            is ApiResult.NetworkError-> ApiResult.NetworkError(apiResult.exception)
+            is ApiResult.UnknownError-> ApiResult.UnknownError(apiResult.exception)
         }
     }
 
@@ -49,11 +29,20 @@ class CommentRepository(
     }
 
     suspend fun removeComment(commentId: String): ApiResult<Unit?> {
-        return try {
-            service.removeComment(commentId)
-            ApiResult.Success(Unit)
-        } catch (e: IOException) {
-            ApiResult.NetworkError(e)
-        }
+        return service.removeComment(commentId)
     }
+
+    suspend fun respondToComment(commentId: String, message: String): ApiResult<Unit?> {
+        return service.respondComment(commentId, message)
+    }
+
+    private fun CommentResponse.toDomain(): Comment =
+        Comment(
+            id        = this.id,
+            songId    = this.songId,
+            user      = this.user,
+            message   = this.message,
+            parentId  = this.parentId,
+            timestamp = this.timestamp
+        )
 }

@@ -3,6 +3,7 @@ package com.example.soundnest_android.restful.services.interfaces
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.comment.CommentResponse
 import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
+import com.example.soundnest_android.restful.models.comment.RespondCommentRequest
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -15,4 +16,6 @@ interface ICommentService {
     suspend fun getCommentById(@Path("id") commentId: String): Response<CommentResponse>
     @DELETE(RestfulRoutes.COMMENT_DELETE)
     suspend fun deleteComment(@Path("id") commentId: String): Response<Unit>
+    @POST(RestfulRoutes.COMMENT_RESPOND)
+    suspend fun respondComment(@Path("commentId") commentId: String, @Body request: RespondCommentRequest): Response<Unit>
 }

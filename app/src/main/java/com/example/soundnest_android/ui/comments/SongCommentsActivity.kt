@@ -1,24 +1,35 @@
 package com.example.soundnest_android.ui.comments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.ui.songs.Song
-import com.bumptech.glide.Glide
 
 class SongCommentsActivity : AppCompatActivity() {
 
-    private val viewModel: SongCommentsViewModel by viewModels()
+    private val viewModel: SongCommentsViewModel by viewModels {
+        val provider = SharedPrefsTokenProvider(this)
+        Log.d("SongCommentsActivity", "JWT Token: ${provider.getToken()}")
+        SongCommentsViewModelFactory(provider)
+    }
     private lateinit var commentsAdapter: CommentsAdapter
     private lateinit var song: Song
+
+    private var parentComment: Comment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,21 +39,31 @@ class SongCommentsActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_song_comments)
 
+        val rvComments      = findViewById<RecyclerView>(R.id.rvComments)
+        val ivArtwork       = findViewById<ImageView>(R.id.ivArtwork)
+        val tvTitle         = findViewById<TextView>(R.id.tvTitle)
+        val tvArtist        = findViewById<TextView>(R.id.tvArtist)
+        val etNewComment    = findViewById<EditText>(R.id.etNewComment)
+        val btnSubmit       = findViewById<Button>(R.id.btnSubmitComment)
+        val btnCancel       = findViewById<Button>(R.id.btnCancelComment)
+
         song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song ?: run {
             Toast.makeText(this, "Canción no encontrada", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
-
         viewModel.setSongId(song.id)
 
-        val rvComments = findViewById<RecyclerView>(R.id.rvComments)
-        val ivArtwork = findViewById<ImageView>(R.id.ivArtwork)
-        val tvTitle = findViewById<TextView>(R.id.tvTitle)
-        val tvArtist = findViewById<TextView>(R.id.tvArtist)
-        val etNewComment = findViewById<EditText>(R.id.etNewComment)
-
-        commentsAdapter = CommentsAdapter(mutableListOf())
+        commentsAdapter = CommentsAdapter(mutableListOf()).apply {
+            onDeleteComment = { comment -> viewModel.deleteComment(comment.id) }
+            onReplyComment = { comment ->
+                parentComment = comment
+                val hint = getString(R.string.hint_reply_to)
+                etNewComment.hint = hint + comment.user
+                btnSubmit.text   = getString(R.string.btn_send)
+                btnCancel.visibility = Button.VISIBLE
+            }
+        }
         rvComments.apply {
             layoutManager = LinearLayoutManager(this@SongCommentsActivity)
             adapter = commentsAdapter
@@ -50,37 +71,54 @@ class SongCommentsActivity : AppCompatActivity() {
 
         viewModel.comments.observe(this) { comments ->
             commentsAdapter.setItems(comments)
+            if (comments.isEmpty()) {
+                Toast.makeText(this, "No hay comentarios para esta canción", Toast.LENGTH_SHORT).show()
+            }
         }
-
         viewModel.error.observe(this) { errorMsg ->
             errorMsg?.let {
-                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No se pudieron cargar los comentarios: $it", Toast.LENGTH_LONG).show()
             }
         }
-
         viewModel.loadComments()
 
-        tvTitle.text = song.title
+        tvTitle.text  = song.title
         tvArtist.text = song.artist
+        Glide.with(this).load(song.coverUrl).into(ivArtwork)
 
-        Glide.with(this)
-            .load(song.coverUrl)
-            .into(ivArtwork)
+        btnCancel.setOnClickListener {
+            parentComment = null
+            etNewComment.hint = getString(R.string.hint_new_comment)
+            btnSubmit.text   = getString(R.string.btn_send)
+            btnCancel.visibility = Button.GONE
+        }
 
-        findViewById<Button>(R.id.btnSubmitComment).setOnClickListener {
-            val commentText = etNewComment.text.toString()
-            if (commentText.isNotBlank()) {
-                val user = SharedPrefsTokenProvider(this).username
-                if (user != null) {
-                    viewModel.addComment(song.id, user, commentText)
-                    etNewComment.text.clear()
-                    hideKeyboard(etNewComment)
-                } else {
-                    Toast.makeText(this, "No se pudo obtener el usuario", Toast.LENGTH_SHORT).show()
-                }
-            } else {
+        btnSubmit.setOnClickListener {
+            val text = etNewComment.text.toString().trim()
+            if (text.isBlank()) {
                 Toast.makeText(this, "Por favor, escribe un comentario", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+            val provider = SharedPrefsTokenProvider(this)
+            val user = provider.username
+            Log.d("SongCommentsActivity", "Submit by user: $user, token: ${provider.getToken()}")
+            if (user == null) {
+                Toast.makeText(this, "No se pudo obtener el usuario", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            parentComment?.let { parent ->
+                viewModel.replyToComment(parent.id, text)
+            } ?: run {
+                viewModel.addComment(song.id, user, text)
+            }
+
+            etNewComment.text.clear()
+            btnCancel.visibility = Button.GONE
+            parentComment = null
+            etNewComment.hint = getString(R.string.hint_new_comment)
+            btnSubmit.text   = getString(R.string.btn_send)
+            hideKeyboard(etNewComment)
         }
     }
 

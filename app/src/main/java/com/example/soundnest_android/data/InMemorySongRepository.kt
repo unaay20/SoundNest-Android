@@ -21,13 +21,39 @@ class InMemorySongRepository : SongRepository {
     )
 
     private val comments = listOf(
-        Comment(song_id = 1, user = "User1", message = "¡Me encanta esta canción!"),
-        Comment(song_id = 2, user = "User2", message = "El ritmo es brutal.")
+        Comment(
+            id        = "c1",
+            songId    = 1,
+            user      = "User1",
+            message   = "¡Me encanta esta canción!",
+            parentId  = null,
+            timestamp = "2025-05-17T10:00:00Z"
+        ),
+        Comment(
+            id        = "c2",
+            songId    = 2,
+            user      = "User2",
+            message   = "El ritmo es brutal.",
+            parentId  = null,
+            timestamp = "2025-05-17T10:05:00Z"
+        )
+    )
+
+    // Si quieres añadir alguna respuesta anidada de ejemplo:
+    private val commentsWithReplies = listOf(
+        Comment(
+            id        = "c3",
+            songId    = 1,
+            user      = "User3",
+            message   = "Totalmente de acuerdo",
+            parentId  = "c1",
+            timestamp = "2025-05-17T10:15:00Z"
+        )
     )
 
     private val commentsBySong = mapOf(
-        1 to comments.subList(0, 1),
-        2 to comments.subList(0, 2)
+        1 to (comments.filter { it.songId == 1 } + commentsWithReplies),
+        2 to comments.filter { it.songId == 2 }
     )
 
     override suspend fun getSongById(songId: Int): Song =

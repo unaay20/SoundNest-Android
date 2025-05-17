@@ -89,4 +89,7 @@
     <string name="msg_no_notifications">No tienes notificaciones</string>
     <string name="lbl_popular">Más popular este mes</string>
     <string name="lbl_recent">Más recientes (esta semana)</string>
+    <string name="menu_reply">Responder</string>
+    <string name="menu_delete">Eliminar</string>
+    <string name="hint_reply_to">"Responder a: "</string>
 </resources>

@@ -86,10 +86,20 @@
             android:layout_weight="1"
             android:minLines="2"
             android:textColorHint="@color/black"
+            android:textColor="@color/black"
             android:hint="@string/hint_new_comment"
             android:background="@drawable/bg_comment_input"
             android:padding="12dp"
             android:inputType="textMultiLine"/>
+
+        <Button
+            android:id="@+id/btnCancelComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_cancel"
+            android:visibility="gone"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/black"/>
 
         <Button
             android:id="@+id/btnSubmitComment"
