@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.songs
+package com.example.soundnest_android.business_logic
 
 import java.io.Serializable
 

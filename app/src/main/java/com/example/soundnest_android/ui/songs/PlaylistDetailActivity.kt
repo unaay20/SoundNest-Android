@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
+import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.ui.comments.SongCommentsActivity
 
 class PlaylistDetailActivity : AppCompatActivity() {

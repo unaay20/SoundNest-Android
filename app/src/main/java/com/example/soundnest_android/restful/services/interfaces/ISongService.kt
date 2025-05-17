@@ -29,7 +29,7 @@ interface ISongService {
         @Path("idAppUser") userId: Int
     ): Response<List<GetSongDetailResponse>>
 
-    @GET(RestfulRoutes.SONG_GET_SONG_SARCH_FILTERS)
+    @GET(RestfulRoutes.SONG_GET_SONG_SEARCH_FILTERS)
     suspend fun searchSongs(
         @Query("songName") songName: String?,
         @Query("artistName") artistName: String?,

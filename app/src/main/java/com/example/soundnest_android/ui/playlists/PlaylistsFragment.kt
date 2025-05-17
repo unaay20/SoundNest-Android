@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.soundnest_android.databinding.FragmentPlaylistsBinding
-import com.example.soundnest_android.R
 import com.example.soundnest_android.ui.songs.PlaylistDetailActivity
-import com.example.soundnest_android.ui.songs.Song
 import com.google.android.material.snackbar.Snackbar
 class PlaylistsFragment : Fragment() {
 

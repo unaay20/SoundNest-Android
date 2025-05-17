@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.profile
+package com.example.soundnest_android.business_logic
 
 data class UserProfile(
     val username: String,

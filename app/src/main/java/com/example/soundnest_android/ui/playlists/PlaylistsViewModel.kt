@@ -3,8 +3,8 @@ package com.example.soundnest_android.ui.playlists
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.soundnest_android.R
-import com.example.soundnest_android.ui.songs.Song
+import com.example.soundnest_android.business_logic.Playlist
+import com.example.soundnest_android.business_logic.Song
 
 class PlaylistsViewModel : ViewModel() {
 

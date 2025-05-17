@@ -14,11 +14,10 @@ import com.example.soundnest_android.databinding.FragmentHomeBinding
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.ui.notifications.NotificationsActivity
-import com.example.soundnest_android.ui.songs.Song
+import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.ui.songs.SongAdapter
 import com.example.soundnest_android.ui.upload_song.UploadSongActivity
 import com.example.soundnest_android.utils.SingleLiveEvent
-import java.time.LocalDate
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 

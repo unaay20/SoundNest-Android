@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
+import com.example.soundnest_android.business_logic.Playlist
 import com.squareup.picasso.Picasso
 
 class PlaylistAdapter(

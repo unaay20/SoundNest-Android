@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
+import com.example.soundnest_android.business_logic.Song
 
 class SongAdapter(
     private val onSongClick: (Song) -> Unit

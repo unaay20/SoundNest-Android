@@ -4,19 +4,32 @@ import com.example.soundnest_android.restful.models.comment.CommentResponse
 import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
 import com.example.soundnest_android.restful.services.CommentService
 import com.example.soundnest_android.restful.utils.ApiResult
-import com.example.soundnest_android.ui.comments.Comment
+import com.example.soundnest_android.business_logic.Comment
 
 class CommentRepository(
     private val service: CommentService
 ) {
 
+    private fun mapResponse(resp: CommentResponse): Comment =
+        Comment(
+            id        = resp.id,
+            songId    = resp.songId,
+            user      = resp.user,
+            message   = resp.message,
+            parentId  = resp.parentId,
+            timestamp = resp.timestamp,
+            responses = resp.responses
+                ?.map { mapResponse(it) }
+                ?: emptyList()
+        )
+
     suspend fun getCommentsForSong(songId: String): ApiResult<List<Comment>> {
-        return when (val apiResult = service.fetchComments(songId)) {
+        return when(val apiResult = service.fetchComments(songId)) {
             is ApiResult.Success -> {
-                val domainComments = apiResult.data
-                    ?.map { it.toDomain() }
+                val domain = apiResult.data
+                    ?.map { mapResponse(it) }
                     ?: emptyList()
-                ApiResult.Success(domainComments)
+                ApiResult.Success(domain)
             }
             is ApiResult.HttpError   -> ApiResult.HttpError(apiResult.code, apiResult.message)
             is ApiResult.NetworkError-> ApiResult.NetworkError(apiResult.exception)

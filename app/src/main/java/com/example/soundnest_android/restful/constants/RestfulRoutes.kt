@@ -20,11 +20,11 @@ object RestfulRoutes {
     const val USER_EDIT_PASSWORD = "api/user/editUserPassword"
 
     // Comment endpoints
-    const val COMMENT_CREATE = "api/comment/createComment"
-    const val COMMENT_GET_BY_SONG_ID = "api/comment/getComment/{song_id}"
-    const val COMMENT_GET_BY_ID = "api/comment/getComment/comment/{id}"
-    const val COMMENT_DELETE = "api/comment/delete/{id}"
     const val COMMENT_RESPOND = "api/comment/{commentId}/respondComment"
+    const val COMMENT_CREATE = "api/comment/createComment"
+    const val COMMENT_GET_BY_SONG_ID = "api/comment/getComment/{song_id}/song"
+    const val COMMENT_GET_BY_ID = "api/comment/{id}/all"
+    const val COMMENT_DELETE = "api/comment/delete/{id}"
 
     // Notification endpoints
     const val NOTIFICATION_CREATE = "api/notifications/createNotification"
@@ -38,7 +38,7 @@ object RestfulRoutes {
     const val SONG_PATCH_SONG_IMAGE = "api/songs/{idsong}/image"
     const val SONG_GET_LATEST_SONG = "api/songs/user/{idAppUser}/lastest"
     const val SONG_GET_SONGS_BY_USERID = "api/songs/user/{idAppUser}"
-    const val SONG_GET_SONG_SARCH_FILTERS = "api/songs/search"
+    const val SONG_GET_SONG_SEARCH_FILTERS = "api/songs/search"
     const val SONG_GET_POPULAR_SONGS = "api/songs/{amount}/popular/{year}/{month}"
     const val SONG_GET_RECENT_SONGS = "api/songs/{amount}/recent"
     const val SONG_GET_RANDOM_SONGS = "api/songs/{amount}/random"

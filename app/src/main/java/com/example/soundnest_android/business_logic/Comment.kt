@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.comments
+package com.example.soundnest_android.business_logic
 
 import java.io.Serializable
 
@@ -8,5 +8,6 @@ data class Comment(
     val user: String,
     val message: String,
     val parentId: String? = null,
-    val timestamp: String? = null
+    val timestamp: String? = null,
+    val responses: List<Comment> = emptyList()
 ) : Serializable

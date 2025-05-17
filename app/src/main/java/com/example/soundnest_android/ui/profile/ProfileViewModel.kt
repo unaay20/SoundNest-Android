@@ -1,8 +1,8 @@
 package com.example.soundnest_android.ui.profile
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
+import com.example.soundnest_android.business_logic.UserProfile
 import com.example.soundnest_android.grpc.services.UserImageGrpcService
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult

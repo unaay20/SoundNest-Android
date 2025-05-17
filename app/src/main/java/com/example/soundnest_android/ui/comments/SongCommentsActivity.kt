@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
-import com.example.soundnest_android.ui.songs.Song
+import com.example.soundnest_android.business_logic.Comment
+import com.example.soundnest_android.business_logic.Song
 
 class SongCommentsActivity : AppCompatActivity() {
 
@@ -39,13 +41,13 @@ class SongCommentsActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_song_comments)
 
-        val rvComments      = findViewById<RecyclerView>(R.id.rvComments)
-        val ivArtwork       = findViewById<ImageView>(R.id.ivArtwork)
-        val tvTitle         = findViewById<TextView>(R.id.tvTitle)
-        val tvArtist        = findViewById<TextView>(R.id.tvArtist)
-        val etNewComment    = findViewById<EditText>(R.id.etNewComment)
-        val btnSubmit       = findViewById<Button>(R.id.btnSubmitComment)
-        val btnCancel       = findViewById<Button>(R.id.btnCancelComment)
+        val rvComments   = findViewById<RecyclerView>(R.id.rvComments)
+        val ivArtwork    = findViewById<ImageView>(R.id.ivArtwork)
+        val tvTitle      = findViewById<TextView>(R.id.tvTitle)
+        val tvArtist     = findViewById<TextView>(R.id.tvArtist)
+        val etNewComment = findViewById<EditText>(R.id.etNewComment)
+        val btnSubmit    = findViewById<Button>(R.id.btnSubmitComment)
+        val btnCancel    = findViewById<Button>(R.id.btnCancelComment)
 
         song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song ?: run {
             Toast.makeText(this, "Canción no encontrada", Toast.LENGTH_SHORT).show()
@@ -54,16 +56,27 @@ class SongCommentsActivity : AppCompatActivity() {
         }
         viewModel.setSongId(song.id)
 
-        commentsAdapter = CommentsAdapter(mutableListOf()).apply {
-            onDeleteComment = { comment -> viewModel.deleteComment(comment.id) }
+        commentsAdapter = CommentsAdapter().apply {
+            onDeleteComment = { comment ->
+                AlertDialog.Builder(this@SongCommentsActivity)
+                    .setTitle("Confirmar eliminación")
+                    .setMessage("¿Estás seguro de que deseas eliminar el comentario de ‘${comment.user}’?")
+                    .setPositiveButton("Eliminar") { _, _ ->
+                        viewModel.deleteComment(comment.id)
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
             onReplyComment = { comment ->
                 parentComment = comment
                 val hint = getString(R.string.hint_reply_to)
                 etNewComment.hint = hint + comment.user
-                btnSubmit.text   = getString(R.string.btn_send)
+                btnSubmit.text = getString(R.string.btn_send)
                 btnCancel.visibility = Button.VISIBLE
             }
+            isUserModerator = /* tu lógica para moderador */ false
         }
+
         rvComments.apply {
             layoutManager = LinearLayoutManager(this@SongCommentsActivity)
             adapter = commentsAdapter
@@ -82,14 +95,14 @@ class SongCommentsActivity : AppCompatActivity() {
         }
         viewModel.loadComments()
 
-        tvTitle.text  = song.title
+        tvTitle.text = song.title
         tvArtist.text = song.artist
         Glide.with(this).load(song.coverUrl).into(ivArtwork)
 
         btnCancel.setOnClickListener {
             parentComment = null
             etNewComment.hint = getString(R.string.hint_new_comment)
-            btnSubmit.text   = getString(R.string.btn_send)
+            btnSubmit.text = getString(R.string.btn_send)
             btnCancel.visibility = Button.GONE
         }
 
@@ -117,7 +130,7 @@ class SongCommentsActivity : AppCompatActivity() {
             btnCancel.visibility = Button.GONE
             parentComment = null
             etNewComment.hint = getString(R.string.hint_new_comment)
-            btnSubmit.text   = getString(R.string.btn_send)
+            btnSubmit.text = getString(R.string.btn_send)
             hideKeyboard(etNewComment)
         }
     }
