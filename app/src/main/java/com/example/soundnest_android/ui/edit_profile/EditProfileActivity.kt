@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.profile
+package com.example.soundnest_android.ui.edit_profile
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityEditProfileBinding
-import com.example.soundnest_android.network.ApiService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.ui.change_password.ChangePasswordActivity

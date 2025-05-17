@@ -87,4 +87,6 @@
     <string name="error_saving_profile">Hubo un error al guardar la información</string>
     <string name="msg_fields_required">Usuario, correo electrónico y contraseña son requeridos</string>
     <string name="msg_no_notifications">No tienes notificaciones</string>
+    <string name="lbl_popular">Más popular este mes</string>
+    <string name="lbl_recent">Más recientes (esta semana)</string>
 </resources>

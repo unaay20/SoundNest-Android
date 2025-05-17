@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.profile
+package com.example.soundnest_android.ui.edit_profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,9 +9,9 @@ import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.UserImageGrpcService
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
-import com.example.soundnest_android.restful.models.user.EditUserRequest
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.ui.profile.UserProfile
 import com.example.soundnest_android.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

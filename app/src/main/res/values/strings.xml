@@ -86,4 +86,6 @@
     <string name="error_saving_profile">There was an error saving the information</string>
     <string name="msg_fields_required">Username, email and password are required</string>
     <string name="msg_no_notifications">You have no notifications</string>
+    <string name="lbl_popular">Most popular this month</string>
+    <string name="lbl_recent">Most recent (this week)</string>
 </resources>

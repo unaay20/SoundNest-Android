@@ -14,9 +14,9 @@ class PlaylistsViewModel : ViewModel() {
     init {
         val initialPlaylists = mutableListOf(
             Playlist("Rock Classics", mutableListOf(
-                Song(123, "Bohemian Rhapsody", "Queen", R.drawable.im_cover_bohemian),
-                Song(123, "Stairway to Heaven", "Led Zeppelin", R.drawable.im_cover_bohemian),
-                Song(123, "Hotel California", "Eagles", R.drawable.im_cover_bohemian)
+                Song(123, "Bohemian Rhapsody", "Queen", "https://upload.wikimedia.org/wikipedia/en/2/20/ImagineCover.jpg"),
+                Song(123, "Stairway to Heaven", "Led Zeppelin", "https://upload.wikimedia.org/wikipedia/en/2/20/ImagineCover.jpg"),
+                Song(123, "Hotel California", "Eagles", "https://upload.wikimedia.org/wikipedia/en/2/20/ImagineCover.jpg")
             ), "img_party_background"),
             Playlist("Chill Vibes", mutableListOf(), "img_party_background")
         )

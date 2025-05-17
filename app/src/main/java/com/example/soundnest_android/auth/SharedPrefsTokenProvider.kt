@@ -14,8 +14,15 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     override fun getToken(): String? =
         prefs.getString(KEY_TOKEN, null)
 
-    override fun shouldAttachToken(): Boolean =
-        !getToken().isNullOrBlank()
+    override fun shouldAttachToken(): Boolean {
+        val token = getToken().takeUnless { it.isNullOrBlank() } ?: return false
+        val jwt = try {
+            JWT(token)
+        } catch (e: Exception) {
+            return false
+        }
+        return !jwt.isExpired(10)
+    }
 
     fun saveToken(token: String) {
         prefs.edit().putString(KEY_TOKEN, token).apply()

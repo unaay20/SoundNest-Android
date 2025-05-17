@@ -50,7 +50,7 @@
             android:label="@string/app_name"/>
 
         <activity
-            android:name=".ui.profile.EditProfileActivity"
+            android:name=".ui.edit_profile.EditProfileActivity"
             android:exported="true"
             android:label="@string/app_name"/>
 

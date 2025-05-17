@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 
 class SongAdapter(
@@ -21,7 +22,9 @@ class SongAdapter(
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        holder.bind(getItem(position), onSongClick)
+        getItem(position)?.let { song ->
+            holder.bind(song, onSongClick)
+        }
     }
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,18 +33,27 @@ class SongAdapter(
         private val tvArtist = itemView.findViewById<TextView>(R.id.tv_artist)
 
         fun bind(song: Song, onSongClick: (Song) -> Unit) {
-            ivCover.setImageResource(song.coverResId)
             tvTitle.text  = song.title
             tvArtist.text = song.artist
+
+            if (!song.coverUrl.isNullOrEmpty()) {
+                Glide.with(itemView)
+                    .load(song.coverUrl)
+                    .placeholder(R.drawable.img_default_song)
+                    .into(ivCover)
+            } else {
+                ivCover.setImageResource(R.drawable.img_default_song)
+            }
+
             itemView.setOnClickListener { onSongClick(song) }
         }
     }
 
     class SongDiffCallback : DiffUtil.ItemCallback<Song>() {
-        override fun areItemsTheSame(old: Song, new: Song): Boolean =
+        override fun areItemsTheSame(old: Song, new: Song) =
             old.id == new.id
 
-        override fun areContentsTheSame(old: Song, new: Song): Boolean =
+        override fun areContentsTheSame(old: Song, new: Song) =
             old == new
     }
 }

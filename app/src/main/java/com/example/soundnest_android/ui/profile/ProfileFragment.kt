@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.FragmentProfileBinding
+import com.example.soundnest_android.ui.edit_profile.EditProfileActivity
 import com.example.soundnest_android.ui.login.LoginActivity
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {

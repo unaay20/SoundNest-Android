@@ -64,7 +64,7 @@ class SongCommentsActivity : AppCompatActivity() {
         tvArtist.text = song.artist
 
         Glide.with(this)
-            .load(song.coverResId)
+            .load(song.coverUrl)
             .into(ivArtwork)
 
         findViewById<Button>(R.id.btnSubmitComment).setOnClickListener {

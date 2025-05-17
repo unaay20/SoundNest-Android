@@ -1,4 +1,4 @@
-package com.example.soundnest_android.ui.profile
+package com.example.soundnest_android.ui.edit_profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

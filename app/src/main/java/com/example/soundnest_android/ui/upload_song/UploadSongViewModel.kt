@@ -51,29 +51,33 @@ class UploadSongViewModel(
             return
         }
 
-        val genreId = mapGenreToId(genreString)
+        val genreId = when (genreString) {
+            "Rock"  -> 1
+            "Pop"   -> 2
+            "Indie" -> 3
+            else    -> 0
+        }
 
         viewModelScope.launch {
             val grpcResult = grpcService.uploadSong(
                 songName = songName,
                 songGenreId = genreId,
                 description = description,
-                extension = extractExtension(context, uri),
-                fileData = readBytes(context, uri)
+                extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(
+                    context.contentResolver.getType(uri)
+                ) ?: "mp3",
+                fileData = context.contentResolver.openInputStream(uri)!!.use { it.readBytes() }
             )
 
             when (grpcResult) {
                 is GrpcResult.Success<*> -> {
                     val response = grpcResult.data as? UploadSongResponse
-                    if (response == null) {
-                        _uploadSuccess.postValue(false)
-                        _uploadError.postValue("Respuesta vacía del servidor")
-                    } else if (response.result) {
+                    if (response?.result == true) {
                         _uploadSuccess.postValue(true)
                         _uploadError.postValue(null)
                     } else {
                         _uploadSuccess.postValue(false)
-                        _uploadError.postValue(response.message)
+                        _uploadError.postValue(response?.message ?: "Respuesta vacía")
                     }
                 }
                 is GrpcResult.GrpcError -> {
@@ -91,21 +95,4 @@ class UploadSongViewModel(
             }
         }
     }
-    private fun mapGenreToId(genre: String): Int = when (genre) {
-        "Rock"  -> 1
-        "Pop"   -> 2
-        "Indie" -> 3
-        else    -> 0
-    }
-
-    private fun extractExtension(context: Context, uri: Uri): String {
-        val mime = context.contentResolver.getType(uri)
-        return MimeTypeMap.getSingleton()
-            .getExtensionFromMimeType(mime) ?: "mp3"
-    }
-
-    private fun readBytes(context: Context, uri: Uri): ByteArray =
-        context.contentResolver.openInputStream(uri)!!.use { it.readBytes() }
-
 }
-

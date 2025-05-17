@@ -12,15 +12,16 @@ object RestfulRoutes {
     const val AUTH_LOGIN = "api/auth/login"
     const val AUTH_SEND_CODE_EMAIL = "api/auth/sendCodeEmail"
     const val AUTH_VERIFY_CODE = "api/auth/verifiCode"
+    const val AUTH_VALIDATE_JWT = "api/auth/validateJWT"
 
     // User endpoints
     const val USER_NEW_USER = "api/user/newUser"
     const val USER_EDIT_USER = "api/user/editUser"
-    const val USER_VALIDATE_JWT = "api/user/validateJWT"
+    const val USER_EDIT_PASSWORD = "api/user/editUserPassword"
 
     // Comment endpoints
-    const val COMMENT_CREATE = "api/comment/comment"
-    const val COMMENT_GET_BY_SONG_ID = "api/comment/getComment/{song_id}/comments"
+    const val COMMENT_CREATE = "api/comment/createComment"
+    const val COMMENT_GET_BY_SONG_ID = "api/comment/getComment/{song_id}"
     const val COMMENT_GET_BY_ID = "api/comment/getComment/comment/{id}"
     const val COMMENT_DELETE = "api/comment/delete/{id}"
 
@@ -32,12 +33,24 @@ object RestfulRoutes {
     const val NOTIFICATION_MARK_AS_READ = "api/notifications/notification/{id}/read"
 
     //Song endpoints
+    const val SONG_DELETE = "api/songs/{idsong}/delete"
+    const val SONG_PATCH_SONG_IMAGE = "api/songs/{idsong}/image"
+    const val SONG_GET_LATEST_SONG = "api/songs/user/{idAppUser}/lastest"
+    const val SONG_GET_SONGS_BY_USERID = "api/songs/user/{idAppUser}"
+    const val SONG_GET_SONG_SARCH_FILTERS = "api/songs/search"
     const val SONG_GET_POPULAR_SONGS = "api/songs/{amount}/popular/{year}/{month}"
     const val SONG_GET_RECENT_SONGS = "api/songs/{amount}/recent"
     const val SONG_GET_RANDOM_SONGS = "api/songs/{amount}/random"
     const val SONG_GET_BY_ID = "api/songs/{idsong}/song"
     const val SONG_GET_GENRES = "api/songs/genres"
     const val SONG_GET_EXTENSIONS = "songs/extensions"
+
+    //Playlist endpoints
+    const val PLAYLIST_GET_BY_USERID = "api/playlist/{iduser}/user"
+    const val PLAYLIST_PATCH_REMOVE_SONG = "api/playlist/{idsong}/{idPlaylist}/remove"
+    const val PLAYLIST_PATCH_ADD_SONG = "api/playlist/{idsong}/{idPlaylist}/add"
+    const val PLAYLIST_DELETE = "api/playlist/{idPlaylist}/delete/"
+    const val PLAYLIST_PUT_NEW_PLAYLIST = "api/playlist/upload"
 
 
     fun getBaseUrl(): String = baseUrl
