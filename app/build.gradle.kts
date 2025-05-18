@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     kotlin("kapt")
     id("com.google.protobuf")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -72,7 +73,8 @@ dependencies {
     implementation("com.auth0.android:jwtdecode:2.0.1")
     implementation("io.grpc:grpc-okhttp:1.63.0")
 
-
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-messaging")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

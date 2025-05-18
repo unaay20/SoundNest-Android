@@ -6,13 +6,15 @@ object RestfulRoutes {
     //https://localhost:6969/
     //https://allowing-walrus-classic.ngrok-free.app/restful/
     //https://100.65.158.22/restful/
-    private var baseUrl = "http://100.65.158.22/restful/"
+    //https://10.0.2.2:6969/
+    private var baseUrl = "https://10.0.2.2:6969/"
 
     // Auth endpoints
     const val AUTH_LOGIN = "api/auth/login"
     const val AUTH_SEND_CODE_EMAIL = "api/auth/sendCodeEmail"
     const val AUTH_VERIFY_CODE = "api/auth/verifiCode"
     const val AUTH_VALIDATE_JWT = "api/auth/validateJWT"
+    const val AUTH_UPDATE_FCM_TOKEN = "/api/auth/fcm/update"
 
     // User endpoints
     const val USER_NEW_USER = "api/user/newUser"
