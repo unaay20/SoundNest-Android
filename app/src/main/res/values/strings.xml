@@ -91,4 +91,7 @@
     <string name="menu_reply">Reply</string>
     <string name="menu_delete">Delete</string>
     <string name="hint_reply_to">"Reply to: "</string>
+    <string name="menu_options">Options</string>
+    <string name="txt_comment_placeholder">Here goes the comment text, it can be longer and occupy multiple lines without being cut.</string>
+    <string name="txt_author_placeholder">Comment author</string>
 </resources>

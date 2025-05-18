@@ -92,4 +92,7 @@
     <string name="menu_reply">Responder</string>
     <string name="menu_delete">Eliminar</string>
     <string name="hint_reply_to">"Responder a: "</string>
+    <string name="menu_options">Opciones</string>
+    <string name="txt_comment_placeholder">Aquí va el texto del comentario, que puede ser más largo y ocupar varias líneas sin cortarse.</string>
+    <string name="txt_author_placeholder">Autor del comentario</string>
 </resources>

@@ -1,6 +1,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardComment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,39 +11,46 @@
     card_view:cardUseCompatPadding="true"
     card_view:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="12dp">
-
-        <TextView
-            android:id="@+id/tvCommentAuthor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:textSize="14sp"
-            android:text="Autor del comentario" />
-
-        <TextView
-            android:id="@+id/tvCommentText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="#555555"
-            android:textSize="16sp"
-            android:text="Aquí va el texto del comentario, que puede ser más largo y ocupar varias líneas sin cortarse." />
 
         <ImageButton
             android:id="@+id/btnMoreOptions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_options_24"
-            android:contentDescription="Más opciones"
-            android:layout_gravity="end"
             android:background="?android:attr/selectableItemBackground"
-            android:padding="8dp" />
-    </LinearLayout>
+            android:contentDescription="@string/menu_options"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_options_24"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
+        <TextView
+            android:id="@+id/tvCommentAuthor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_author_placeholder"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnMoreOptions"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@id/btnMoreOptions"/>
+
+        <TextView
+            android:id="@+id/tvCommentText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/txt_comment_placeholder"
+            android:textColor="#555555"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCommentAuthor"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

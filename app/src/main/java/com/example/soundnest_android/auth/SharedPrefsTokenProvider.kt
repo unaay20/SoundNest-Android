@@ -99,4 +99,8 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
 
     fun getAuthHeader(): String? =
         getToken()?.let { "Bearer $it" }
+
+    fun getUserId(): Int{
+        return id ?: -1
+    }
 }

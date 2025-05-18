@@ -1,12 +1,14 @@
 package com.example.soundnest_android.restful.models.playlist
 
+import com.example.soundnest_android.business_logic.Song
 import com.squareup.moshi.Json
 
 data class PlaylistResponse(
-    @Json(name = "idPlaylist") val idPlaylist: Int,
-    @Json(name = "name") val name: String,
-    @Json(name = "description") val description: String?,
-    @Json(name = "pathImageUrl") val pathImageUrl: String?,
-    @Json(name = "userId") val userId: Int,
-    @Json(name = "createdAt") val createdAt: String
+    @Json(name = "_id")            val idPlaylist: String,
+    @Json(name = "creator_id")     val creatorId: Int,
+    @Json(name = "playlist_name")  val name: String,
+    @Json(name = "description")    val description: String?,
+    @Json(name = "image_path")     val pathImageUrl: String,
+    @Json(name = "songs")          val songs: List<Song>,
+    @Json(name = "createdAt")      val createdAt: String
 )

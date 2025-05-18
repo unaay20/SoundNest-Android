@@ -62,6 +62,7 @@
         android:layout_marginTop="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@android:color/white"
         android:layout_gravity="center">
 
     <ImageView
@@ -69,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:scaleType="centerInside"
+        android:scaleType="centerCrop"
         android:src="@android:drawable/ic_menu_add"
         android:contentDescription="@string/hint_select_image"
         app:tint="@android:color/black" />
