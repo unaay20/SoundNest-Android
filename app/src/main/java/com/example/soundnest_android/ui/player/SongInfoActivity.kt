@@ -3,18 +3,17 @@ package com.example.soundnest_android.ui.player
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.ImageButton
-import android.widget.SeekBar
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 
 class SongInfoActivity : AppCompatActivity() {
+    private lateinit var imgBackground: ImageView
     private lateinit var infoSongImage: ImageView
     private lateinit var infoSongTitle: TextView
     private lateinit var infoArtistName: TextView
-
     private lateinit var tvCurrentTime: TextView
     private lateinit var tvTotalTime: TextView
     private lateinit var seekBar: SeekBar
@@ -35,53 +34,57 @@ class SongInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_song_info)
 
-        infoSongImage   = findViewById(R.id.infoSongImage)
-        infoSongTitle   = findViewById(R.id.infoSongTitle)
-        infoArtistName  = findViewById(R.id.infoArtistName)
-        tvCurrentTime   = findViewById(R.id.tvCurrentTime)
-        tvTotalTime     = findViewById(R.id.tvTotalTime)
-        seekBar         = findViewById(R.id.seekBar)
-        btnPlayPause    = findViewById(R.id.btnPlayPause)
+        imgBackground    = findViewById(R.id.img_background_blur)
+        infoSongImage    = findViewById(R.id.infoSongImage)
+        infoSongTitle    = findViewById(R.id.infoSongTitle)
+        infoArtistName   = findViewById(R.id.infoArtistName)
+        tvCurrentTime    = findViewById(R.id.tvCurrentTime)
+        tvTotalTime      = findViewById(R.id.tvTotalTime)
+        seekBar          = findViewById(R.id.seekBar)
+        btnPlayPause     = findViewById(R.id.btnPlayPause)
 
-        val title    = intent.getStringExtra("EXTRA_TITLE") ?: ""
-        val artist   = intent.getStringExtra("EXTRA_ARTIST") ?: ""
-        val imageRes = intent.getIntExtra("EXTRA_IMAGE_RES", R.drawable.img_default_song)
+        val title   = intent.getStringExtra("EXTRA_TITLE").orEmpty()
+        val artist  = intent.getStringExtra("EXTRA_ARTIST").orEmpty()
+        val cover   = intent.getStringExtra("EXTRA_COVER").orEmpty()
 
         infoSongTitle.text  = title
         infoArtistName.text = artist
-        infoSongImage.setImageResource(imageRes)
+
+        Glide.with(this)
+            .load(cover)
+            .into(imgBackground)
+
+        Glide.with(this)
+            .load(cover)
+            .centerCrop()
+            .into(infoSongImage)
 
         val duration = player.duration
-        seekBar.max       = duration
-        tvTotalTime.text  = formatTime(duration)
+        seekBar.max      = duration
+        tvTotalTime.text = formatTime(duration)
+        handler.post(updateRunnable)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(sb: SeekBar) {
                 handler.removeCallbacks(updateRunnable)
             }
             override fun onStopTrackingTouch(sb: SeekBar) {
-                val pos = sb.progress
-                player.seekTo(pos)
-                tvCurrentTime.text = formatTime(pos)
+                player.seekTo(sb.progress)
                 handler.post(updateRunnable)
             }
-            override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    tvCurrentTime.text = formatTime(progress)
-                }
+            override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {
+                if (fromUser) tvCurrentTime.text = formatTime(p)
             }
         })
 
         btnPlayPause.setOnClickListener {
             val playing = PlayerManager.togglePlayPause()
             btnPlayPause.setImageResource(
-                if (playing) R.drawable.ic_baseline_pause else R.drawable.ic_baseline_play
+                if (playing) R.drawable.ic_baseline_pause
+                else R.drawable.ic_baseline_play
             )
-            if (playing) {
-                handler.post(updateRunnable)
-            } else {
-                handler.removeCallbacks(updateRunnable)
-            }
+            if (playing) handler.post(updateRunnable)
+            else handler.removeCallbacks(updateRunnable)
         }
     }
 
@@ -91,10 +94,7 @@ class SongInfoActivity : AppCompatActivity() {
     }
 
     private fun formatTime(ms: Int): String {
-        val totalSeconds = ms / 1000
-        val minutes = totalSeconds / 60
-        val seconds = totalSeconds % 60
-        return "%d:%02d".format(minutes, seconds)
+        val secs = ms / 1000
+        return "%d:%02d".format(secs / 60, secs % 60)
     }
 }
-

@@ -4,9 +4,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
@@ -15,14 +18,27 @@ import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.ui.notifications.NotificationsActivity
 import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.grpc.constants.GrpcRoutes
+import com.example.soundnest_android.grpc.http.GrpcResult
+import com.example.soundnest_android.grpc.services.SongFileGrpcService
+import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.SongAdapter
 import com.example.soundnest_android.ui.upload_song.UploadSongActivity
 import com.example.soundnest_android.utils.SingleLiveEvent
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val sharedPlayer: SharedPlayerViewModel by activityViewModels()
+    private val songGrpc by lazy {
+        SongFileGrpcService(
+            GrpcRoutes.getHost(),
+            GrpcRoutes.getPort()
+        ) { SharedPrefsTokenProvider(requireContext()).getToken() }
+    }
 
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(
@@ -50,12 +66,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             startActivity(Intent(requireContext(), NotificationsActivity::class.java))
         }
 
-        popularAdapter = SongAdapter { song ->
-            // TODO: manejar click en canción popular
-        }
-        recentAdapter = SongAdapter { song ->
-            // TODO: manejar click en canción reciente
-        }
+        popularAdapter = SongAdapter { song -> downloadAndQueue(song) }
+        recentAdapter  = SongAdapter { song -> downloadAndQueue(song) }
 
         binding.rvPopular.apply {
             adapter = popularAdapter
@@ -109,6 +121,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         viewModel.loadSongs()
+    }
+
+    private fun downloadAndQueue(song: Song) = lifecycleScope.launch {
+        sharedPlayer.setLoading(true)
+        when (val res = songGrpc.downloadSongSimple(song.id)) {
+            is GrpcResult.Success -> {
+                val (meta, bytes) = res.data!!
+                sharedPlayer.queue(song, bytes)
+            }
+            is GrpcResult.GrpcError -> showError("gRPC error: ${res.message}")
+            is GrpcResult.NetworkError -> showError("Red: ${res.exception.message}")
+            is GrpcResult.UnknownError -> showError("Error: ${res.exception.message}")
+        }
+        sharedPlayer.setLoading(false)
+    }
+
+
+    private fun showError(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

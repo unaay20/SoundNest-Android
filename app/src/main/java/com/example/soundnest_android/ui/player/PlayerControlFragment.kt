@@ -1,59 +1,88 @@
 package com.example.soundnest_android.ui.player
 
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
+import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import java.io.File
 
 class PlayerControlFragment : Fragment(R.layout.fragment_player_control) {
 
-    private var isPlaying = false
+    private val shared: SharedPlayerViewModel by activityViewModels()
+
+    private lateinit var root: ConstraintLayout
+    private lateinit var songImage: ImageView
+    private lateinit var songTitle: TextView
+    private lateinit var artistName: TextView
+    private lateinit var btnPlayPause: ImageButton
+    private lateinit var progressLoading: ProgressBar
+
+    private var currentSong: Song? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val songImage   = view.findViewById<ImageView>(R.id.songImage)
-        val songTitle   = view.findViewById<TextView>(R.id.songTitle)
-        val artistName  = view.findViewById<TextView>(R.id.artistName)
+        root            = view.findViewById(R.id.playerControl)
+        songImage       = view.findViewById(R.id.songImage)
+        songTitle       = view.findViewById(R.id.songTitle)
+        artistName      = view.findViewById(R.id.artistName)
+        btnPlayPause    = view.findViewById(R.id.btnPlayPause)
+        progressLoading = view.findViewById(R.id.progress_loading)
 
-        val btnBack      = view.findViewById<ImageButton>(R.id.btnBack)
-        val btnPlayPause = view.findViewById<ImageButton>(R.id.btnPlayPause)
-        val btnNext      = view.findViewById<ImageButton>(R.id.btnNext)
-        val btnDownload  = view.findViewById<ImageButton>(R.id.btnDownload)
-        val btnComments  = view.findViewById<ImageButton>(R.id.btnComments)
+        shared.isLoading.observe(viewLifecycleOwner) { loading ->
+            progressLoading.visibility = if (loading) View.VISIBLE else View.GONE
+            btnPlayPause.isEnabled     = !loading
+        }
 
-        songImage.setImageResource(R.drawable.img_default_song)
-        songTitle.text  = "19 días y 500 noches"
-        artistName.text = "Joaquín Sabina"
+        shared.pending.observe(viewLifecycleOwner) { (song, data) ->
+            currentSong = song
 
-        view.setOnClickListener {
-            Intent(requireContext(), SongInfoActivity::class.java).also { intent ->
-                intent.putExtra("EXTRA_TITLE", songTitle.text.toString())
-                intent.putExtra("EXTRA_ARTIST", artistName.text.toString())
-                intent.putExtra("EXTRA_IMAGE_RES", R.drawable.img_default_song)
-                startActivity(intent)
-            }
+            val tmpFile = File(requireContext().cacheDir, "song_${song.id}.mp3")
+            tmpFile.writeBytes(data)
+
+            PlayerManager.initFromPath(tmpFile.absolutePath)
+
+            songTitle.text  = song.title
+            artistName.text = song.artist
+            Glide.with(this)
+                .load(song.coverUrl)
+                .circleCrop()
+                .into(songImage)
+
+            val playing = PlayerManager.togglePlayPause()
+            btnPlayPause.setImageResource(
+                if (playing) R.drawable.ic_baseline_pause
+                else R.drawable.ic_baseline_play
+            )
         }
 
         btnPlayPause.setOnClickListener {
-            val isPlaying = PlayerManager.togglePlayPause()
+            val playing = PlayerManager.togglePlayPause()
             btnPlayPause.setImageResource(
-                if (isPlaying) R.drawable.ic_baseline_pause else R.drawable.ic_baseline_play
+                if (playing) R.drawable.ic_baseline_pause
+                else R.drawable.ic_baseline_play
             )
         }
-        btnBack.setOnClickListener { /* lógica de retroceso */ }
-        btnNext.setOnClickListener { /* lógica de siguiente */ }
 
-        btnDownload.setOnClickListener { /* lógica de descarga */ }
-        btnComments.setOnClickListener { /* lógica de comentarios */ }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
+        root.setOnClickListener {
+            currentSong?.let { song ->
+                val intent = Intent(requireContext(), SongInfoActivity::class.java).apply {
+                    putExtra("EXTRA_TITLE",  song.title)
+                    putExtra("EXTRA_ARTIST", song.artist)
+                    putExtra("EXTRA_COVER",  song.coverUrl)
+                }
+                startActivity(intent)
+            }
+        }
     }
 }
