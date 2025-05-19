@@ -26,6 +26,7 @@ import com.example.soundnest_android.ui.songs.SongAdapter
 import com.example.soundnest_android.ui.upload_song.UploadSongActivity
 import com.example.soundnest_android.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
+import java.io.File
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -125,18 +126,35 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun downloadAndQueue(song: Song) = lifecycleScope.launch {
         sharedPlayer.setLoading(true)
-        when (val res = songGrpc.downloadSongSimple(song.id)) {
+
+        val tmpFile = File(requireContext().cacheDir, "song_${song.id}.mp3")
+        if (tmpFile.exists()) tmpFile.delete()
+        tmpFile.parentFile?.mkdirs()
+
+        val fos = tmpFile.outputStream()
+
+        when (val res = songGrpc.downloadSongStreamTo(song.id, fos)) {
             is GrpcResult.Success -> {
-                val (meta, bytes) = res.data!!
+                fos.close()
+                val bytes = tmpFile.readBytes()
                 sharedPlayer.queue(song, bytes)
             }
-            is GrpcResult.GrpcError -> showError("gRPC error: ${res.message}")
-            is GrpcResult.NetworkError -> showError("Red: ${res.exception.message}")
-            is GrpcResult.UnknownError -> showError("Error: ${res.exception.message}")
+            is GrpcResult.GrpcError -> {
+                fos.close()
+                showError("gRPC error: ${res.message}")
+            }
+            is GrpcResult.NetworkError -> {
+                fos.close()
+                showError("Red: ${res.exception.message}")
+            }
+            is GrpcResult.UnknownError -> {
+                fos.close()
+                showError("Error: ${res.exception.message}")
+            }
         }
+
         sharedPlayer.setLoading(false)
     }
-
 
     private fun showError(msg: String) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()

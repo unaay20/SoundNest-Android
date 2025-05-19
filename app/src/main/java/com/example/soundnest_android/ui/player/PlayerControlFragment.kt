@@ -14,13 +14,14 @@ import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import com.google.android.material.card.MaterialCardView
 import java.io.File
 
 class PlayerControlFragment : Fragment(R.layout.fragment_player_control) {
 
     private val shared: SharedPlayerViewModel by activityViewModels()
 
-    private lateinit var root: ConstraintLayout
+    private lateinit var root: MaterialCardView
     private lateinit var songImage: ImageView
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView

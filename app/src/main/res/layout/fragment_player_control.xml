@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/playerControl"
-    android:layout_width="match_parent"
+    android:layout_width="320dp"
+    android:layout_gravity="center_horizontal"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    android:background="@color/accent_purple">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/accent_purple"
+    android:clickable="true"
+    android:focusable="true">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:paddingHorizontal="40dp">
 
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginStart="76dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_back"
         android:padding="12dp"
@@ -27,7 +36,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_play_pause"
         android:padding="12dp"
@@ -40,7 +49,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="0dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/msg_next"
         android:padding="12dp"
@@ -52,7 +61,7 @@
         android:id="@+id/songImage"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/img_default_song"
+        android:src="@drawable/img_soundnest_logo_svg"
         android:contentDescription="@string/msg_song_image"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,66 +70,41 @@
 
     <TextView
         android:id="@+id/songTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="336dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="Song Title"
         android:textColor="@android:color/white"
         android:textSize="16sp"
-        android:ellipsize="end"
-        android:maxLines="1"
         app:layout_constraintStart_toEndOf="@id/songImage"
-        app:layout_constraintEnd_toStartOf="@id/btnComments"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        android:layout_marginStart="12dp" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack" />
 
     <TextView
         android:id="@+id/artistName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="336dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="Artist Name"
         android:textColor="@android:color/white"
         android:textSize="14sp"
-        android:ellipsize="end"
-        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/songImage"
-        app:layout_constraintEnd_toStartOf="@id/btnComments"
-        app:layout_constraintTop_toBottomOf="@id/songTitle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="12dp" />
+        app:layout_constraintTop_toBottomOf="@id/songTitle" />
 
-    <ImageButton
-        android:id="@+id/btnComments"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:padding="12dp"
-        android:src="@drawable/ic_baseline_comment_24"
-        android:contentDescription="@string/msg_comments"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        android:layout_marginEnd="8dp" />
+        <ProgressBar
+            android:id="@+id/progress_loading"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:visibility="gone"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageButton
-        android:id="@+id/btnDownload"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:padding="12dp"
-        android:src="@drawable/ic_baseline_download_24"
-        android:contentDescription="@string/msg_download"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toStartOf="@id/btnComments"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        android:layout_marginEnd="8dp" />
-
-    <ProgressBar
-        android:id="@+id/progress_loading"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
