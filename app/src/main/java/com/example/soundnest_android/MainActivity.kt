@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         requestNotificationPermission()
         ApiService.init(this)
 
-        PlayerManager.init(this, R.raw.mi_cancion)
+
 
         supportFragmentManager
             .beginTransaction()

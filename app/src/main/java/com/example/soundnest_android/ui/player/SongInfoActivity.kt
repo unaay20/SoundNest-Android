@@ -23,9 +23,11 @@ class SongInfoActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
-            val current = player.currentPosition
-            seekBar.progress = current
-            tvCurrentTime.text = formatTime(current)
+            val current = player?.currentPosition
+            if (current != null) {
+                seekBar.progress = current
+            }
+            tvCurrentTime.text = current?.let { formatTime(it) }
             handler.postDelayed(this, 500)
         }
     }
@@ -59,9 +61,11 @@ class SongInfoActivity : AppCompatActivity() {
             .centerCrop()
             .into(infoSongImage)
 
-        val duration = player.duration
-        seekBar.max      = duration
-        tvTotalTime.text = formatTime(duration)
+        val duration = player?.duration
+        if (duration != null) {
+            seekBar.max      = duration
+        }
+        tvTotalTime.text = duration?.let { formatTime(it) }
         handler.post(updateRunnable)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -69,7 +73,7 @@ class SongInfoActivity : AppCompatActivity() {
                 handler.removeCallbacks(updateRunnable)
             }
             override fun onStopTrackingTouch(sb: SeekBar) {
-                player.seekTo(sb.progress)
+                player?.seekTo(sb.progress)
                 handler.post(updateRunnable)
             }
             override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {

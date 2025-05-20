@@ -29,8 +29,8 @@ class PlaylistAdapter(
         holder.tvCount.text = "${playlist.songs.size} songs"
         Picasso.get()
             .load(playlist.imageUri)
-            .placeholder(R.drawable.ic_baseline_add_24)
-            .error(R.drawable.ic_baseline_add_24)
+            .placeholder(R.drawable.img_soundnest_logo_svg)
+            .error(R.drawable.img_soundnest_logo_svg)
             .fit()
             .centerCrop()
             .into(holder.ivImage)
