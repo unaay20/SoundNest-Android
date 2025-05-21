@@ -129,10 +129,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
-                if (isFirstSongEverPlayed) { // You'd need a flag for this test
+                if (isFirstSongEverPlayed) {
                     Log.d("HomeFragment", "Attempting to play FIRST song directly: ${cacheFile.name}")
-                    // PlayerManager.playFile(requireContext(), cacheFile) // Test direct call
-                    sharedPlayer.playFromFile(song, cacheFile) // Normal path
+                    sharedPlayer.playFromFile(song, cacheFile)
                     isFirstSongEverPlayed = false
                 } else {
                     sharedPlayer.playFromFile(song, cacheFile)

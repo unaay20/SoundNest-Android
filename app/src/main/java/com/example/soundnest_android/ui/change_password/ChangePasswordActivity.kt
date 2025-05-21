@@ -56,7 +56,7 @@ class ChangePasswordActivity : AppCompatActivity() {
                     Toast.makeText(this, R.string.msg_password_too_weak, Toast.LENGTH_SHORT).show()
                 newPass != repeat ->
                     Toast.makeText(this, R.string.msg_password_match, Toast.LENGTH_SHORT).show()
-                else -> vm.changePassword(email, code, newPass)
+                else -> vm.changePassword(code, newPass)
             }
         }
 

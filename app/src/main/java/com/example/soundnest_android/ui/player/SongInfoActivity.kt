@@ -1,13 +1,26 @@
 package com.example.soundnest_android.ui.player
 
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.documentfile.provider.DocumentFile
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
+import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.ui.comments.SongCommentsActivity
+import java.io.File
 
 class SongInfoActivity : AppCompatActivity() {
     private lateinit var imgBackground: ImageView
@@ -18,23 +31,37 @@ class SongInfoActivity : AppCompatActivity() {
     private lateinit var tvTotalTime: TextView
     private lateinit var seekBar: SeekBar
     private lateinit var btnPlayPause: ImageButton
+    private lateinit var btnDownload: ImageButton
+    private lateinit var btnComments: ImageButton
 
     private val player by lazy { PlayerManager.getPlayer() }
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
-            val current = player?.currentPosition
-            if (current != null) {
+            player?.currentPosition?.let { current ->
                 seekBar.progress = current
+                tvCurrentTime.text = formatTime(current)
             }
-            tvCurrentTime.text = current?.let { formatTime(it) }
             handler.postDelayed(this, 500)
         }
     }
 
+    private val pickDirLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        treeUri?.let { saveToDirectory(it) }
+    }
+
+    private lateinit var song: Song
+    private var localFilePath: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_song_info)
+
+        song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song
+            ?: throw IllegalArgumentException("Se esperaba EXTRA_SONG_OBJ")
+        localFilePath = intent.getStringExtra("EXTRA_FILE_PATH")
 
         imgBackground    = findViewById(R.id.img_background_blur)
         infoSongImage    = findViewById(R.id.infoSongImage)
@@ -44,34 +71,29 @@ class SongInfoActivity : AppCompatActivity() {
         tvTotalTime      = findViewById(R.id.tvTotalTime)
         seekBar          = findViewById(R.id.seekBar)
         btnPlayPause     = findViewById(R.id.btnPlayPause)
+        btnDownload      = findViewById(R.id.btnDownload)
+        btnComments      = findViewById(R.id.btnComments)
 
-        val title   = intent.getStringExtra("EXTRA_TITLE").orEmpty()
-        val artist  = intent.getStringExtra("EXTRA_ARTIST").orEmpty()
-        val cover   = intent.getStringExtra("EXTRA_COVER").orEmpty()
-
-        infoSongTitle.text  = title
-        infoArtistName.text = artist
+        infoSongTitle.text  = song.title
+        infoArtistName.text = song.artist
 
         Glide.with(this)
-            .load(cover)
+            .load(song.coverUrl)
             .into(imgBackground)
 
         Glide.with(this)
-            .load(cover)
+            .load(song.coverUrl)
             .centerCrop()
             .into(infoSongImage)
 
-        val duration = player?.duration
-        if (duration != null) {
-            seekBar.max      = duration
+        player?.duration?.let { duration ->
+            seekBar.max = duration
+            tvTotalTime.text = formatTime(duration)
         }
-        tvTotalTime.text = duration?.let { formatTime(it) }
         handler.post(updateRunnable)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStartTrackingTouch(sb: SeekBar) {
-                handler.removeCallbacks(updateRunnable)
-            }
+            override fun onStartTrackingTouch(sb: SeekBar) { handler.removeCallbacks(updateRunnable) }
             override fun onStopTrackingTouch(sb: SeekBar) {
                 player?.seekTo(sb.progress)
                 handler.post(updateRunnable)
@@ -89,6 +111,43 @@ class SongInfoActivity : AppCompatActivity() {
             )
             if (playing) handler.post(updateRunnable)
             else handler.removeCallbacks(updateRunnable)
+        }
+
+        btnDownload.setOnClickListener {
+            pickDirLauncher.launch(null)
+        }
+
+
+        btnComments.setOnClickListener {
+            val intent = Intent(this, SongCommentsActivity::class.java)
+            intent.putExtra("EXTRA_SONG_OBJ", song)
+            startActivity(intent)
+        }
+    }
+
+    private fun saveToDirectory(treeUri: Uri) {
+        contentResolver.takePersistableUriPermission(
+            treeUri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
+
+        val docTree = DocumentFile.fromTreeUri(this, treeUri)
+        val filename = "${song.title}.mp3"
+        docTree?.findFile(filename)?.delete()
+        val newFile = docTree?.createFile("audio/mpeg", filename)
+        if (newFile != null) {
+            try {
+                contentResolver.openOutputStream(newFile.uri).use { out ->
+                    File(localFilePath!!).inputStream().use { input ->
+                        input.copyTo(out!!)
+                    }
+                }
+                Toast.makeText(this, "Guardado en ${newFile.uri}", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error al guardar: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            Toast.makeText(this, "No se pudo crear el fichero.", Toast.LENGTH_LONG).show()
         }
     }
 

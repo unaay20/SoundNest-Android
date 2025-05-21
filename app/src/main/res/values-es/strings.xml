@@ -95,4 +95,5 @@
     <string name="menu_options">Opciones</string>
     <string name="txt_comment_placeholder">Aquí va el texto del comentario, que puede ser más largo y ocupar varias líneas sin cortarse.</string>
     <string name="txt_author_placeholder">Autor del comentario</string>
+    <string name="lbl_no_comments">Aún no hay comentarios en esta canción, sé el primero en comentar</string>
 </resources>

@@ -20,6 +20,7 @@ import com.example.soundnest_android.ui.player.SongInfoActivity
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 class PlayerControlFragment : Fragment(R.layout.fragment_player_control), PlayerManager.PlayerStateListener {
     private val shared: SharedPlayerViewModel by activityViewModels()
@@ -30,6 +31,7 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control), Player
     private lateinit var btnPlayPause: ImageButton
     private lateinit var progressLoading: ProgressBar
     private var currentSong: Song? = null
+    private var currentFile: File? = null
     private var isFirstPlaybackAttemptInFragment: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,7 +43,7 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control), Player
         btnPlayPause = view.findViewById(R.id.btnPlayPause)
         progressLoading = view.findViewById(R.id.progress_loading)
 
-        PlayerManager.playerStateListener = this // Set this fragment as the listener
+        PlayerManager.playerStateListener = this
 
         shared.isLoading.observe(viewLifecycleOwner) { loading ->
             progressLoading.visibility = if (loading) View.VISIBLE else View.GONE
@@ -53,11 +55,12 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control), Player
 
         shared.pendingFile.observe(viewLifecycleOwner) { (song, file) ->
             currentSong = song
+            currentFile = file
             songTitle.text = song.title
             artistName.text = song.artist
             Glide.with(this).load(song.coverUrl).circleCrop().into(songImage)
 
-            if (isFirstPlaybackAttemptInFragment) { // You'll need to manage this flag
+            if (isFirstPlaybackAttemptInFragment) {
                 Log.d("PlayerControlFragment", "First playback attempt, delaying...")
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(500) // Delay for 500ms
@@ -79,6 +82,9 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control), Player
                     putExtra("EXTRA_TITLE", song.title)
                     putExtra("EXTRA_ARTIST", song.artist)
                     putExtra("EXTRA_COVER", song.coverUrl)
+                    putExtra("EXTRA_SONG_OBJ", song)
+                    currentFile?.absolutePath
+                        ?.let { path -> putExtra("EXTRA_FILE_PATH", path) }
                 }
                 startActivity(intent)
             }

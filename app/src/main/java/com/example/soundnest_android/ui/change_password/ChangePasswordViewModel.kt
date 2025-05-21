@@ -44,16 +44,10 @@ class ChangePasswordViewModel : ViewModel() {
         }
     }
 
-    fun changePassword(email: String, code: String, newPassword: String) {
+    fun changePassword(code: String, newPassword: String) {
         _changeState.value = ChangePasswordState.Loading
         viewModelScope.launch {
-            //TODO code have to be used in the request to indicate that is a changePassword request
-            val result = userService.editUser(
-                username = email,
-                email = email,
-                password = newPassword,
-                additionalInformation = AdditionalInformation(info = listOf())
-            )
+            val result = userService.editUserPassword(code, newPassword)
 
             when (result) {
                 is ApiResult.Success -> {

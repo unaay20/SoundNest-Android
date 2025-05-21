@@ -94,4 +94,5 @@
     <string name="menu_options">Options</string>
     <string name="txt_comment_placeholder">Here goes the comment text, it can be longer and occupy multiple lines without being cut.</string>
     <string name="txt_author_placeholder">Comment author</string>
+    <string name="lbl_no_comments">No comments yet, be the first!</string>
 </resources>

@@ -2,6 +2,7 @@ package com.example.soundnest_android.restful.services
 
 import com.example.soundnest_android.restful.models.user.EditUserRequest
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
+import com.example.soundnest_android.restful.models.user.EditUserPasswordRequest
 import com.example.soundnest_android.restful.models.user.NewUserRequest
 import com.example.soundnest_android.restful.services.interfaces.IUserService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -39,5 +40,16 @@ class UserService(baseUrl: String) : BaseService(baseUrl) {
             additionalInformation = additionalInformation
         )
         return safeCall { userService.editUser(editUserRequest) }
+    }
+
+    suspend fun editUserPassword(
+        code: String,
+        newPassword: String
+    ): ApiResult<Unit?> {
+        val editUserPasswordRequest = EditUserPasswordRequest(
+            code = code,
+            newPassword = newPassword
+        )
+        return safeCall { userService.editUserPassword(editUserPasswordRequest) }
     }
 }

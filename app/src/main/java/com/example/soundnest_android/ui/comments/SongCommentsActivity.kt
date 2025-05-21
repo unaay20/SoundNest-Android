@@ -2,11 +2,13 @@ package com.example.soundnest_android.ui.comments
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -41,7 +43,9 @@ class SongCommentsActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_song_comments)
 
-        val rvComments   = findViewById<RecyclerView>(R.id.rvComments)
+        val tvNoComments  = findViewById<TextView>(R.id.tvNoComments)
+        val rvComments    = findViewById<RecyclerView>(R.id.rvComments)
+        val inputRow      = findViewById<LinearLayout>(R.id.comment_input_row)
         val ivArtwork    = findViewById<ImageView>(R.id.ivArtwork)
         val tvTitle      = findViewById<TextView>(R.id.tvTitle)
         val tvArtist     = findViewById<TextView>(R.id.tvArtist)
@@ -88,9 +92,30 @@ class SongCommentsActivity : AppCompatActivity() {
                 Toast.makeText(this, "No hay comentarios para esta canción", Toast.LENGTH_SHORT).show()
             }
         }
+
+        viewModel.comments.observe(this) { comments ->
+            if (comments.isNotEmpty()) {
+                tvNoComments.visibility = View.GONE
+                rvComments.visibility   = View.VISIBLE
+                inputRow.visibility     = View.VISIBLE
+
+                commentsAdapter.setItems(comments)
+            }
+        }
+
         viewModel.error.observe(this) { errorMsg ->
-            errorMsg?.let {
-                Toast.makeText(this, "No se pudieron cargar los comentarios: $it", Toast.LENGTH_LONG).show()
+            if (errorMsg != null) {
+                if (errorMsg.contains("404")) {
+                    tvNoComments.visibility = View.VISIBLE
+                    rvComments.visibility   = View.GONE
+                    inputRow.visibility     = View.GONE
+                } else {
+                    Toast.makeText(
+                        this,
+                        "No se pudieron cargar los comentarios: $errorMsg",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
         viewModel.loadComments()
