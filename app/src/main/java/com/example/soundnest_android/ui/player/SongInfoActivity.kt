@@ -142,12 +142,12 @@ class SongInfoActivity : AppCompatActivity() {
                         input.copyTo(out!!)
                     }
                 }
-                Toast.makeText(this, "Guardado en ${newFile.uri}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Saved in ${newFile.uri}", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Toast.makeText(this, "Error al guardar: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Error downloading: ${e.message}", Toast.LENGTH_LONG).show()
             }
         } else {
-            Toast.makeText(this, "No se pudo crear el fichero.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Impossible to create file.", Toast.LENGTH_LONG).show()
         }
     }
 

@@ -89,7 +89,7 @@ class SongCommentsActivity : AppCompatActivity() {
         viewModel.comments.observe(this) { comments ->
             commentsAdapter.setItems(comments)
             if (comments.isEmpty()) {
-                Toast.makeText(this, "No hay comentarios para esta canción", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.lbl_no_comments, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -108,13 +108,10 @@ class SongCommentsActivity : AppCompatActivity() {
                 if (errorMsg.contains("404")) {
                     tvNoComments.visibility = View.VISIBLE
                     rvComments.visibility   = View.GONE
-                    inputRow.visibility     = View.GONE
+                    inputRow.visibility     = View.VISIBLE
                 } else {
-                    Toast.makeText(
-                        this,
-                        "No se pudieron cargar los comentarios: $errorMsg",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    val msg = getString(R.string.error_loading_comments)
+                    Toast.makeText(this, "$msg: $errorMsg", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -134,14 +131,16 @@ class SongCommentsActivity : AppCompatActivity() {
         btnSubmit.setOnClickListener {
             val text = etNewComment.text.toString().trim()
             if (text.isBlank()) {
-                Toast.makeText(this, "Por favor, escribe un comentario", Toast.LENGTH_SHORT).show()
+                val message = getString(R.string.error_empty_comment)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val provider = SharedPrefsTokenProvider(this)
             val user = provider.username
             Log.d("SongCommentsActivity", "Submit by user: $user, token: ${provider.getToken()}")
             if (user == null) {
-                Toast.makeText(this, "No se pudo obtener el usuario", Toast.LENGTH_SHORT).show()
+                val message = getString(R.string.error_no_user)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

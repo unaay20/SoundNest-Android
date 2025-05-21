@@ -95,4 +95,7 @@
     <string name="txt_comment_placeholder">Here goes the comment text, it can be longer and occupy multiple lines without being cut.</string>
     <string name="txt_author_placeholder">Comment author</string>
     <string name="lbl_no_comments">No comments yet, be the first!</string>
+    <string name="error_loading_comments">There was an error loading the comments</string>
+    <string name="error_empty_comment">The comment cannot be empty</string>
+    <string name="error_no_user">It was not possible to load the user, try again later</string>
 </resources>

@@ -96,4 +96,7 @@
     <string name="txt_comment_placeholder">Aquí va el texto del comentario, que puede ser más largo y ocupar varias líneas sin cortarse.</string>
     <string name="txt_author_placeholder">Autor del comentario</string>
     <string name="lbl_no_comments">Aún no hay comentarios en esta canción, sé el primero en comentar</string>
+    <string name="error_loading_comments">Hubo un error cargando los comentarios</string>
+    <string name="error_empty_comment">El comentario no puede quedar vacío</string>
+    <string name="error_no_user">No se pudo encontrar tu usuario,te recomendamos volver a iniciar sesión</string>
 </resources>
