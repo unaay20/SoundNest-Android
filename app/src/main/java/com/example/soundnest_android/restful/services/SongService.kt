@@ -34,9 +34,14 @@ class SongService(
         safeCall { api.getSongsByUser(userId) }
 
     suspend fun search(
-        songName: String?, artistName: String?, genreId: Int?, limit: Int?, offset: Int?
+        songName:   String? = null,
+        artistName: String? = null,
+        genreId:    Int?    = null,
+        limit:      Int     = 10,
+        offset:     Int     = 0
     ): ApiResult<List<GetSongDetailResponse>?> =
         safeCall { api.searchSongs(songName, artistName, genreId, limit, offset) }
+
 
     suspend fun getRandom(amount: Int): ApiResult<List<GetRandomSongResponse>?> =
         safeCall { api.getRandomSongs(amount) }

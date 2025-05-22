@@ -31,11 +31,11 @@ interface ISongService {
 
     @GET(RestfulRoutes.SONG_GET_SONG_SEARCH_FILTERS)
     suspend fun searchSongs(
-        @Query("songName") songName: String?,
-        @Query("artistName") artistName: String?,
-        @Query("idGenre") genreId: Int?,
-        @Query("limit") limit: Int?,
-        @Query("offset") offset: Int?
+        @Query("songName")    songName:   String? = null,
+        @Query("artistName")  artistName: String? = null,
+        @Query("idGenre")     idGenre:    Int?    = null,
+        @Query("limit")       limit:      Int     = 10,
+        @Query("offset")      offset:     Int     = 0
     ): Response<List<GetSongDetailResponse>>
 
     @GET(RestfulRoutes.SONG_GET_RANDOM_SONGS)

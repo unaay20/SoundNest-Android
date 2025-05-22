@@ -22,8 +22,11 @@ import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
+import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongAdapter
+import com.example.soundnest_android.ui.songs.SongDialogFragment
 import com.example.soundnest_android.ui.upload_song.UploadSongActivity
 import com.example.soundnest_android.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val sharedPlayer: SharedPlayerViewModel by activityViewModels()
@@ -41,6 +44,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             GrpcRoutes.getHost(),
             GrpcRoutes.getPort()
         ) { SharedPrefsTokenProvider(requireContext()).getToken() }
+    }
+    private val songService: SongService by lazy {
+        SongService(
+            RestfulRoutes.getBaseUrl(),
+            SharedPrefsTokenProvider(requireContext())
+        )
     }
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(
@@ -107,6 +116,33 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
+        binding.fabRandomSong.setOnClickListener {
+            lifecycleScope.launch {
+                when (val r = songService.getRandom(1)) {
+                    is ApiResult.Success -> {
+                        val list = r.data.orEmpty()
+                        if (list.isNotEmpty()) {
+                            val resp = list.first()
+                            val song = Song(
+                                id       = resp.idSong,
+                                title    = resp.songName.orEmpty(),
+                                artist   = resp.userName.orEmpty(),
+                                coverUrl = resp.pathImageUrl?.let { base ->
+                                    RestfulRoutes.getBaseUrl().removeSuffix("/") + base
+                                }
+                            )
+                            SongDialogFragment.newInstance(song)
+                                .show(childFragmentManager, "dlgRandomSong")
+                        } else {
+                            Toast.makeText(requireContext(),"No hay canción aleatoria",Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(),"Error al obtener canción aleatoria",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
         binding.fabAddSong.setOnClickListener {
             startActivity(Intent(requireContext(), UploadSongActivity::class.java))
         }
@@ -140,6 +176,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    override fun playSong(song: Song) {
+        downloadAndQueue(song)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
