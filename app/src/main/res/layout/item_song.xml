@@ -39,7 +39,8 @@
                 android:layout_height="wrap_content"
                 android:text="Título de la canción"
                 android:textSize="16sp"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/darker_gray"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/tv_artist"

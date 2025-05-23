@@ -5,7 +5,8 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="@drawable/rounded_dialog">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPlaylistName"

@@ -1,13 +1,13 @@
 package com.example.soundnest_android.restful.constants
 
 object RestfulRoutes {
-    //http://192.168.100.42/restful/
+    //http://192.168.100.42/
     //https://10.0.2.2:6969/
     //https://localhost:6969/
-    //https://allowing-walrus-classic.ngrok-free.app/restful/
-    //https://100.65.158.22/restful/
+    //https://allowing-walrus-classic.ngrok-free.app/
+    //https://100.65.158.22/
     //https://10.0.2.2:6969/
-    private var baseUrl = "http://100.65.158.22/restful/"
+    private var baseUrl = "http://100.65.158.22/"
 
     // Auth endpoints
     const val AUTH_LOGIN = "api/auth/login"
@@ -20,6 +20,7 @@ object RestfulRoutes {
     const val USER_NEW_USER = "api/user/newUser"
     const val USER_EDIT_USER = "api/user/editUser"
     const val USER_EDIT_PASSWORD = "api/user/editUserPassword"
+    const val USER_GET_ADDITIONAL_INFO = "api/user/get/aditionalInfo"
 
     // Comment endpoints
     const val COMMENT_RESPOND = "api/comment/{commentId}/respondComment"
@@ -55,6 +56,11 @@ object RestfulRoutes {
     const val PLAYLIST_DELETE = "api/playlist/{idPlaylist}/delete/"
     const val PLAYLIST_PUT_NEW_PLAYLIST = "api/playlist/upload"
 
+    //Visualization endpoints
+    const val VISUALIZATION_INCREMENT = "api/visit/{idsong}/increment"
+    const val VISUALIZATION_GET_BY_MONTH = "api/visit/top/{year}/{month}"
+    const val VISUALIZATION_GET_BY_SONG_ID_IN_MONTH = "api/visit/{idsong}/{year}/{month}"
+    const val VISUALIZATION_GET_BY_SONG_ID = "api/visit/{idsong}"
 
     fun getBaseUrl(): String = baseUrl
     fun setBaseUrl(value: String) { baseUrl = value }

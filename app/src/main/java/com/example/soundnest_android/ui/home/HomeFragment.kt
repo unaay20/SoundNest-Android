@@ -72,8 +72,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
         binding.btnNotifications.setOnClickListener {
             startActivity(Intent(requireContext(), NotificationsActivity::class.java))
         }
-        popularAdapter = SongAdapter { song -> downloadAndQueue(song) }
-        recentAdapter = SongAdapter { song -> downloadAndQueue(song) }
+
+        popularAdapter = SongAdapter { song -> showSongFragment(song) }
+        recentAdapter = SongAdapter { song -> showSongFragment(song) }
+
         binding.rvPopular.apply {
             adapter = popularAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -131,8 +133,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
                                     RestfulRoutes.getBaseUrl().removeSuffix("/") + base
                                 }
                             )
-                            SongDialogFragment.newInstance(song)
-                                .show(childFragmentManager, "dlgRandomSong")
+                            showSongFragment(song)
                         } else {
                             Toast.makeText(requireContext(),"No hay canción aleatoria",Toast.LENGTH_SHORT).show()
                         }
@@ -174,6 +175,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
                 }
             }
         }
+    }
+
+    private fun showSongFragment(song: Song) {
+        SongDialogFragment.newInstance(song)
+            .show(childFragmentManager, "dlgSong")
     }
 
     override fun playSong(song: Song) {

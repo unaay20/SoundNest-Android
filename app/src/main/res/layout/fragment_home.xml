@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="130dp"
     tools:context=".ui.home.HomeFragment">
 
     <ImageButton
@@ -41,23 +40,20 @@
         tools:text="Hola, NombreUsuario" />
 
     <androidx.core.widget.NestedScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/scrollContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="30dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/text_home"
-        app:layout_constraintBottom_toTopOf="@id/fabAddSong"
+        android:paddingTop="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/text_home">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="1dp">
+            android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -77,14 +73,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/lbl_popular"
                         android:textSize="16sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPopular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:nestedScrollingEnabled="false"/>
+                        android:nestedScrollingEnabled="false" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -106,14 +102,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/lbl_recent"
                         android:textSize="16sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvRecent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:nestedScrollingEnabled="false"/>
+                        android:nestedScrollingEnabled="false" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -122,29 +118,30 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_add_24"
+        android:contentDescription="@string/desc_add_song"
+        app:backgroundTint="@color/accent_purple"
+        app:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="130dp"
+        android:elevation="8dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabRandomSong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="96dp"
         android:src="@drawable/baseline_card_giftcard_24"
         android:contentDescription="@string/desc_random_song"
         app:backgroundTint="@color/accent_purple"
         app:tint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddSong"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_baseline_add_24"
-        android:contentDescription="@string/desc_add_song"
-        app:backgroundTint="@color/accent_purple"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:elevation="8dp"
-        app:tint="@color/white" />
+        app:layout_constraintBottom_toTopOf="@id/fabAddSong"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

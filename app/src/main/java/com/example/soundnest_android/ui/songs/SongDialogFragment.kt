@@ -35,7 +35,7 @@ class SongDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = requireActivity().layoutInflater
-            .inflate(R.layout.fragment_random_song_dialog, null)
+            .inflate(R.layout.fragment_detail_song_dialog, null)
 
         val imgCover = view.findViewById<ImageView>(R.id.imgCover)
         val tvTitle  = view.findViewById<TextView>(R.id.tvTitle)
