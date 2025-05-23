@@ -33,7 +33,18 @@ class EditProfileActivity : AppCompatActivity() {
 
         viewModel.profile.observe(this) { profile ->
             binding.etUsername.setText(profile.username)
-            binding.etAdditionalInfo.setText(profile.additionalInformation.joinToString("\n"))
+
+            val infoMap = profile.additionalInformation.info
+
+            val sb = StringBuilder()
+            for ((key, values) in infoMap) {
+                val label = key.replaceFirstChar { it.uppercaseChar() }
+                sb.append(label)
+                    .append(": ")
+                    .append(values.joinToString(", "))
+                    .append("\n")
+            }
+            binding.etAdditionalInfo.setText(sb.toString().trimEnd())
         }
 
         viewModel.photoBytes.observe(this) { bytes ->

@@ -50,7 +50,7 @@ class EditProfileViewModel(
 
     private fun loadProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            val infoList = tokenProvider.additionalInfo
+            val infoList = tokenProvider.getAdditionalInformation()
             val username = tokenProvider.username
                 ?: throw IllegalStateException("No se encontró el nombre de usuario")
             val email = tokenProvider.email
@@ -71,7 +71,7 @@ class EditProfileViewModel(
             val nameUser = newUsername
             val email = tokenProvider.email.orEmpty()
             val password = ""
-            val additionalInformation = AdditionalInformation(info = infoList)
+            val additionalInformation = tokenProvider.getAdditionalInformation()
 
             when (val resp = userService.editUser(nameUser, email, password, additionalInformation)) {
                 is ApiResult.Success -> {

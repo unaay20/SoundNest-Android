@@ -11,6 +11,7 @@ import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.network.ApiService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.utils.Constants
 import kotlinx.coroutines.launch
 
@@ -27,6 +28,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val tokenProvider = ApiService.tokenProvider
     private val authService    = AuthService(RestfulRoutes.getBaseUrl())
+    private val userService    = UserService(RestfulRoutes.getBaseUrl())
 
     fun login(username: String, password: String) {
         _state.value = LoginState.Loading
@@ -35,7 +37,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 is ApiResult.Success -> {
                     result.data?.let {
                         tokenProvider.saveToken(it.token)
-                        tokenProvider.getToken()?.let { it1 -> Log.d(Constants.LOGIN_ACTIVITY, it1) }
+
+                        when (val addInfoResult = userService.getAdditionalInfo()) {
+                            is ApiResult.Success -> {
+                                val additionalInfo = addInfoResult.data
+                                if (additionalInfo != null) {
+                                    tokenProvider.saveAdditionalInformation(additionalInfo)
+                                }
+                            }
+                            else -> { /* ignoro */ }
+                        }
+                        //tokenProvider.getToken()?.let { it1 -> Log.d(Constants.LOGIN_ACTIVITY, it1) }
                         _state.value = LoginState.Success(it)
                     } ?: run {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")

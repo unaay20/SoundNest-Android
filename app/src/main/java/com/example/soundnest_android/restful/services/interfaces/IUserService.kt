@@ -1,11 +1,13 @@
 package com.example.soundnest_android.restful.services.interfaces
 
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.models.user.EditUserPasswordRequest
 import com.example.soundnest_android.restful.models.user.EditUserRequest
 import com.example.soundnest_android.restful.models.user.NewUserRequest
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 
@@ -18,4 +20,7 @@ interface IUserService {
 
     @PATCH(RestfulRoutes.USER_EDIT_PASSWORD)
     suspend fun editUserPassword(@Body request: EditUserPasswordRequest): Response<Unit>
+
+    @GET(RestfulRoutes.USER_GET_ADDITIONAL_INFO)
+    suspend fun getAdditionalInfo(): Response<AdditionalInformation>
 }

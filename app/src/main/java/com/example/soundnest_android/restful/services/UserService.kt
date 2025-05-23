@@ -52,4 +52,8 @@ class UserService(baseUrl: String) : BaseService(baseUrl) {
         )
         return safeCall { userService.editUserPassword(editUserPasswordRequest) }
     }
+
+    suspend fun getAdditionalInfo(): ApiResult<AdditionalInformation?> {
+        return safeCall { userService.getAdditionalInfo() }
+    }
 }

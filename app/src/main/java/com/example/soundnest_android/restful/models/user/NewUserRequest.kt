@@ -21,5 +21,5 @@ data class NewUserRequest(
 
 data class AdditionalInformation(
     @Json(name = "info")
-    val info: List<String>
+    val info: Map<String, List<String>>
 )

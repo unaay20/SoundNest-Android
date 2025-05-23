@@ -22,7 +22,7 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.btnSend.setOnClickListener {
             val user  = binding.etUsername.text.toString().trim()
-            val email = binding.etEmail   .text.toString().trim()
+            val email = binding.etEmail.text.toString().trim()
             val pass  = binding.etPassword.text.toString()
 
             if (user.isEmpty() || email.isEmpty() || pass.isEmpty()) {
@@ -35,13 +35,6 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val rawInfo = binding.etAdditionalInfo.text.toString().trim()
-            val infoList = rawInfo
-                .split('\n')
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-            val additionalInfo = AdditionalInformation(info = infoList)
-
             vm.sendCode(email)
         }
 
@@ -52,21 +45,22 @@ class RegisterActivity : AppCompatActivity() {
                 }
                 is SendCodeState.Success -> {
                     binding.btnSend.isEnabled = true
-
                     showCodeDialog { code ->
+                        val rawInfo = binding.etAdditionalInfo.text.toString().trim()
+                        val infoList = rawInfo
+                            .split('\n')
+                            .map { it.trim() }
+                            .filter { it.isNotEmpty() }
+                        val additionalInfo = AdditionalInformation(
+                            info = mapOf("interests" to infoList)
+                        )
+
                         vm.register(
                             username              = binding.etUsername.text.toString().trim(),
-                            email                 = binding.etEmail   .text.toString().trim(),
+                            email                 = binding.etEmail.text.toString().trim(),
                             password              = binding.etPassword.text.toString(),
                             code                  = code,
-                            additionalInformation = AdditionalInformation(
-                                info = binding.etAdditionalInfo.text
-                                    .toString()
-                                    .trim()
-                                    .split('\n')
-                                    .map { it.trim() }
-                                    .filter { it.isNotEmpty() }
-                            )
+                            additionalInformation = additionalInfo
                         )
                     }
                 }
@@ -120,9 +114,7 @@ class RegisterActivity : AppCompatActivity() {
                     dlg.dismiss()
                 }
             }
-            .setNegativeButton(R.string.action_cancel) { dlg, _ ->
-                dlg.dismiss()
-            }
+            .setNegativeButton(R.string.action_cancel) { dlg, _ -> dlg.dismiss() }
             .setCancelable(false)
             .show()
     }

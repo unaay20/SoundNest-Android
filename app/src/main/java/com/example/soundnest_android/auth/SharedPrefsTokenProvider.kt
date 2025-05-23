@@ -4,12 +4,17 @@ import android.content.Context
 import com.auth0.android.jwt.JWT
 import com.example.soundnest_android.R
 import android.util.Base64
+import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import org.json.JSONObject
 import com.example.soundnest_android.restful.utils.TokenProvider
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 
 class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     private val KEY_TOKEN = "key_token"
+
+    private val gson = Gson()
 
     override fun getToken(): String? =
         prefs.getString(KEY_TOKEN, null)
@@ -69,9 +74,23 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
             }
         }
 
-    val additionalInfo: List<String>
-        get() = decodeJWT()?.getClaim("info")?.asList(String::class.java) ?: emptyList()
 
+
+    fun saveAdditionalInformation(info: AdditionalInformation) {
+        prefs.edit()
+            .putString("additional_info", gson.toJson(info.info))
+            .apply()
+    }
+
+    fun getAdditionalInformation(): AdditionalInformation {
+        val json = prefs.getString("additional_info", null)
+        if (!json.isNullOrEmpty()) {
+            val type = object : TypeToken<Map<String, List<String>>>() {}.type
+            val infoMap: Map<String, List<String>> = gson.fromJson(json, type)
+            return AdditionalInformation(infoMap)
+        }
+        return AdditionalInformation(emptyMap())
+    }
 
     fun saveClaims(claims: Map<String, Any>) {
         val headerJson = JSONObject(mapOf(
