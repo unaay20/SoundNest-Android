@@ -13,7 +13,7 @@ interface ISongService {
         @Path("idsong") songId: Int
     ): Response<Unit>
 
-    @HTTP(method = "GET", path = RestfulRoutes.SONG_GET_LIST_BY_IDS, hasBody = true)
+    @POST(RestfulRoutes.SONG_GET_LIST_BY_IDS)
     suspend fun getSongsByIds(
         @Body request: SongIdsRequest
     ): Response<List<GetSongDetailResponse>>

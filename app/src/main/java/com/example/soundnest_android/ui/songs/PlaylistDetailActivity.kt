@@ -1,9 +1,10 @@
 package com.example.soundnest_android.ui.songs
 
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,17 +12,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.grpc.constants.GrpcRoutes
+import com.example.soundnest_android.grpc.http.GrpcResult
+import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.restful.utils.ApiResult
-import com.example.soundnest_android.restful.utils.TokenProvider
-import com.example.soundnest_android.ui.comments.SongCommentsActivity
+import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
+class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
 
-class PlaylistDetailActivity : AppCompatActivity() {
+    private lateinit var songAdapter: SongAdapter
 
-    private lateinit var adapter: SongAdapter
+    private val sharedPlayer: SharedPlayerViewModel by viewModels()
+
+    private val grpcService by lazy {
+        SongFileGrpcService(
+            GrpcRoutes.getHost(),
+            GrpcRoutes.getPort()
+        ) { SharedPrefsTokenProvider(this).getToken() }
+    }
+
     private val songService by lazy {
         SongService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(this))
     }
@@ -30,14 +45,14 @@ class PlaylistDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playlist_detail)
 
-        val rvSongs = findViewById<RecyclerView>(R.id.rvSongs).apply {
+        songAdapter = SongAdapter { song ->
+            SongDialogFragment.newInstance(song)
+                .show(supportFragmentManager, "dlgSong")
+        }
+
+        findViewById<RecyclerView>(R.id.rvSongs).apply {
             layoutManager = LinearLayoutManager(this@PlaylistDetailActivity)
-            adapter = SongAdapter { song ->
-                startActivity(
-                    Intent(this@PlaylistDetailActivity, SongCommentsActivity::class.java)
-                        .putExtra("EXTRA_SONG_OBJ", song)
-                )
-            }.also { adapter = it }
+            adapter       = songAdapter
         }
 
         findViewById<TextView>(R.id.tvPlaylistName).text =
@@ -45,51 +60,54 @@ class PlaylistDetailActivity : AppCompatActivity() {
 
         val songIds = intent.getIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS")
             ?: arrayListOf()
+        Log.d("PlaylistDetail", "songIds recibidos: $songIds")
 
         lifecycleScope.launch {
             when (val r = songService.getByIds(songIds)) {
-                is ApiResult.Success<*> -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val dtoList = (r.data as? List<com.example.soundnest_android.restful.models.song.GetSongDetailResponse>)
-                        .orEmpty()
-
-                    val fullSongs = dtoList.map { dto ->
-                        dto.userName?.let {
-                            Song(
-                                id       = dto.idSong,
-                                title    = dto.songName,
-                                artist   = it,
-                                coverUrl = dto.pathImageUrl
-                            )
-                        }
+                is ApiResult.Success -> {
+                    val fullSongs = r.data.orEmpty().map { dto ->
+                        Song(
+                            id       = dto.idSong,
+                            title    = dto.songName,
+                            artist   = dto.userName ?: "Desconocido",
+                            coverUrl = dto.pathImageUrl
+                        )
                     }
-                    adapter.submitList(fullSongs)
+                    songAdapter.submitList(fullSongs)
                 }
-
-                is ApiResult.HttpError -> {
-                    Toast.makeText(
-                        this@PlaylistDetailActivity,
-                        "HTTP ${r.code}: ${r.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                is ApiResult.NetworkError -> {
-                    Toast.makeText(
-                        this@PlaylistDetailActivity,
-                        "Error de red: ${r.exception.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                is ApiResult.UnknownError -> {
-                    Toast.makeText(
-                        this@PlaylistDetailActivity,
-                        "Error inesperado: ${r.exception.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                is ApiResult.HttpError    -> toast("HTTP ${r.code}: ${r.message}")
+                is ApiResult.NetworkError -> toast("Red: ${r.exception.message}")
+                is ApiResult.UnknownError -> toast("Error: ${r.exception.message}")
             }
         }
+    }
+
+    override fun playSong(song: Song) {
+        downloadAndPlay(song)
+    }
+
+    private fun downloadAndPlay(song: Song) {
+        val cacheFile = File(cacheDir, "song_${song.id}.mp3")
+        if (cacheFile.exists()) {
+            sharedPlayer.playFromFile(song, cacheFile)
+            return
+        }
+
+        sharedPlayer.setLoading(true)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val tmp = File(cacheDir, "song_${song.id}.tmp").also { if (it.exists()) it.delete() }
+            when (val res = grpcService.downloadSongStreamTo(song.id, tmp.outputStream())) {
+                is GrpcResult.Success -> tmp.renameTo(cacheFile)
+                else                 -> tmp.delete()
+            }
+            withContext(Dispatchers.Main) {
+                sharedPlayer.setLoading(false)
+                sharedPlayer.playFromFile(song, cacheFile)
+            }
+        }
+    }
+
+    private fun toast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 }

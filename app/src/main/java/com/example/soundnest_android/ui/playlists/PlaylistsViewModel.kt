@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.soundnest_android.business_logic.Playlist
+import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.restful.services.PlaylistService
@@ -40,13 +41,21 @@ class PlaylistsViewModel(
                     is ApiResult.Success -> {
                         val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
                         _playlists.value = result.data?.playlists.orEmpty()
-                            .map {
+                            .map { dto ->
+                                val songs = dto.songs.map { rel ->
+                                    Song(
+                                        id       = rel.songId,
+                                        title    = "",
+                                        artist   = "",
+                                        coverUrl = null
+                                    )
+                                }
                                 Playlist(
-                                    id       = it.idPlaylist,
-                                    name     = it.name,
-                                    description = it.description,
-                                    songs    = emptyList(),
-                                    imageUri = "$base${it.pathImageUrl}"
+                                    id          = dto.idPlaylist,
+                                    name        = dto.name,
+                                    description = dto.description,
+                                    songs       = songs,
+                                    imageUri    = "$base${dto.pathImageUrl}"
                                 )
                             }
                             .toMutableList()
@@ -82,11 +91,11 @@ class PlaylistsViewModel(
                     is ApiResult.Success -> result.data?.let {
                         val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
                         val nueva = Playlist(
-                            id       = it.idPlaylist,
-                            name     = it.name,
+                            id          = it.idPlaylist,
+                            name        = it.name,
                             description = it.description,
-                            songs    = emptyList(),
-                            imageUri = "$base/uploads/${it.pathImageUrl}"
+                            songs       = emptyList(), // al crear no traemos canciones
+                            imageUri    = "$base/uploads/${it.pathImageUrl}"
                         )
                         _playlists.value?.apply {
                             add(nueva)
@@ -112,7 +121,7 @@ class PlaylistsViewModel(
 
     fun deletePlaylist(playlist: Playlist) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = service.deletePlaylist(playlist.id.toString())
+            val result = service.deletePlaylist(playlist.id)
             withContext(Dispatchers.Main) {
                 when (result) {
                     is ApiResult.Success -> _playlists.value?.apply {
