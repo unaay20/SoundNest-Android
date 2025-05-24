@@ -1,6 +1,8 @@
 package com.example.soundnest_android.ui.change_password
 
+import android.app.Application
 import androidx.lifecycle.*
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.AuthService
@@ -22,7 +24,9 @@ sealed class ChangePasswordState {
     data class Error(val msg: String) : ChangePasswordState()
 }
 
-class ChangePasswordViewModel : ViewModel() {
+class ChangePasswordViewModel(
+    application: Application
+) : AndroidViewModel(application) {
     private val _sendCodeState = MutableLiveData<SendCodeState>(SendCodeState.Idle)
     val sendCodeState: LiveData<SendCodeState> = _sendCodeState
 
@@ -30,7 +34,7 @@ class ChangePasswordViewModel : ViewModel() {
     val changeState: LiveData<ChangePasswordState> = _changeState
 
     private val authService = AuthService(RestfulRoutes.getBaseUrl())
-    private val userService = UserService(RestfulRoutes.getBaseUrl())
+    private val userService = UserService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(getApplication()))
 
     fun sendCode(email: String) {
         _sendCodeState.value = SendCodeState.Loading

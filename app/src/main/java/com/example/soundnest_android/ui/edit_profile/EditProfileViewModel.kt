@@ -30,8 +30,8 @@ class EditProfileViewModel(
         )
     }
 
-    private val _profile = MutableLiveData<UserProfile>()
-    val profile: LiveData<UserProfile> = _profile
+    private val _profile = MutableLiveData<UserProfile?>()
+    val profile: MutableLiveData<UserProfile?> = _profile
 
     private val _photoBytes = MutableLiveData<ByteArray?>()
     val photoBytes: LiveData<ByteArray?> = _photoBytes
@@ -50,30 +50,47 @@ class EditProfileViewModel(
 
     private fun loadProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            val infoList = tokenProvider.getAdditionalInformation()
             val username = tokenProvider.username
-                ?: throw IllegalStateException("No se encontró el nombre de usuario")
+                ?: throw IllegalStateException("No hay username")
             val email = tokenProvider.email
-                ?: throw IllegalStateException("No se encontró el correo del usuario")
+                ?: throw IllegalStateException("No hay email")
+
+            val additionalInfoString: String = when (val r = userService.getAdditionalInfo()) {
+                is ApiResult.Success -> {
+                    val info = r.data?.info
+                    if (!info.isNullOrBlank()) {
+                        tokenProvider.saveAdditionalInformation(info)
+                        info
+                    } else {
+                        tokenProvider.getAdditionalInformation()
+                    }
+                }
+                else -> {
+                    tokenProvider.getAdditionalInformation()
+                }
+            }
 
             val uiModel = UserProfile(
-                username = username,
-                email = email,
-                role = tokenProvider.role,
-                additionalInformation = infoList
+                username               = username,
+                email                  = email,
+                role                   = tokenProvider.role,
+                additionalInformation  = additionalInfoString
             )
-            withContext(Dispatchers.Main) { _profile.value = uiModel }
+
+            withContext(Dispatchers.Main) {
+                _profile.value = uiModel
+            }
         }
     }
 
-    fun saveProfile(newUsername: String, infoList: List<String>) {
+
+    fun saveProfile(newUsername: String, info: AdditionalInformation) {
         viewModelScope.launch(Dispatchers.IO) {
             val nameUser = newUsername
             val email = tokenProvider.email.orEmpty()
-            val password = ""
-            val additionalInformation = tokenProvider.getAdditionalInformation()
+            val additionalInformation = info
 
-            when (val resp = userService.editUser(nameUser, email, password, additionalInformation)) {
+            when (val resp = userService.editUser(nameUser, email, additionalInformation)) {
                 is ApiResult.Success -> {
                     tokenProvider.setUserName(newUsername)
                     withContext(Dispatchers.Main) {

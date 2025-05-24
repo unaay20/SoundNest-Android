@@ -101,4 +101,5 @@
     <string name="error_no_user">No se pudo encontrar tu usuario,te recomendamos volver a iniciar sesión</string>
     <string name="desc_random_song">Canción aleatoria</string>
     <string name="btn_play">Reproducir</string>
+    <string name="lbl_clear_all">Eliminar todo</string>
 </resources>

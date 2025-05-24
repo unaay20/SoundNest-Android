@@ -100,4 +100,5 @@
     <string name="error_no_user">It was not possible to load the user, try again later</string>
     <string name="desc_random_song">Random song</string>
     <string name="btn_play">Play</string>
+    <string name="lbl_clear_all">Clear all</string>
 </resources>

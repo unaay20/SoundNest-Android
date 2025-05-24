@@ -1,12 +1,15 @@
 package com.example.soundnest_android.ui.register
 
+import android.app.Application
 import androidx.lifecycle.*
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
 import kotlinx.coroutines.launch
+import org.checkerframework.checker.units.qual.A
 
 sealed class SendCodeState {
     object Idle    : SendCodeState()
@@ -22,7 +25,9 @@ sealed class RegisterState {
     data class Error(val msg: String) : RegisterState()
 }
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(
+    application: Application
+) : AndroidViewModel(application) {
     private val _sendCodeState = MutableLiveData<SendCodeState>(SendCodeState.Idle)
     val sendCodeState: LiveData<SendCodeState> = _sendCodeState
 
@@ -30,7 +35,7 @@ class RegisterViewModel : ViewModel() {
     val state: LiveData<RegisterState> = _state
 
     private val authService = AuthService(RestfulRoutes.getBaseUrl())
-    private val userService = UserService(RestfulRoutes.getBaseUrl())
+    private val userService = UserService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(getApplication()))
 
     fun sendCode(email: String) {
         _sendCodeState.value = SendCodeState.Loading

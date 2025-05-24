@@ -28,7 +28,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val tokenProvider = ApiService.tokenProvider
     private val authService    = AuthService(RestfulRoutes.getBaseUrl())
-    private val userService    = UserService(RestfulRoutes.getBaseUrl())
+    private val userService    = UserService(RestfulRoutes.getBaseUrl(), tokenProvider)
 
     fun login(username: String, password: String) {
         _state.value = LoginState.Loading
@@ -40,9 +40,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
                         when (val addInfoResult = userService.getAdditionalInfo()) {
                             is ApiResult.Success -> {
-                                val additionalInfo = addInfoResult.data
-                                if (additionalInfo != null) {
-                                    tokenProvider.saveAdditionalInformation(additionalInfo)
+                                addInfoResult.data?.info?.let { infoString ->
+                                    Log.d(Constants.LOGIN_ACTIVITY, "Additional info: $infoString")
+                                    tokenProvider.saveAdditionalInformation(infoString)
                                 }
                             }
                             else -> { /* ignoro */ }

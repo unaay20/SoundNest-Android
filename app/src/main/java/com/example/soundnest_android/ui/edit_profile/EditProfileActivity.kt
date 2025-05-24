@@ -10,6 +10,7 @@ import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityEditProfileBinding
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.ui.change_password.ChangePasswordActivity
 
@@ -19,7 +20,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var tokenProvider: SharedPrefsTokenProvider
     private val factory by lazy {
         EditProfileViewModelFactory(
-            UserService(RestfulRoutes.getBaseUrl()),
+            UserService(RestfulRoutes.getBaseUrl(), tokenProvider),
             SharedPrefsTokenProvider(this)
         )
     }
@@ -32,19 +33,13 @@ class EditProfileActivity : AppCompatActivity() {
         tokenProvider = SharedPrefsTokenProvider(this)
 
         viewModel.profile.observe(this) { profile ->
-            binding.etUsername.setText(profile.username)
-
-            val infoMap = profile.additionalInformation.info
-
-            val sb = StringBuilder()
-            for ((key, values) in infoMap) {
-                val label = key.replaceFirstChar { it.uppercaseChar() }
-                sb.append(label)
-                    .append(": ")
-                    .append(values.joinToString(", "))
-                    .append("\n")
+            if (profile != null) {
+                binding.etUsername.setText(profile.username)
             }
-            binding.etAdditionalInfo.setText(sb.toString().trimEnd())
+
+            val info = profile?.additionalInformation
+
+            binding.etAdditionalInfo.setText(info.toString().trimEnd())
         }
 
         viewModel.photoBytes.observe(this) { bytes ->
@@ -73,9 +68,9 @@ class EditProfileActivity : AppCompatActivity() {
 
         binding.btnSaveProfile.setOnClickListener {
             val newUsername = binding.etUsername.text.toString().trim()
-            val infoList = binding.etAdditionalInfo.text.toString()
-                .split('\n').map { it.trim() }.filter { it.isNotEmpty() }
-            viewModel.saveProfile(newUsername, infoList)
+            val infoText = binding.etAdditionalInfo.text.toString()
+            val additionalInfo = AdditionalInformation(infoText)
+            viewModel.saveProfile(newUsername, additionalInfo)
         }
 
         binding.btnChangePassword.setOnClickListener {

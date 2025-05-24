@@ -6,8 +6,13 @@ import com.example.soundnest_android.restful.models.user.EditUserPasswordRequest
 import com.example.soundnest_android.restful.models.user.NewUserRequest
 import com.example.soundnest_android.restful.services.interfaces.IUserService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.restful.utils.TokenProvider
+import org.checkerframework.checker.units.qual.A
 
-class UserService(baseUrl: String) : BaseService(baseUrl) {
+class UserService(
+    baseUrl: String,
+    tokenProvider: TokenProvider
+) : BaseService(baseUrl, tokenProvider) {
     private val userService = retrofit.create(IUserService::class.java)
 
     suspend fun createUser(
@@ -30,13 +35,11 @@ class UserService(baseUrl: String) : BaseService(baseUrl) {
     suspend fun editUser(
         username: String,
         email: String,
-        password: String,
         additionalInformation: AdditionalInformation
     ): ApiResult<Unit?> {
         val editUserRequest = EditUserRequest(
             nameUser = username,
             email = email,
-            password = password,
             additionalInformation = additionalInformation
         )
         return safeCall { userService.editUser(editUserRequest) }

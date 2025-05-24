@@ -3,23 +3,32 @@ package com.example.soundnest_android.ui.search
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 
 class RecentSearchAdapter(
     private val items: MutableList<String>,
-    private val onClick: (String) -> Unit
+    private val onClick: (String) -> Unit,
+    private val onDelete: (String) -> Unit
 ) : RecyclerView.Adapter<RecentSearchAdapter.SearchVH>() {
 
     inner class SearchVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tv: TextView = itemView.findViewById(R.id.tvRecentSearch)
+        private val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
 
         init {
             itemView.setOnClickListener {
                 val pos = adapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     onClick(items[pos])
+                }
+            }
+            ivDelete.setOnClickListener {
+                val pos = adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onDelete(items[pos])
                 }
             }
         }
@@ -45,11 +54,24 @@ class RecentSearchAdapter(
         val oldIndex = items.indexOf(query)
         if (oldIndex != -1) {
             items.removeAt(oldIndex)
-            items.add(0, query)
-            notifyItemMoved(oldIndex, 0)
-        } else {
-            items.add(0, query)
-            notifyItemInserted(0)
+            notifyItemRemoved(oldIndex)
+        }
+        items.add(0, query)
+        notifyItemInserted(0)
+    }
+
+    fun remove(query: String) {
+        val pos = items.indexOf(query)
+        if (pos != -1) {
+            items.removeAt(pos)
+            notifyItemRemoved(pos)
         }
     }
+
+    fun clearAll() {
+        val count = items.size
+        items.clear()
+        notifyItemRangeRemoved(0, count)
+    }
 }
+

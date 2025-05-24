@@ -13,4 +13,10 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="AppTheme.Fullscreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Oculta la status bar -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- Opcional: si quieres también ocultar la barra de navegación -->
+        <!-- <item name="android:windowTranslucentNavigation">true</item> -->
+    </style>
 </resources>

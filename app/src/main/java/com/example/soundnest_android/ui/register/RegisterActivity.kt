@@ -47,13 +47,8 @@ class RegisterActivity : AppCompatActivity() {
                     binding.btnSend.isEnabled = true
                     showCodeDialog { code ->
                         val rawInfo = binding.etAdditionalInfo.text.toString().trim()
-                        val infoList = rawInfo
-                            .split('\n')
-                            .map { it.trim() }
-                            .filter { it.isNotEmpty() }
-                        val additionalInfo = AdditionalInformation(
-                            info = mapOf("interests" to infoList)
-                        )
+
+                        val additionalInfo = AdditionalInformation(rawInfo)
 
                         vm.register(
                             username              = binding.etUsername.text.toString().trim(),

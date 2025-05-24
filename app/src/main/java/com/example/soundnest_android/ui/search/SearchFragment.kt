@@ -2,23 +2,29 @@ package com.example.soundnest_android.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.soundnest_android.databinding.FragmentSearchBinding
+import java.io.File
 
 class SearchFragment : Fragment() {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private val recentSearches = mutableListOf<String>()
     private lateinit var adapter: RecentSearchAdapter
+    private val fileName = "recent_searches.txt"
+    private val recentSearches = mutableListOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,41 +39,50 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recentSearches.addAll(listOf(
-            "android retrofit",
-            "kotlin coroutines",
-            "mvvm ejemplo"
-        ))
+        loadFromFile()
 
-        adapter = RecentSearchAdapter(recentSearches) { query ->
-            binding.searchView.setQuery(query, true)
-            adapter.addSearch(query)
-        }
+        adapter = RecentSearchAdapter(recentSearches,
+            onClick = { query -> doSearch(query) },
+            onDelete = { query ->
+                recentSearches.remove(query)
+                adapter.remove(query)
+                saveToFile()
+            }
+        )
+
 
         binding.rvRecentSearches.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@SearchFragment.adapter
         }
 
+        binding.btnClearAll.setOnClickListener {
+            recentSearches.clear()
+            adapter.clearAll()
+            saveToFile()
+        }
+
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                adapter.addSearch(query)
-                binding.searchView.setQuery("", false)
+                doSearch(query)
                 return true
             }
-            override fun onQueryTextChange(newText: String?): Boolean = false
+            override fun onQueryTextChange(newText: String?) = false
         })
+
 
         binding.searchView.apply {
             setIconifiedByDefault(true)
             isIconified = true
 
-            val searchAutoComplete = findViewById<SearchView.SearchAutoComplete>(
-                androidx.appcompat.R.id.search_src_text
-            ).apply {
-                isFocusable = true
-                isFocusableInTouchMode = true
-            }
+            val searchAutoComplete = binding.searchView
+                .findViewById<SearchView.SearchAutoComplete>(
+                    androidx.appcompat.R.id.search_src_text
+                )
+
+            searchAutoComplete.hint = "Escribe tu búsqueda"
+            searchAutoComplete.isFocusable = true
+            searchAutoComplete.isFocusableInTouchMode = true
 
             setOnTouchListener { _, event ->
                 if (isIconified) {
@@ -92,6 +107,40 @@ class SearchFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun loadFromFile() {
+        recentSearches.clear()
+        val file = File(requireContext().filesDir, fileName)
+
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+
+        file.bufferedReader().useLines { lines ->
+            lines
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+                .forEach { recentSearches.add(it) }
+        }
+    }
+
+    private fun doSearch(query: String) {
+        adapter.addSearch(query)
+        saveToFile()
+
+        val intent = Intent(requireContext(), SearchResultActivity::class.java)
+            .putExtra("QUERY", query)
+        startActivity(intent)
+
+        binding.searchView.setQuery("", false)
+        binding.searchView.clearFocus()
+    }
+
+    private fun saveToFile() {
+        context?.openFileOutput(fileName, Context.MODE_PRIVATE)?.bufferedWriter()?.use { w ->
+            recentSearches.forEach { w.write(it); w.newLine() }
+        }
     }
 
     override fun onDestroyView() {

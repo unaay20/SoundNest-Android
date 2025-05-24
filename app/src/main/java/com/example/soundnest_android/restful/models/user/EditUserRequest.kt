@@ -9,9 +9,6 @@ data class EditUserRequest(
     @Json(name = "email")
     val email: String,
 
-    @Json(name = "password")
-    val password: String,
-
     @Json(name = "additionalInformation")
     val additionalInformation: AdditionalInformation
 )

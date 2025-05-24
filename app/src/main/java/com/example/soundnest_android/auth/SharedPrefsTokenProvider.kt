@@ -13,6 +13,7 @@ import com.google.gson.Gson
 class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     private val KEY_TOKEN = "key_token"
+    private val KEY_ADDITIONAL_INFO = "additional_info"
 
     private val gson = Gson()
 
@@ -74,22 +75,16 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
             }
         }
 
-
-
-    fun saveAdditionalInformation(info: AdditionalInformation) {
+    fun saveAdditionalInformation(infoJson: String) {
         prefs.edit()
-            .putString("additional_info", gson.toJson(info.info))
+            .putString(KEY_ADDITIONAL_INFO, infoJson)
             .apply()
     }
 
-    fun getAdditionalInformation(): AdditionalInformation {
-        val json = prefs.getString("additional_info", null)
-        if (!json.isNullOrEmpty()) {
-            val type = object : TypeToken<Map<String, List<String>>>() {}.type
-            val infoMap: Map<String, List<String>> = gson.fromJson(json, type)
-            return AdditionalInformation(infoMap)
-        }
-        return AdditionalInformation(emptyMap())
+    fun getAdditionalInformation(): String {
+        return prefs
+            .getString(KEY_ADDITIONAL_INFO, "{}")
+            .orEmpty()
     }
 
     fun saveClaims(claims: Map<String, Any>) {
