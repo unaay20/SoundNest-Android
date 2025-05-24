@@ -28,10 +28,10 @@ class PlaylistsFragment : Fragment() {
 
     private val viewModel: PlaylistsViewModel by viewModels {
         PlaylistsViewModelFactory(
-            application = requireActivity().application,
-            baseUrl = RestfulRoutes.getBaseUrl(),
+            application   = requireActivity().application,
+            baseUrl       = RestfulRoutes.getBaseUrl(),
             tokenProvider = sharedPrefs,
-            userId = userIdString
+            userId        = userIdString
         )
     }
 
@@ -47,10 +47,12 @@ class PlaylistsFragment : Fragment() {
             binding.rvPlaylists.adapter = PlaylistAdapter(
                 playlists,
                 { p ->
+                    val songIds = ArrayList(p.songs.map { it.id })
+
                     startActivity(Intent(requireContext(), PlaylistDetailActivity::class.java).apply {
-                        putExtra("EXTRA_PLAYLIST_NAME", p.name)
+                        putExtra("EXTRA_PLAYLIST_NAME",  p.name)
                         putExtra("EXTRA_PLAYLIST_IMAGE", p.imageUri)
-                        putExtra("EXTRA_PLAYLIST_SONGS", ArrayList(p.songs))
+                        putIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS", songIds)
                     })
                 },
                 { p ->

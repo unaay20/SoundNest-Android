@@ -9,6 +9,6 @@ data class PlaylistResponse(
     @Json(name = "playlist_name")  val name: String,
     @Json(name = "description")    val description: String?,
     @Json(name = "image_path")     val pathImageUrl: String,
-    @Json(name = "songs")          val songs: List<Song>,
+    @Json(name = "songs")          val songs: List<SongInPlaylistResponse>,
     @Json(name = "createdAt")      val createdAt: String
 )

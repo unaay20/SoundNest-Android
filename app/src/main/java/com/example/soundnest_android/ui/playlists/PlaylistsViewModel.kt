@@ -46,7 +46,7 @@ class PlaylistsViewModel(
                                     name     = it.name,
                                     description = it.description,
                                     songs    = emptyList(),
-                                    imageUri = "$base/images/playlists/${it.pathImageUrl}"
+                                    imageUri = "$base${it.pathImageUrl}"
                                 )
                             }
                             .toMutableList()

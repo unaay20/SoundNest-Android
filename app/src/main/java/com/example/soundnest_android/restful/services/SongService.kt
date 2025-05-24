@@ -1,5 +1,6 @@
 package com.example.soundnest_android.restful.services
 
+import com.example.soundnest_android.restful.models.playlist.SongIdsRequest
 import com.example.soundnest_android.restful.models.song.*
 import com.example.soundnest_android.restful.services.interfaces.ISongService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -17,6 +18,11 @@ class SongService(
 
     suspend fun deleteSong(songId: Int): ApiResult<Unit?> =
         safeCall { api.deleteSong(songId) }
+
+    suspend fun getByIds(songIds: List<Int>): ApiResult<List<GetSongDetailResponse>?> {
+        val req = SongIdsRequest(songIds)
+        return safeCall { api.getSongsByIds(req) }
+    }
 
     suspend fun uploadImage(songId: String, imageFile: File): ApiResult<Unit?> {
         val part = MultipartBody.Part.createFormData(

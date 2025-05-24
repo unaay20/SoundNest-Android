@@ -1,6 +1,7 @@
 package com.example.soundnest_android.restful.services.interfaces
 
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.models.playlist.SongIdsRequest
 import com.example.soundnest_android.restful.models.song.*
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -11,6 +12,11 @@ interface ISongService {
     suspend fun deleteSong(
         @Path("idsong") songId: Int
     ): Response<Unit>
+
+    @HTTP(method = "GET", path = RestfulRoutes.SONG_GET_LIST_BY_IDS, hasBody = true)
+    suspend fun getSongsByIds(
+        @Body request: SongIdsRequest
+    ): Response<List<GetSongDetailResponse>>
 
     @PATCH(RestfulRoutes.SONG_PATCH_SONG_IMAGE)
     @Multipart

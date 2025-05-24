@@ -37,6 +37,7 @@ object RestfulRoutes {
     const val NOTIFICATION_MARK_AS_READ = "api/notifications/notification/{id}/read"
 
     //Song endpoints
+    const val SONG_GET_LIST_BY_IDS = "api/songs/list/get"
     const val SONG_DELETE = "api/songs/{idsong}/delete"
     const val SONG_PATCH_SONG_IMAGE = "api/songs/{idsong}/image"
     const val SONG_GET_LATEST_SONG = "api/songs/user/{idAppUser}/lastest"
