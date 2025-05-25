@@ -80,7 +80,7 @@ class SearchFragment : Fragment() {
                     androidx.appcompat.R.id.search_src_text
                 )
 
-            searchAutoComplete.hint = "Escribe tu búsqueda"
+            searchAutoComplete.hint = "Type your search here..."
             searchAutoComplete.isFocusable = true
             searchAutoComplete.isFocusableInTouchMode = true
 
@@ -138,9 +138,16 @@ class SearchFragment : Fragment() {
     }
 
     private fun saveToFile() {
-        context?.openFileOutput(fileName, Context.MODE_PRIVATE)?.bufferedWriter()?.use { w ->
-            recentSearches.forEach { w.write(it); w.newLine() }
-        }
+        Thread {
+            try {
+                val file = File(requireContext().filesDir, fileName)
+                file.bufferedWriter().use { w ->
+                    recentSearches.forEach { w.write(it); w.newLine() }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }.start()
     }
 
     override fun onDestroyView() {

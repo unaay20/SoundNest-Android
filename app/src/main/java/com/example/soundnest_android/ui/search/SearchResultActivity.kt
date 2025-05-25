@@ -37,7 +37,7 @@ class SearchResultActivity : AppCompatActivity() {
         }
 
         val query = intent.getStringExtra("QUERY") ?: ""
-        title = "Resultados: \"$query\""
+        title = "Results for: \"$query\""
         fetchSongs(query)
     }
 
@@ -64,15 +64,15 @@ class SearchResultActivity : AppCompatActivity() {
                 }
                 is ApiResult.HttpError -> {
                     Toast.makeText(this@SearchResultActivity,
-                        "Error en la respuesta del servidor", Toast.LENGTH_SHORT).show()
+                        "Error communicating with server", Toast.LENGTH_SHORT).show()
                 }
                 is ApiResult.NetworkError -> {
                     Toast.makeText(this@SearchResultActivity,
-                        "Verifica tu conexión a internet", Toast.LENGTH_SHORT).show()
+                        "Verify your internet connection", Toast.LENGTH_SHORT).show()
                 }
                 is ApiResult.UnknownError -> {
                     Toast.makeText(this@SearchResultActivity,
-                        "Ocurrió un error inesperado", Toast.LENGTH_SHORT).show()
+                        "An unknown error occurred", Toast.LENGTH_SHORT).show()
                 }
             }
             binding.progress.visibility = View.GONE
