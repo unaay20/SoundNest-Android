@@ -121,36 +121,20 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
                 }
             }
         }
-        binding.fabRandomSong.setOnClickListener {
-            lifecycleScope.launch {
-                when (val r = songService.getRandom(1)) {
-                    is ApiResult.Success -> {
-                        val list = r.data.orEmpty()
-                        if (list.isNotEmpty()) {
-                            val resp = list.first()
-                            val song = Song(
-                                id       = resp.idSong,
-                                title    = resp.songName.orEmpty(),
-                                artist   = resp.userName.orEmpty(),
-                                coverUrl = resp.pathImageUrl?.let { base ->
-                                    RestfulRoutes.getBaseUrl().removeSuffix("/") + base
-                                }
-                            )
-                            showSongFragment(song)
-                        } else {
-                            Toast.makeText(requireContext(),"No hay canción aleatoria",Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(),"Error al obtener canción aleatoria",Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
+
         binding.fabAddSong.setOnClickListener {
             startActivity(Intent(requireContext(), UploadSongActivity::class.java))
         }
         viewModel.loadSongs()
+    }
+
+    private fun showSongFragment(song: Song) {
+        SongDialogFragment.newInstance(song)
+            .show(childFragmentManager, "dlgSong")
+    }
+
+    override fun playSong(song: Song) {
+        downloadAndQueue(song)
     }
 
     private fun downloadAndQueue(song: Song) {
@@ -178,15 +162,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
                 }
             }
         }
-    }
-
-    private fun showSongFragment(song: Song) {
-        SongDialogFragment.newInstance(song)
-            .show(childFragmentManager, "dlgSong")
-    }
-
-    override fun playSong(song: Song) {
-        downloadAndQueue(song)
     }
 
     override fun onDestroyView() {

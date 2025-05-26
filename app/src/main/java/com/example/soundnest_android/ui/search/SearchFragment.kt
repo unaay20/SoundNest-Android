@@ -4,20 +4,38 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
+import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.databinding.FragmentSearchBinding
+import com.example.soundnest_android.grpc.constants.GrpcRoutes
+import com.example.soundnest_android.grpc.http.GrpcResult
+import com.example.soundnest_android.grpc.services.SongFileGrpcService
+import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.services.SongService
+import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import com.example.soundnest_android.ui.songs.PlayerHost
+import com.example.soundnest_android.ui.songs.SongDialogFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), PlayerHost {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
@@ -25,6 +43,22 @@ class SearchFragment : Fragment() {
     private lateinit var adapter: RecentSearchAdapter
     private val fileName = "recent_searches.txt"
     private val recentSearches = mutableListOf<String>()
+
+    private val songService: SongService by lazy {
+        SongService(
+            RestfulRoutes.getBaseUrl(),
+            SharedPrefsTokenProvider(requireContext())
+        )
+    }
+
+    private val sharedPlayer: SharedPlayerViewModel by activityViewModels()
+    private var isFirstSongEverPlayed: Boolean = true
+    private val songGrpc by lazy {
+        SongFileGrpcService(
+            GrpcRoutes.getHost(),
+            GrpcRoutes.getPort()
+        ) { SharedPrefsTokenProvider(requireContext()).getToken() }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -107,6 +141,33 @@ class SearchFragment : Fragment() {
             }
         }
 
+        binding.fabRandomSong.setOnClickListener {
+            lifecycleScope.launch {
+                when (val r = songService.getRandom(1)) {
+                    is ApiResult.Success -> {
+                        val list = r.data.orEmpty()
+                        if (list.isNotEmpty()) {
+                            val resp = list.first()
+                            val song = Song(
+                                id       = resp.idSong,
+                                title    = resp.songName.orEmpty(),
+                                artist   = resp.userName.orEmpty(),
+                                coverUrl = resp.pathImageUrl?.let { base ->
+                                    RestfulRoutes.getBaseUrl().removeSuffix("/") + base
+                                }
+                            )
+                            showSongFragment(song)
+                        } else {
+                            Toast.makeText(requireContext(),"No hay canción aleatoria", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(),"Error al obtener canción aleatoria", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
     }
 
     private fun loadFromFile() {
@@ -148,6 +209,42 @@ class SearchFragment : Fragment() {
                 e.printStackTrace()
             }
         }.start()
+    }
+
+    private fun showSongFragment(song: Song) {
+        SongDialogFragment.newInstance(song)
+            .show(childFragmentManager, "dlgSong")
+    }
+
+    override fun playSong(song: Song) {
+        downloadAndQueue(song)
+    }
+
+    private fun downloadAndQueue(song: Song) {
+        val cacheFile = File(requireContext().cacheDir, "song_${song.id}.mp3")
+        if (cacheFile.exists()) {
+            sharedPlayer.playFromFile(song, cacheFile)
+            return
+        }
+        sharedPlayer.setLoading(true)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val tmpFile = File(requireContext().cacheDir, "song_${song.id}.tmp")
+            if (tmpFile.exists()) tmpFile.delete()
+            when (val res = songGrpc.downloadSongStreamTo(song.id, tmpFile.outputStream())) {
+                is GrpcResult.Success -> tmpFile.renameTo(cacheFile)
+                else -> tmpFile.delete()
+            }
+            withContext(Dispatchers.Main) {
+                sharedPlayer.setLoading(false)
+                if (isFirstSongEverPlayed) {
+                    Log.d("HomeFragment", "Attempting to play FIRST song directly: ${cacheFile.name}")
+                    sharedPlayer.playFromFile(song, cacheFile)
+                    isFirstSongEverPlayed = false
+                } else {
+                    sharedPlayer.playFromFile(song, cacheFile)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
