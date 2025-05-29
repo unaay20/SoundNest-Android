@@ -76,18 +76,28 @@ class LoginFragment : Fragment() {
                     tokenProvider.saveToken(state.data.token)
                     (activity as? LoginActivity)?.goToMain()
                 }
+
                 is LoginState.Error -> {
-                    if(state.msg.contains(invalidCredentialsText)){
+                    if (state.msg.contains(invalidCredentialsText)) {
                         Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
                     } else if (state.msg.contains(userNotFoundText)) {
                         Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
                     } else if (state.msg.contains(failedToConnectText)) {
-                        Toast.makeText(requireContext(), R.string.msg_server_error, Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.msg_server_error,
+                            Toast.LENGTH_LONG
+                        ).show()
                     } else {
-                        Toast.makeText(requireContext(), R.string.msg_login_error, Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.msg_login_error,
+                            Toast.LENGTH_LONG
+                        ).show()
                         Log.d(Constants.LOGIN_ACTIVITY, "Error: ${state.msg}")
                     }
                 }
+
                 else -> {
                     // Idle o Loading: no-op
                 }

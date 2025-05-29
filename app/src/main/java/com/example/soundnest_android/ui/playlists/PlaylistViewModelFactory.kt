@@ -19,8 +19,8 @@ class PlaylistsViewModelFactory(
             @Suppress("UNCHECKED_CAST")
             return PlaylistsViewModel(
                 application = application,
-                service     = PlaylistService(baseUrl, tokenProvider),
-                userId      = userId
+                service = PlaylistService(baseUrl, tokenProvider),
+                userId = userId
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

@@ -64,5 +64,7 @@ object RestfulRoutes {
     const val VISUALIZATION_GET_BY_SONG_ID = "api/visit/{idsong}"
 
     fun getBaseUrl(): String = baseUrl
-    fun setBaseUrl(value: String) { baseUrl = value }
+    fun setBaseUrl(value: String) {
+        baseUrl = value
+    }
 }

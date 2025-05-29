@@ -50,7 +50,13 @@ class NewPlaylistDialogFragment : DialogFragment() {
     @SuppressLint("Range")
     private fun handlePickedUri(uri: Uri) {
         val resolver = requireContext().contentResolver
-        val cursor = resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE), null, null, null) ?: return
+        val cursor = resolver.query(
+            uri,
+            arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
+            null,
+            null,
+            null
+        ) ?: return
         var name = ""
         var size = 0L
         cursor.use {

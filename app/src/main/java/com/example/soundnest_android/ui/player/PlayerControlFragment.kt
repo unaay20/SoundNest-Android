@@ -8,21 +8,19 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.activity.result.launch
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.activity
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Song
-import com.example.soundnest_android.ui.player.SongInfoActivity
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
-class PlayerControlFragment : Fragment(R.layout.fragment_player_control), PlayerManager.PlayerStateListener {
+class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
+    PlayerManager.PlayerStateListener {
     private val shared: SharedPlayerViewModel by activityViewModels()
     private lateinit var root: MaterialCardView
     private lateinit var songImage: ImageView

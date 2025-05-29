@@ -12,57 +12,58 @@ import com.example.soundnest_android.song.UploadSongMetadata
 import com.example.soundnest_android.song.UploadSongRequest
 import com.example.soundnest_android.song.UploadSongResponse
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.Flow
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.flow.flow
 import java.io.OutputStream
 
 class SongFileGrpcService(
     host: String,
     port: Int, tokenProvider: () -> String?
 ) : BaseGrpcService(host, port, tokenProvider) {
-        private val stub = SongServiceCoroutineStub(channel)
+    private val stub = SongServiceCoroutineStub(channel)
 
-        suspend fun uploadSong(    songName: String,
-                                   songGenreId: Int,
-                                   description: String,
-                                   extension: String,
-                                   fileData: ByteArray,
-                                   chunkSize: Int = 1024 * 64 // 64KB per chunk
-        ): GrpcResult<UploadSongResponse?> {
-            return safeCall {
-                val requestFlow = flow {
-                    val metadata = UploadSongMetadata.newBuilder()
-                        .setSongName(songName)
-                        .setIdSongGenre(songGenreId)
-                        .setDescription(description)
-                        .setExtension(extension)
+    suspend fun uploadSong(
+        songName: String,
+        songGenreId: Int,
+        description: String,
+        extension: String,
+        fileData: ByteArray,
+        chunkSize: Int = 1024 * 64 // 64KB per chunk
+    ): GrpcResult<UploadSongResponse?> {
+        return safeCall {
+            val requestFlow = flow {
+                val metadata = UploadSongMetadata.newBuilder()
+                    .setSongName(songName)
+                    .setIdSongGenre(songGenreId)
+                    .setDescription(description)
+                    .setExtension(extension)
+                    .build()
+                emit(
+                    UploadSongRequest.newBuilder()
+                        .setMetadata(metadata)
                         .build()
+                )
+                var offset = 0
+                while (offset < fileData.size) {
+                    val end = minOf(offset + chunkSize, fileData.size)
+                    val chunk = UploadSongChunk.newBuilder()
+                        .setChunkData(ByteString.copyFrom(fileData, offset, end - offset))
+                        .build()
+
                     emit(
                         UploadSongRequest.newBuilder()
-                            .setMetadata(metadata)
+                            .setChunk(chunk)
                             .build()
                     )
-                    var offset = 0
-                    while (offset < fileData.size) {
-                        val end = minOf(offset + chunkSize, fileData.size)
-                        val chunk = UploadSongChunk.newBuilder()
-                            .setChunkData(ByteString.copyFrom(fileData, offset, end - offset))
-                            .build()
 
-                        emit(
-                            UploadSongRequest.newBuilder()
-                                .setChunk(chunk)
-                                .build()
-                        )
-
-                        offset = end
-                    }
-
+                    offset = end
                 }
+
+            }
             stub.uploadSongStream(requestFlow)
         }
     }
+
     suspend fun uploadSongSimple(
         songName: String,
         genreId: Int,
@@ -82,6 +83,7 @@ class SongFileGrpcService(
             stub.uploadSong(request)
         }
     }
+
     suspend fun downloadSongSimple(songId: Int): GrpcResult<Pair<DownloadSongData, ByteArray>?> {
         println("Valor que recibo como songId: $songId")
         return safeCall {
@@ -117,10 +119,12 @@ class SongFileGrpcService(
                     DownloadStreamResponse.PayloadCase.METADATA -> {
                         metadata = response.metadata
                     }
+
                     DownloadStreamResponse.PayloadCase.CHUNK -> {
                         val chunk = response.chunk.chunkData
                         outputStream.write(chunk.toByteArray())
                     }
+
                     else -> {}
                 }
             }

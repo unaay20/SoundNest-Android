@@ -7,25 +7,22 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
-import com.example.soundnest_android.databinding.FragmentHomeBinding
-import com.example.soundnest_android.restful.constants.RestfulRoutes
-import com.example.soundnest_android.restful.services.SongService
-import com.example.soundnest_android.ui.notifications.NotificationsActivity
 import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.databinding.FragmentHomeBinding
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
-import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.services.SongService
+import com.example.soundnest_android.ui.notifications.NotificationsActivity
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongAdapter
@@ -70,23 +67,35 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentHomeBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
-        val name = SharedPrefsTokenProvider(requireContext()).username ?: getString(R.string.lbl_mandatory)
+        val name =
+            SharedPrefsTokenProvider(requireContext()).username ?: getString(R.string.lbl_mandatory)
         binding.textHome.text = getString(R.string.hello_user, name)
         binding.btnNotifications.setOnClickListener {
             startActivity(Intent(requireContext(), NotificationsActivity::class.java))
         }
 
-        popularAdapter = SongAdapter { song -> showSongFragment(song) }
-        recentAdapter = SongAdapter { song -> showSongFragment(song) }
+        var isScrollingPopular = false
+        var isScrollingRecent = false
+
+        popularAdapter = SongAdapter(
+            onSongClick = { song -> showSongFragment(song) },
+            isScrollingProvider = { isScrollingPopular }
+        )
+        recentAdapter = SongAdapter(
+            onSongClick = { song -> showSongFragment(song) },
+            isScrollingProvider = { isScrollingRecent }
+        )
 
         binding.rvPopular.apply {
             adapter = popularAdapter
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             isNestedScrollingEnabled = false
         }
         binding.rvRecent.apply {
             adapter = recentAdapter
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             isNestedScrollingEnabled = false
         }
         viewModel.popular.observe(viewLifecycleOwner) { rawList ->
@@ -122,6 +131,18 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             }
         }
 
+        binding.rvPopular.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                isScrollingPopular = newState != RecyclerView.SCROLL_STATE_IDLE
+            }
+        })
+
+        binding.rvRecent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                isScrollingRecent = newState != RecyclerView.SCROLL_STATE_IDLE
+            }
+        })
+
         binding.fabAddSong.setOnClickListener {
             startActivity(Intent(requireContext(), UploadSongActivity::class.java))
         }
@@ -154,7 +175,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
                 if (isFirstSongEverPlayed) {
-                    Log.d("HomeFragment", "Attempting to play FIRST song directly: ${cacheFile.name}")
+                    Log.d(
+                        "HomeFragment",
+                        "Attempting to play FIRST song directly: ${cacheFile.name}"
+                    )
                     sharedPlayer.playFromFile(song, cacheFile)
                     isFirstSongEverPlayed = false
                 } else {

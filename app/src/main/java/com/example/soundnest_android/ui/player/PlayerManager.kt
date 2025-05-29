@@ -19,6 +19,7 @@ object PlayerManager {
         fun onTrackCompleted()
         fun onError()
     }
+
     var playerStateListener: PlayerStateListener? = null
 
     fun playFile(context: Context, file: File) {
@@ -76,7 +77,11 @@ object PlayerManager {
             playerStateListener?.onError()
             releaseCurrentPlayer()
         } catch (e: IllegalStateException) {
-            Log.e("PlayerManager", "IllegalStateException during MediaPlayer setup: ${e.message}", e)
+            Log.e(
+                "PlayerManager",
+                "IllegalStateException during MediaPlayer setup: ${e.message}",
+                e
+            )
             playerStateListener?.onError()
             releaseCurrentPlayer()
         } catch (e: Exception) {

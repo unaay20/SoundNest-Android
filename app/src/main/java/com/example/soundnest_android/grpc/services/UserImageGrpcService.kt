@@ -1,7 +1,6 @@
 package com.example.soundnest_android.grpc.services
 
 
-import android.content.Context
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.user_image.DownloadImageRequest
 import com.example.soundnest_android.user_image.DownloadImageResponse
@@ -16,7 +15,11 @@ class UserImageGrpcService(
 ) : BaseGrpcService(host, port, tokenProvider) {
     private val stub = UserImageServiceCoroutineStub(channel)
 
-    suspend fun uploadImage(userId: Int, imageData: ByteArray, extension: String): GrpcResult<UploadImageResponse?> {
+    suspend fun uploadImage(
+        userId: Int,
+        imageData: ByteArray,
+        extension: String
+    ): GrpcResult<UploadImageResponse?> {
         val request = UploadImageRequest.newBuilder()
             .setUserId(userId)
             .setImageData(ByteString.copyFrom(imageData))
@@ -25,12 +28,13 @@ class UserImageGrpcService(
 
         return safeCall { stub.uploadImage(request) }
     }
-    suspend fun downloadImage(userId: Int): GrpcResult<DownloadImageResponse?>{
+
+    suspend fun downloadImage(userId: Int): GrpcResult<DownloadImageResponse?> {
         val request = DownloadImageRequest.newBuilder()
             .setUserId(userId)
             .build()
 
-        return  safeCall { stub.downloadImage(request) }
+        return safeCall { stub.downloadImage(request) }
 
     }
 }

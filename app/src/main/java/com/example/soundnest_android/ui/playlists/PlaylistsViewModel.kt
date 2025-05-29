@@ -2,12 +2,15 @@ package com.example.soundnest_android.ui.playlists
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.business_logic.Playlist
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.restful.constants.RestfulRoutes
-import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.restful.services.PlaylistService
+import com.example.soundnest_android.restful.utils.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,30 +47,33 @@ class PlaylistsViewModel(
                             .map { dto ->
                                 val songs = dto.songs.map { rel ->
                                     Song(
-                                        id       = rel.songId,
-                                        title    = "",
-                                        artist   = "",
+                                        id = rel.songId,
+                                        title = "",
+                                        artist = "",
                                         coverUrl = null
                                     )
                                 }
                                 Playlist(
-                                    id          = dto.idPlaylist,
-                                    name        = dto.name,
+                                    id = dto.idPlaylist,
+                                    name = dto.name,
                                     description = dto.description,
-                                    songs       = songs,
-                                    imageUri    = "$base${dto.pathImageUrl}"
+                                    songs = songs,
+                                    imageUri = "$base${dto.pathImageUrl}"
                                 )
                             }
                             .toMutableList()
                     }
+
                     is ApiResult.HttpError -> {
                         Log.e(TAG, "HTTP error: ${result.message}")
                         _error.value = "Error al cargar playlists: ${result.message}"
                     }
+
                     is ApiResult.NetworkError -> {
                         Log.e(TAG, "Network error", result.exception)
                         _error.value = "Problema de red al cargar playlists"
                     }
+
                     is ApiResult.UnknownError -> {
                         Log.e(TAG, "Unknown error", result.exception)
                         _error.value = "Error desconocido al cargar playlists"
@@ -91,25 +97,28 @@ class PlaylistsViewModel(
                     is ApiResult.Success -> result.data?.let {
                         val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
                         val nueva = Playlist(
-                            id          = it.idPlaylist,
-                            name        = it.name,
+                            id = it.idPlaylist,
+                            name = it.name,
                             description = it.description,
-                            songs       = emptyList(), // al crear no traemos canciones
-                            imageUri    = "$base/uploads/${it.pathImageUrl}"
+                            songs = emptyList(), // al crear no traemos canciones
+                            imageUri = "$base/uploads/${it.pathImageUrl}"
                         )
                         _playlists.value?.apply {
                             add(nueva)
                             _playlists.value = this
                         }
                     }
+
                     is ApiResult.HttpError -> {
                         Log.e(TAG, "Error HTTP: ${result.message}")
                         _error.value = "Error HTTP: ${result.message}"
                     }
+
                     is ApiResult.NetworkError -> {
                         Log.e(TAG, "Error de red", result.exception)
                         _error.value = "Error de red"
                     }
+
                     is ApiResult.UnknownError -> {
                         Log.e(TAG, "Error desconocido", result.exception)
                         _error.value = "Error desconocido"
@@ -128,14 +137,17 @@ class PlaylistsViewModel(
                         remove(playlist)
                         _playlists.value = this
                     }
+
                     is ApiResult.HttpError -> {
                         Log.e(TAG, "HTTP error deleting playlist: ${result.message}")
                         _error.value = "No se pudo borrar playlist: ${result.message}"
                     }
+
                     is ApiResult.NetworkError -> {
                         Log.e(TAG, "Network error deleting playlist", result.exception)
                         _error.value = "Problema de red al borrar playlist"
                     }
+
                     is ApiResult.UnknownError -> {
                         Log.e(TAG, "Unknown error deleting playlist", result.exception)
                         _error.value = "Error desconocido al borrar playlist"

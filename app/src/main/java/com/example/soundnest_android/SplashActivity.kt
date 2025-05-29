@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.ui.login.LoginActivity
-import com.example.soundnest_android.MainActivity
 
 class SplashActivity : AppCompatActivity() {
 

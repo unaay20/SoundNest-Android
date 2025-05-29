@@ -16,8 +16,10 @@ import com.example.soundnest_android.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class HomeViewModel (private val songService: SongService,
-                     private val tokenProvider: TokenProvider) : ViewModel() {
+class HomeViewModel(
+    private val songService: SongService,
+    private val tokenProvider: TokenProvider
+) : ViewModel() {
     private val _navigateToNotifications = MutableLiveData<Boolean>()
     val navigateToNotifications: LiveData<Boolean> = _navigateToNotifications
 
@@ -49,14 +51,17 @@ class HomeViewModel (private val songService: SongService,
                     Log.d("HomeViewModel", "POPULARES ▶ servidor devolvió: $list")
                     _popular.value = list
                 }
+
                 is ApiResult.HttpError -> {
                     Log.e("HomeViewModel", "POPULARES HTTP ${r.code}: ${r.message}")
                     _error.value = "HTTP ${r.code}: ${r.message}"
                 }
+
                 is ApiResult.NetworkError -> {
                     Log.e("HomeViewModel", "POPULARES RED: ${r.exception}")
                     _error.value = "Red: ${r.exception.message}"
                 }
+
                 is ApiResult.UnknownError -> {
                     Log.e("HomeViewModel", "POPULARES ERROR: ${r.exception}")
                     _error.value = "Error: ${r.exception.message}"
@@ -69,14 +74,17 @@ class HomeViewModel (private val songService: SongService,
                     Log.d("HomeViewModel", "RECIENTES ▶ servidor devolvió: $list")
                     _recent.value = list
                 }
+
                 is ApiResult.HttpError -> {
                     Log.e("HomeViewModel", "RECIENTES HTTP ${r.code}: ${r.message}")
                     _error.value = "HTTP ${r.code}: ${r.message}"
                 }
+
                 is ApiResult.NetworkError -> {
                     Log.e("HomeViewModel", "RECIENTES RED: ${r.exception}")
                     _error.value = "Red: ${r.exception.message}"
                 }
+
                 is ApiResult.UnknownError -> {
                     Log.e("HomeViewModel", "RECIENTES ERROR: ${r.exception}")
                     _error.value = "Error: ${r.exception.message}"
@@ -84,7 +92,6 @@ class HomeViewModel (private val songService: SongService,
             }
         }
     }
-
 
 
     private val _navigateToUploadSong = MutableLiveData<Boolean>()

@@ -14,10 +14,16 @@ interface IPlaylistService {
     suspend fun getPlaylistsByUser(@Path("iduser") userId: String): Response<PlaylistsResponse>
 
     @PATCH(RestfulRoutes.PLAYLIST_PATCH_ADD_SONG)
-    suspend fun addSongToPlaylist(@Path("idsong") songId: String, @Path("idPlaylist") playlistId: String): Response<Unit>
+    suspend fun addSongToPlaylist(
+        @Path("idsong") songId: String,
+        @Path("idPlaylist") playlistId: String
+    ): Response<Unit>
 
     @PATCH(RestfulRoutes.PLAYLIST_PATCH_REMOVE_SONG)
-    suspend fun removeSongFromPlaylist(@Path("idsong") songId: String, @Path("idPlaylist") playlistId: String): Response<Unit>
+    suspend fun removeSongFromPlaylist(
+        @Path("idsong") songId: String,
+        @Path("idPlaylist") playlistId: String
+    ): Response<Unit>
 
     @DELETE(RestfulRoutes.PLAYLIST_DELETE)
     suspend fun deletePlaylist(@Path("idPlaylist") playlistId: String): Response<Unit>
@@ -27,6 +33,6 @@ interface IPlaylistService {
     suspend fun createPlaylist(
         @Part image: MultipartBody.Part,
         @Part("playlistName") playlistName: RequestBody,
-        @Part("description")  description: RequestBody?
+        @Part("description") description: RequestBody?
     ): Response<CreatePlaylistResponse>
 }

@@ -9,7 +9,8 @@ class AuthInterceptor(private val tokenProvider: TokenProvider?) : Interceptor {
         val token = tokenProvider?.getToken()
         return if (tokenProvider != null
             && tokenProvider.shouldAttachToken()
-            && tokenProvider.getToken() != null) {
+            && tokenProvider.getToken() != null
+        ) {
             val newRequest = request.newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()

@@ -38,12 +38,12 @@ class SongDialogFragment : DialogFragment() {
             .inflate(R.layout.fragment_detail_song_dialog, null)
 
         val imgCover = view.findViewById<ImageView>(R.id.imgCover)
-        val tvTitle  = view.findViewById<TextView>(R.id.tvTitle)
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
         val tvArtist = view.findViewById<TextView>(R.id.tvArtist)
-        val btnPlay  = view.findViewById<Button>(R.id.btnPlay)
-        val btnCancel= view.findViewById<Button>(R.id.btnCancel)
+        val btnPlay = view.findViewById<Button>(R.id.btnPlay)
+        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
 
-        tvTitle.text  = song.title
+        tvTitle.text = song.title
         tvArtist.text = song.artist
 
         song.coverUrl?.let { url ->

@@ -9,7 +9,7 @@ import com.example.soundnest_android.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-class SounNestFirebaseService: FirebaseMessagingService() {
+class SounNestFirebaseService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
@@ -26,6 +26,7 @@ class SounNestFirebaseService: FirebaseMessagingService() {
             showNotification(notification.title, notification.body)
         }
     }
+
     private fun showNotification(title: String?, message: String?) {
         val channelId = "default_channel"
         val builder = NotificationCompat.Builder(this, channelId)
@@ -34,10 +35,15 @@ class SounNestFirebaseService: FirebaseMessagingService() {
             .setContentText(message ?: "Mensaje")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Canal predeterminado", NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(
+                channelId,
+                "Canal predeterminado",
+                NotificationManager.IMPORTANCE_HIGH
+            )
             notificationManager.createNotificationChannel(channel)
         }
 

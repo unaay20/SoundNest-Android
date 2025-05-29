@@ -28,14 +28,18 @@ class PlaylistsFragment : Fragment() {
 
     private val viewModel: PlaylistsViewModel by viewModels {
         PlaylistsViewModelFactory(
-            application   = requireActivity().application,
-            baseUrl       = RestfulRoutes.getBaseUrl(),
+            application = requireActivity().application,
+            baseUrl = RestfulRoutes.getBaseUrl(),
             tokenProvider = sharedPrefs,
-            userId        = userIdString
+            userId = userIdString
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,11 +53,15 @@ class PlaylistsFragment : Fragment() {
                 { p ->
                     val songIds = ArrayList(p.songs.map { it.id })
 
-                    startActivity(Intent(requireContext(), PlaylistDetailActivity::class.java).apply {
-                        putExtra("EXTRA_PLAYLIST_NAME",  p.name)
-                        putExtra("EXTRA_PLAYLIST_IMAGE", p.imageUri)
-                        putIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS", songIds)
-                    })
+                    startActivity(
+                        Intent(
+                            requireContext(),
+                            PlaylistDetailActivity::class.java
+                        ).apply {
+                            putExtra("EXTRA_PLAYLIST_NAME", p.name)
+                            putExtra("EXTRA_PLAYLIST_IMAGE", p.imageUri)
+                            putIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS", songIds)
+                        })
                 },
                 { p ->
                     viewModel.deletePlaylist(p)

@@ -52,10 +52,10 @@ class UploadSongViewModel(
         }
 
         val genreId = when (genreString) {
-            "Rock"  -> 1
-            "Pop"   -> 2
+            "Rock" -> 1
+            "Pop" -> 2
             "Indie" -> 3
-            else    -> 0
+            else -> 0
         }
 
         viewModelScope.launch {
@@ -80,14 +80,17 @@ class UploadSongViewModel(
                         _uploadError.postValue(response?.message ?: "Respuesta vacía")
                     }
                 }
+
                 is GrpcResult.GrpcError -> {
                     _uploadSuccess.postValue(false)
                     _uploadError.postValue("gRPC Error ${grpcResult.statusCode}: ${grpcResult.message}")
                 }
+
                 is GrpcResult.NetworkError -> {
                     _uploadSuccess.postValue(false)
                     _uploadError.postValue("Network Error: ${grpcResult.exception.localizedMessage}")
                 }
+
                 is GrpcResult.UnknownError -> {
                     _uploadSuccess.postValue(false)
                     _uploadError.postValue("Unknown Error: ${grpcResult.exception.localizedMessage}")

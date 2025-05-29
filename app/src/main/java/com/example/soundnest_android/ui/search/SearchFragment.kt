@@ -11,9 +11,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -101,6 +98,7 @@ class SearchFragment : Fragment(), PlayerHost {
                 doSearch(query)
                 return true
             }
+
             override fun onQueryTextChange(newText: String?) = false
         })
 
@@ -149,20 +147,29 @@ class SearchFragment : Fragment(), PlayerHost {
                         if (list.isNotEmpty()) {
                             val resp = list.first()
                             val song = Song(
-                                id       = resp.idSong,
-                                title    = resp.songName.orEmpty(),
-                                artist   = resp.userName.orEmpty(),
+                                id = resp.idSong,
+                                title = resp.songName.orEmpty(),
+                                artist = resp.userName.orEmpty(),
                                 coverUrl = resp.pathImageUrl?.let { base ->
                                     RestfulRoutes.getBaseUrl().removeSuffix("/") + base
                                 }
                             )
                             showSongFragment(song)
                         } else {
-                            Toast.makeText(requireContext(),"No hay canción aleatoria", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "No hay canción aleatoria",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
+
                     else -> {
-                        Toast.makeText(requireContext(),"Error al obtener canción aleatoria", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Error al obtener canción aleatoria",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -237,7 +244,10 @@ class SearchFragment : Fragment(), PlayerHost {
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
                 if (isFirstSongEverPlayed) {
-                    Log.d("HomeFragment", "Attempting to play FIRST song directly: ${cacheFile.name}")
+                    Log.d(
+                        "HomeFragment",
+                        "Attempting to play FIRST song directly: ${cacheFile.name}"
+                    )
                     sharedPlayer.playFromFile(song, cacheFile)
                     isFirstSongEverPlayed = false
                 } else {

@@ -28,9 +28,12 @@ class SearchResultActivity : AppCompatActivity() {
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = SongAdapter { song ->
-            Toast.makeText(this, "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
-        }
+        adapter = SongAdapter(
+            onSongClick = { song ->
+                Toast.makeText(this, "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
+            },
+            isScrollingProvider = { false }
+        )
         binding.rvResults.apply {
             layoutManager = LinearLayoutManager(this@SearchResultActivity)
             adapter = this@SearchResultActivity.adapter
@@ -62,17 +65,26 @@ class SearchResultActivity : AppCompatActivity() {
                         binding.rvResults.visibility = View.VISIBLE
                     }
                 }
+
                 is ApiResult.HttpError -> {
-                    Toast.makeText(this@SearchResultActivity,
-                        "Error communicating with server", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SearchResultActivity,
+                        "Error communicating with server", Toast.LENGTH_SHORT
+                    ).show()
                 }
+
                 is ApiResult.NetworkError -> {
-                    Toast.makeText(this@SearchResultActivity,
-                        "Verify your internet connection", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SearchResultActivity,
+                        "Verify your internet connection", Toast.LENGTH_SHORT
+                    ).show()
                 }
+
                 is ApiResult.UnknownError -> {
-                    Toast.makeText(this@SearchResultActivity,
-                        "An unknown error occurred", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SearchResultActivity,
+                        "An unknown error occurred", Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             binding.progress.visibility = View.GONE
@@ -82,9 +94,9 @@ class SearchResultActivity : AppCompatActivity() {
     private fun GetSongDetailResponse.toBusinessSong(): Song? {
         return this.userName?.let {
             Song(
-                id       = this.idSong,
-                title    = this.songName.orEmpty(),
-                artist   = it,
+                id = this.idSong,
+                title = this.songName.orEmpty(),
+                artist = it,
                 coverUrl = this.pathImageUrl
             )
         }

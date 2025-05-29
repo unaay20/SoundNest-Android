@@ -29,7 +29,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return ProfileViewModel(
-                    prefs         = SharedPrefsTokenProvider(requireContext()),
+                    prefs = SharedPrefsTokenProvider(requireContext()),
                     tokenProvider = { SharedPrefsTokenProvider(requireContext()).getToken() }
                 ) as T
             }
@@ -47,8 +47,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         viewModel.profile.observe(viewLifecycleOwner) { p ->
             binding.tvUsername.text = p.username
-            binding.tvEmail.   text = p.email
-            binding.tvRole.    text = p.role
+            binding.tvEmail.text = p.email
+            binding.tvRole.text = p.role
         }
 
         viewModel.photoBytes.observe(viewLifecycleOwner) { bytes ->
@@ -86,7 +86,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 )
                 startActivityForResult(intent, PICK_IMAGE)
-            } ?: Toast.makeText(requireContext(), "No hay userId para subir foto", Toast.LENGTH_SHORT).show()
+            } ?: Toast.makeText(
+                requireContext(),
+                "No hay userId para subir foto",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         binding.btnEditProfile.setOnClickListener {
@@ -97,7 +101,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             SharedPrefsTokenProvider(requireContext()).clearSession()
             startActivity(
                 Intent(requireContext(), LoginActivity::class.java)
-                    .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
+                    .apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
             )
         }
     }

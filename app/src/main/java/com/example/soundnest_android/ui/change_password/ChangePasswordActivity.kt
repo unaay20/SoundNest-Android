@@ -30,16 +30,19 @@ class ChangePasswordActivity : AppCompatActivity() {
                 SendCodeState.Loading -> {
                     binding.btnChangePassword.isEnabled = false
                 }
+
                 is SendCodeState.Success -> {
                     binding.btnChangePassword.isEnabled = true
                     val message = getString(R.string.msg_code_sent, email)
                     Toast.makeText(this, (message), Toast.LENGTH_LONG).show()
                 }
+
                 is SendCodeState.Error -> {
                     binding.btnChangePassword.isEnabled = true
                     Toast.makeText(this, R.string.msg_code_error, Toast.LENGTH_LONG).show()
                     Log.d(Constants.CHANGE_PASSWORD_ACTIVITY, state.msg)
                 }
+
                 else -> Unit
             }
         }
@@ -52,10 +55,13 @@ class ChangePasswordActivity : AppCompatActivity() {
             when {
                 code.isEmpty() ->
                     Toast.makeText(this, R.string.msg_enter_code, Toast.LENGTH_SHORT).show()
+
                 newPass.length < 6 ->
                     Toast.makeText(this, R.string.msg_password_too_weak, Toast.LENGTH_SHORT).show()
+
                 newPass != repeat ->
                     Toast.makeText(this, R.string.msg_password_match, Toast.LENGTH_SHORT).show()
+
                 else -> vm.changePassword(code, newPass)
             }
         }
@@ -66,16 +72,21 @@ class ChangePasswordActivity : AppCompatActivity() {
                     binding.btnChangePassword.isEnabled = false
                     binding.btnCancel.isEnabled = false
                 }
+
                 is ChangePasswordState.Success -> {
-                    Toast.makeText(this, R.string.msg_exit_change_password, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.msg_exit_change_password, Toast.LENGTH_LONG)
+                        .show()
                     finish()
                 }
+
                 is ChangePasswordState.Error -> {
-                    Toast.makeText(this, R.string.msg_error_change_password, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.msg_error_change_password, Toast.LENGTH_LONG)
+                        .show()
                     Log.d(Constants.CHANGE_PASSWORD_ACTIVITY, state.msg)
                     binding.btnChangePassword.isEnabled = true
                     binding.btnCancel.isEnabled = true
                 }
+
                 else -> {
                     binding.btnChangePassword.isEnabled = true
                     binding.btnCancel.isEnabled = true

@@ -21,9 +21,9 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnSend.setOnClickListener {
-            val user  = binding.etUsername.text.toString().trim()
+            val user = binding.etUsername.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
-            val pass  = binding.etPassword.text.toString()
+            val pass = binding.etPassword.text.toString()
 
             if (user.isEmpty() || email.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(this, R.string.msg_fields_required, Toast.LENGTH_SHORT).show()
@@ -43,6 +43,7 @@ class RegisterActivity : AppCompatActivity() {
                 SendCodeState.Loading -> {
                     binding.btnSend.isEnabled = false
                 }
+
                 is SendCodeState.Success -> {
                     binding.btnSend.isEnabled = true
                     showCodeDialog { code ->
@@ -51,18 +52,21 @@ class RegisterActivity : AppCompatActivity() {
                         val additionalInfo = AdditionalInformation(rawInfo)
 
                         vm.register(
-                            username              = binding.etUsername.text.toString().trim(),
-                            email                 = binding.etEmail.text.toString().trim(),
-                            password              = binding.etPassword.text.toString(),
-                            code                  = code,
+                            username = binding.etUsername.text.toString().trim(),
+                            email = binding.etEmail.text.toString().trim(),
+                            password = binding.etPassword.text.toString(),
+                            code = code,
                             additionalInformation = additionalInfo
                         )
                     }
                 }
+
                 is SendCodeState.Error -> {
                     binding.btnSend.isEnabled = true
-                    Toast.makeText(this, "Error sending code: ${state.msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error sending code: ${state.msg}", Toast.LENGTH_LONG)
+                        .show()
                 }
+
                 else -> Unit
             }
         }
@@ -73,15 +77,23 @@ class RegisterActivity : AppCompatActivity() {
                     binding.btnSend.isEnabled = false
                     binding.btnCancel.isEnabled = false
                 }
+
                 is RegisterState.Success -> {
-                    Toast.makeText(this, getString(R.string.lbl_register_success), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.lbl_register_success),
+                        Toast.LENGTH_LONG
+                    ).show()
                     finish()
                 }
+
                 is RegisterState.Error -> {
-                    Toast.makeText(this, "Error registering: ${state.msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error registering: ${state.msg}", Toast.LENGTH_LONG)
+                        .show()
                     binding.btnSend.isEnabled = true
                     binding.btnCancel.isEnabled = true
                 }
+
                 else -> {
                     binding.btnSend.isEnabled = true
                     binding.btnCancel.isEnabled = true

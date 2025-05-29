@@ -42,9 +42,9 @@ class PlaylistService(
 
         return safeCall {
             api.createPlaylist(
-                image        = imagePart,
+                image = imagePart,
                 playlistName = nameBody,
-                description  = descBody
+                description = descBody
             )
         }
     }

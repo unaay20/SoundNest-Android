@@ -15,6 +15,7 @@ class CommentServiceTest {
     fun setup() {
         RestfulRoutes.setBaseUrl("https://localhost:6969/")
     }
+
     @Test
     fun `create comment should succeed`() = runBlocking {
         val service = CommentService(RestfulRoutes.getBaseUrl())
@@ -29,11 +30,13 @@ class CommentServiceTest {
             is ApiResult.Success -> {
                 println("Notification created successfully")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
         }
     }
+
     @Test
     fun `fetch comments by songid should succeed`() = runBlocking {
         val service = CommentService(RestfulRoutes.getBaseUrl())
@@ -45,6 +48,7 @@ class CommentServiceTest {
                 Assert.assertTrue(result.data?.isNotEmpty() == true)
                 println("Notification created successfully")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")

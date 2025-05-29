@@ -40,11 +40,11 @@ class SongService(
         safeCall { api.getSongsByUser(userId) }
 
     suspend fun search(
-        songName:   String? = null,
+        songName: String? = null,
         artistName: String? = null,
-        genreId:    Int?    = null,
-        limit:      Int     = 10,
-        offset:     Int     = 0
+        genreId: Int? = null,
+        limit: Int = 10,
+        offset: Int = 0
     ): ApiResult<List<GetSongDetailResponse>?> =
         safeCall { api.searchSongs(songName, artistName, genreId, limit, offset) }
 

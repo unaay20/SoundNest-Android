@@ -1,12 +1,10 @@
 package com.example.soundnest_android.ui.notifications
 
-import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +23,12 @@ import com.example.soundnest_android.restful.services.NotificationService
 class NotificationsActivity : AppCompatActivity() {
 
     private val viewModel: NotificationsViewModel by viewModels {
-        NotificationsViewModelFactory(NotificationService(RestfulRoutes.getBaseUrl(),ApiService.tokenProvider))
+        NotificationsViewModelFactory(
+            NotificationService(
+                RestfulRoutes.getBaseUrl(),
+                ApiService.tokenProvider
+            )
+        )
     }
 
     private var _binding: ActivityNotificationsBinding? = null
@@ -61,7 +64,11 @@ class NotificationsActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
@@ -76,9 +83,19 @@ class NotificationsActivity : AppCompatActivity() {
             ) {
                 val itemView = viewHolder.itemView
                 if (dX > 0) {
-                    background.setBounds(itemView.left, itemView.top, itemView.left + dX.toInt(), itemView.bottom)
+                    background.setBounds(
+                        itemView.left,
+                        itemView.top,
+                        itemView.left + dX.toInt(),
+                        itemView.bottom
+                    )
                 } else if (dX < 0) {
-                    background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+                    background.setBounds(
+                        itemView.right + dX.toInt(),
+                        itemView.top,
+                        itemView.right,
+                        itemView.bottom
+                    )
                 } else {
                     background.setBounds(0, 0, 0, 0)
                 }
@@ -99,7 +116,15 @@ class NotificationsActivity : AppCompatActivity() {
                 deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
                 deleteIcon.draw(c)
 
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
             }
         })
         itemTouchHelper.attachToRecyclerView(binding.rvNotifications)
@@ -136,11 +161,11 @@ class NotificationsActivity : AppCompatActivity() {
 
     private fun showNotificationDetail(n: NotificationResponse) {
         val frag = NotificationDetailDialogFragment.newInstance(
-            title     = n.title,
-            body      = n.notification ?: "",
-            sender    = n.sender ?: "Unknown",
+            title = n.title,
+            body = n.notification ?: "",
+            sender = n.sender ?: "Unknown",
             relevance = n.relevance,
-            date      = n.createdAt ?: ""
+            date = n.createdAt ?: ""
         )
         frag.show(supportFragmentManager, "NotificationDetail")
     }

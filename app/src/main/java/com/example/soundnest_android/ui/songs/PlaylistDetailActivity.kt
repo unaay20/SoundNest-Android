@@ -45,14 +45,17 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playlist_detail)
 
-        songAdapter = SongAdapter { song ->
-            SongDialogFragment.newInstance(song)
-                .show(supportFragmentManager, "dlgSong")
-        }
+        songAdapter = SongAdapter(
+            onSongClick = { song ->
+                SongDialogFragment.newInstance(song)
+                    .show(supportFragmentManager, "dlgSong")
+            },
+            isScrollingProvider = { false }
+        )
 
         findViewById<RecyclerView>(R.id.rvSongs).apply {
             layoutManager = LinearLayoutManager(this@PlaylistDetailActivity)
-            adapter       = songAdapter
+            adapter = songAdapter
         }
 
         findViewById<TextView>(R.id.tvPlaylistName).text =
@@ -67,15 +70,16 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                 is ApiResult.Success -> {
                     val fullSongs = r.data.orEmpty().map { dto ->
                         Song(
-                            id       = dto.idSong,
-                            title    = dto.songName,
-                            artist   = dto.userName ?: "Desconocido",
+                            id = dto.idSong,
+                            title = dto.songName,
+                            artist = dto.userName ?: "Desconocido",
                             coverUrl = dto.pathImageUrl
                         )
                     }
                     songAdapter.submitList(fullSongs)
                 }
-                is ApiResult.HttpError    -> toast("HTTP ${r.code}: ${r.message}")
+
+                is ApiResult.HttpError -> toast("HTTP ${r.code}: ${r.message}")
                 is ApiResult.NetworkError -> toast("Red: ${r.exception.message}")
                 is ApiResult.UnknownError -> toast("Error: ${r.exception.message}")
             }
@@ -98,7 +102,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
             val tmp = File(cacheDir, "song_${song.id}.tmp").also { if (it.exists()) it.delete() }
             when (val res = grpcService.downloadSongStreamTo(song.id, tmp.outputStream())) {
                 is GrpcResult.Success -> tmp.renameTo(cacheFile)
-                else                 -> tmp.delete()
+                else -> tmp.delete()
             }
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)

@@ -9,8 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -43,15 +43,15 @@ class SongCommentsActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_song_comments)
 
-        val tvNoComments  = findViewById<TextView>(R.id.tvNoComments)
-        val rvComments    = findViewById<RecyclerView>(R.id.rvComments)
-        val inputRow      = findViewById<LinearLayout>(R.id.comment_input_row)
-        val ivArtwork    = findViewById<ImageView>(R.id.ivArtwork)
-        val tvTitle      = findViewById<TextView>(R.id.tvTitle)
-        val tvArtist     = findViewById<TextView>(R.id.tvArtist)
+        val tvNoComments = findViewById<TextView>(R.id.tvNoComments)
+        val rvComments = findViewById<RecyclerView>(R.id.rvComments)
+        val inputRow = findViewById<LinearLayout>(R.id.comment_input_row)
+        val ivArtwork = findViewById<ImageView>(R.id.ivArtwork)
+        val tvTitle = findViewById<TextView>(R.id.tvTitle)
+        val tvArtist = findViewById<TextView>(R.id.tvArtist)
         val etNewComment = findViewById<EditText>(R.id.etNewComment)
-        val btnSubmit    = findViewById<Button>(R.id.btnSubmitComment)
-        val btnCancel    = findViewById<Button>(R.id.btnCancelComment)
+        val btnSubmit = findViewById<Button>(R.id.btnSubmitComment)
+        val btnCancel = findViewById<Button>(R.id.btnCancelComment)
 
         song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song ?: run {
             Toast.makeText(this, "Canción no encontrada", Toast.LENGTH_SHORT).show()
@@ -96,8 +96,8 @@ class SongCommentsActivity : AppCompatActivity() {
         viewModel.comments.observe(this) { comments ->
             if (comments.isNotEmpty()) {
                 tvNoComments.visibility = View.GONE
-                rvComments.visibility   = View.VISIBLE
-                inputRow.visibility     = View.VISIBLE
+                rvComments.visibility = View.VISIBLE
+                inputRow.visibility = View.VISIBLE
 
                 commentsAdapter.setItems(comments)
             }
@@ -107,8 +107,8 @@ class SongCommentsActivity : AppCompatActivity() {
             if (errorMsg != null) {
                 if (errorMsg.contains("404")) {
                     tvNoComments.visibility = View.VISIBLE
-                    rvComments.visibility   = View.GONE
-                    inputRow.visibility     = View.VISIBLE
+                    rvComments.visibility = View.GONE
+                    inputRow.visibility = View.VISIBLE
                 } else {
                     val msg = getString(R.string.error_loading_comments)
                     Toast.makeText(this, "$msg: $errorMsg", Toast.LENGTH_LONG).show()

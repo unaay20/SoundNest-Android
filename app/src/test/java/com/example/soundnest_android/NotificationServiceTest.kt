@@ -1,21 +1,22 @@
 package com.example.soundnest_android
 
 import com.example.soundnest_android.restful.constants.RestfulRoutes
-import kotlinx.coroutines.runBlocking
-
 import com.example.soundnest_android.restful.models.notification.CreateNotificationRequest
+import com.example.soundnest_android.restful.models.notification.Relevance
 import com.example.soundnest_android.restful.services.NotificationService
 import com.example.soundnest_android.restful.utils.ApiResult
-import org.junit.Assert.*
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
-import com.example.soundnest_android.restful.models.notification.Relevance
 
 class NotificationServiceTest {
     @Before
     fun setup() {
         RestfulRoutes.setBaseUrl("https://localhost:6969/")
     }
+
     @Test
     fun `create notification should succeed`() = runBlocking {
         val service = NotificationService(RestfulRoutes.getBaseUrl())
@@ -32,6 +33,7 @@ class NotificationServiceTest {
             is ApiResult.Success -> {
                 println("Notification created successfully")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
@@ -42,20 +44,24 @@ class NotificationServiceTest {
     fun `get notification by id should return notification`() = runBlocking {
         val service = NotificationService(RestfulRoutes.getBaseUrl())
 
-        val notificationId: String? = when (val resultById = service.getNotificationsByUserId("1")) {
-            is ApiResult.Success -> resultById.data?.firstOrNull()?.id
-            is ApiResult.HttpError -> throw Exception("HTTP error: ${resultById.code} - ${resultById.message}")
-            is ApiResult.NetworkError -> throw resultById.exception
-            is ApiResult.UnknownError -> throw resultById.exception
-        }
+        val notificationId: String? =
+            when (val resultById = service.getNotificationsByUserId("1")) {
+                is ApiResult.Success -> resultById.data?.firstOrNull()?.id
+                is ApiResult.HttpError -> throw Exception("HTTP error: ${resultById.code} - ${resultById.message}")
+                is ApiResult.NetworkError -> throw resultById.exception
+                is ApiResult.UnknownError -> throw resultById.exception
+            }
 
-        val result = service.getNotificationById(notificationId ?: throw Exception("No notification ID found"))
+        val result = service.getNotificationById(
+            notificationId ?: throw Exception("No notification ID found")
+        )
 
         when (result) {
             is ApiResult.Success -> {
                 assertNotNull(result.data?.notification, "Notifications list should not be null")
                 println("Received notifications: ${result.data}")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
@@ -72,9 +78,13 @@ class NotificationServiceTest {
         when (result) {
             is ApiResult.Success -> {
                 val notifications = result.data
-                assertNotNull(notifications?.firstOrNull().toString(), "Notifications list should not be null")
+                assertNotNull(
+                    notifications?.firstOrNull().toString(),
+                    "Notifications list should not be null"
+                )
                 println("Received notifications: $notifications")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
@@ -94,20 +104,24 @@ class NotificationServiceTest {
                 relevance = Relevance.low
             )
         )
-        val notificationId: String? = when (val resultById = service.getNotificationsByUserId(userIdForDelete.toString())) {
-            is ApiResult.Success -> resultById.data?.firstOrNull()?.id
-            is ApiResult.HttpError -> throw Exception("HTTP error: ${resultById.code} - ${resultById.message}")
-            is ApiResult.NetworkError -> throw resultById.exception
-            is ApiResult.UnknownError -> throw resultById.exception
-        }
+        val notificationId: String? =
+            when (val resultById = service.getNotificationsByUserId(userIdForDelete.toString())) {
+                is ApiResult.Success -> resultById.data?.firstOrNull()?.id
+                is ApiResult.HttpError -> throw Exception("HTTP error: ${resultById.code} - ${resultById.message}")
+                is ApiResult.NetworkError -> throw resultById.exception
+                is ApiResult.UnknownError -> throw resultById.exception
+            }
 
 
-        val result = service.getNotificationById(notificationId ?: throw Exception("No notification ID found"))
+        val result = service.getNotificationById(
+            notificationId ?: throw Exception("No notification ID found")
+        )
 
         when (result) {
             is ApiResult.Success -> {
                 println("Notification deleted successfully")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")
@@ -125,6 +139,7 @@ class NotificationServiceTest {
             is ApiResult.Success -> {
                 println("Notification marked as read successfully")
             }
+
             is ApiResult.HttpError -> fail("HTTP error: ${result.code} - ${result.message}")
             is ApiResult.NetworkError -> fail("Network error: ${result.exception.message}")
             is ApiResult.UnknownError -> fail("Unknown error: ${result.exception.message}")

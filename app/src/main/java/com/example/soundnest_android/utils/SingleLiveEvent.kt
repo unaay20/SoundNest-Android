@@ -1,7 +1,7 @@
 package com.example.soundnest_android.utils
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import java.util.concurrent.atomic.AtomicBoolean
 

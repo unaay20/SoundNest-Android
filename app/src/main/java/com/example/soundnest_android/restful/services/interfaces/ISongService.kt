@@ -2,10 +2,23 @@ package com.example.soundnest_android.restful.services.interfaces
 
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.playlist.SongIdsRequest
-import com.example.soundnest_android.restful.models.song.*
+import com.example.soundnest_android.restful.models.song.ExtensionResponse
+import com.example.soundnest_android.restful.models.song.GenreResponse
+import com.example.soundnest_android.restful.models.song.GetPopularSongResponse
+import com.example.soundnest_android.restful.models.song.GetRandomSongResponse
+import com.example.soundnest_android.restful.models.song.GetRecentSongResponse
+import com.example.soundnest_android.restful.models.song.GetSongDetailResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ISongService {
     @DELETE(RestfulRoutes.SONG_DELETE)
@@ -37,11 +50,11 @@ interface ISongService {
 
     @GET(RestfulRoutes.SONG_GET_SONG_SEARCH_FILTERS)
     suspend fun searchSongs(
-        @Query("songName")    songName:   String? = null,
-        @Query("artistName")  artistName: String? = null,
-        @Query("idGenre")     idGenre:    Int?    = null,
-        @Query("limit")       limit:      Int     = 10,
-        @Query("offset")      offset:     Int     = 0
+        @Query("songName") songName: String? = null,
+        @Query("artistName") artistName: String? = null,
+        @Query("idGenre") idGenre: Int? = null,
+        @Query("limit") limit: Int = 10,
+        @Query("offset") offset: Int = 0
     ): Response<List<GetSongDetailResponse>>
 
     @GET(RestfulRoutes.SONG_GET_RANDOM_SONGS)

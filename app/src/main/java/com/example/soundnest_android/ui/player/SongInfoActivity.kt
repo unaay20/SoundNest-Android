@@ -1,11 +1,8 @@
 package com.example.soundnest_android.ui.player
 
-import android.app.DownloadManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageButton
@@ -63,18 +60,18 @@ class SongInfoActivity : AppCompatActivity() {
             ?: throw IllegalArgumentException("Se esperaba EXTRA_SONG_OBJ")
         localFilePath = intent.getStringExtra("EXTRA_FILE_PATH")
 
-        imgBackground    = findViewById(R.id.img_background_blur)
-        infoSongImage    = findViewById(R.id.infoSongImage)
-        infoSongTitle    = findViewById(R.id.infoSongTitle)
-        infoArtistName   = findViewById(R.id.infoArtistName)
-        tvCurrentTime    = findViewById(R.id.tvCurrentTime)
-        tvTotalTime      = findViewById(R.id.tvTotalTime)
-        seekBar          = findViewById(R.id.seekBar)
-        btnPlayPause     = findViewById(R.id.btnPlayPause)
-        btnDownload      = findViewById(R.id.btnDownload)
-        btnComments      = findViewById(R.id.btnComments)
+        imgBackground = findViewById(R.id.img_background_blur)
+        infoSongImage = findViewById(R.id.infoSongImage)
+        infoSongTitle = findViewById(R.id.infoSongTitle)
+        infoArtistName = findViewById(R.id.infoArtistName)
+        tvCurrentTime = findViewById(R.id.tvCurrentTime)
+        tvTotalTime = findViewById(R.id.tvTotalTime)
+        seekBar = findViewById(R.id.seekBar)
+        btnPlayPause = findViewById(R.id.btnPlayPause)
+        btnDownload = findViewById(R.id.btnDownload)
+        btnComments = findViewById(R.id.btnComments)
 
-        infoSongTitle.text  = song.title
+        infoSongTitle.text = song.title
         infoArtistName.text = song.artist
 
         Glide.with(this)
@@ -93,11 +90,15 @@ class SongInfoActivity : AppCompatActivity() {
         handler.post(updateRunnable)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStartTrackingTouch(sb: SeekBar) { handler.removeCallbacks(updateRunnable) }
+            override fun onStartTrackingTouch(sb: SeekBar) {
+                handler.removeCallbacks(updateRunnable)
+            }
+
             override fun onStopTrackingTouch(sb: SeekBar) {
                 player?.seekTo(sb.progress)
                 handler.post(updateRunnable)
             }
+
             override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {
                 if (fromUser) tvCurrentTime.text = formatTime(p)
             }

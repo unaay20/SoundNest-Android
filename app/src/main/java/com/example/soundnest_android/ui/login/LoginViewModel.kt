@@ -6,20 +6,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.restful.models.auth.LoginResponse
-import com.example.soundnest_android.restful.services.AuthService
-import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.network.ApiService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.models.auth.LoginResponse
+import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
+import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.utils.Constants
 import kotlinx.coroutines.launch
 
 sealed class LoginState {
-    object Idle    : LoginState()
+    object Idle : LoginState()
     object Loading : LoginState()
     data class Success(val data: LoginResponse) : LoginState()
-    data class Error(val msg: String)           : LoginState()
+    data class Error(val msg: String) : LoginState()
 }
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
@@ -27,8 +27,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     val state: LiveData<LoginState> = _state
 
     private val tokenProvider = ApiService.tokenProvider
-    private val authService    = AuthService(RestfulRoutes.getBaseUrl())
-    private val userService    = UserService(RestfulRoutes.getBaseUrl(), tokenProvider)
+    private val authService = AuthService(RestfulRoutes.getBaseUrl())
+    private val userService = UserService(RestfulRoutes.getBaseUrl(), tokenProvider)
 
     fun login(username: String, password: String) {
         _state.value = LoginState.Loading
@@ -45,7 +45,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                                     tokenProvider.saveAdditionalInformation(infoString)
                                 }
                             }
-                            else -> { /* ignoro */ }
+
+                            else -> { /* ignoro */
+                            }
                         }
                         //tokenProvider.getToken()?.let { it1 -> Log.d(Constants.LOGIN_ACTIVITY, it1) }
                         _state.value = LoginState.Success(it)
@@ -53,14 +55,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")
                     }
                 }
-                is ApiResult.HttpError    -> {
+
+                is ApiResult.HttpError -> {
                     _state.value = LoginState.Error(result.message)
                     Log.d(Constants.LOGIN_ACTIVITY, "HTTP ${result.code}: ${result.message}")
                 }
+
                 is ApiResult.NetworkError -> {
                     _state.value = result.exception.message?.let { LoginState.Error(it) }
                     Log.d(Constants.LOGIN_ACTIVITY, "Red: ${result.exception.message}")
                 }
+
                 is ApiResult.UnknownError -> {
                     _state.value = result.exception.message?.let { LoginState.Error(it) }
                     Log.d(Constants.LOGIN_ACTIVITY, "Desconocido: ${result.exception.message}")

@@ -5,13 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
+import com.example.soundnest_android.business_logic.UserProfile
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.UserImageGrpcService
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
-import com.example.soundnest_android.business_logic.UserProfile
 import com.example.soundnest_android.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,16 +65,17 @@ class EditProfileViewModel(
                         tokenProvider.getAdditionalInformation()
                     }
                 }
+
                 else -> {
                     tokenProvider.getAdditionalInformation()
                 }
             }
 
             val uiModel = UserProfile(
-                username               = username,
-                email                  = email,
-                role                   = tokenProvider.role,
-                additionalInformation  = additionalInfoString
+                username = username,
+                email = email,
+                role = tokenProvider.role,
+                additionalInformation = additionalInfoString
             )
 
             withContext(Dispatchers.Main) {
@@ -125,10 +126,10 @@ class EditProfileViewModel(
 
     fun loadProfileImage(userId: Int) = viewModelScope.launch {
         when (val res = imageService.downloadImage(userId)) {
-            is GrpcResult.Success    -> _photoBytes.postValue(res.data?.imageData?.toByteArray())
-            is GrpcResult.GrpcError  -> _errorEvent.postValue("gRPC error: ${res.message}")
-            is GrpcResult.NetworkError-> _errorEvent.postValue("Network error: ${res.exception.message}")
-            is GrpcResult.UnknownError-> _errorEvent.postValue("Unknown: ${res.exception.message}")
+            is GrpcResult.Success -> _photoBytes.postValue(res.data?.imageData?.toByteArray())
+            is GrpcResult.GrpcError -> _errorEvent.postValue("gRPC error: ${res.message}")
+            is GrpcResult.NetworkError -> _errorEvent.postValue("Network error: ${res.exception.message}")
+            is GrpcResult.UnknownError -> _errorEvent.postValue("Unknown: ${res.exception.message}")
         }
     }
 

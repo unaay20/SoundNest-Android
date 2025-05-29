@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,7 +17,8 @@ import com.example.soundnest_android.business_logic.Song
 import com.google.android.material.card.MaterialCardView
 
 class SongAdapter(
-    private val onSongClick: (Song) -> Unit
+    private val onSongClick: (Song) -> Unit,
+    private val isScrollingProvider: () -> Boolean
 ) : ListAdapter<Song, SongAdapter.SongViewHolder>(SongDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
@@ -32,14 +34,14 @@ class SongAdapter(
     }
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val ivCover  = itemView.findViewById<ImageView>(R.id.iv_cover)
-        private val tvTitle  = itemView.findViewById<TextView>(R.id.tv_title)
+        private val ivCover = itemView.findViewById<ImageView>(R.id.iv_cover)
+        private val tvTitle = itemView.findViewById<TextView>(R.id.tv_title)
         private val tvArtist = itemView.findViewById<TextView>(R.id.tv_artist)
-        private val card        = itemView.findViewById<MaterialCardView>(R.id.card_root)
+        private val card = itemView.findViewById<MaterialCardView>(R.id.card_root)
 
         @SuppressLint("ClickableViewAccessibility")
         fun bind(song: Song, onSongClick: (Song) -> Unit) {
-            tvTitle.text  = song.title
+            tvTitle.text = song.title
             tvArtist.text = song.artist
 
             if (!song.coverUrl.isNullOrEmpty()) {
@@ -51,31 +53,47 @@ class SongAdapter(
                 ivCover.setImageResource(R.drawable.img_soundnest_logo_svg)
             }
 
+            var startX = 0f
+            var startY = 0f
+            val touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop
+
             card.setOnTouchListener { v, event ->
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
+                        startX = event.x
+                        startY = event.y
                         v.animate()
                             .scaleX(0.97f).scaleY(0.97f)
                             .translationZ(2f)
                             .setDuration(100).start()
                     }
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+
+                    MotionEvent.ACTION_UP -> {
                         v.animate()
                             .scaleX(1f).scaleY(1f)
                             .translationZ(8f)
-                            .setDuration(100).withEndAction {
-                                if (event.action == MotionEvent.ACTION_UP) {
-                                    v.performClick()
+                            .setDuration(100)
+                            .withEndAction {
+                                val deltaX = Math.abs(event.x - startX)
+                                val deltaY = Math.abs(event.y - startY)
+                                if (deltaX < touchSlop && deltaY < touchSlop) {
+                                    onSongClick(song)
                                 }
                             }.start()
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        v.animate()
+                            .scaleX(1f).scaleY(1f)
+                            .translationZ(8f)
+                            .setDuration(100).start()
                     }
                 }
                 true
             }
-
-            itemView.setOnClickListener { onSongClick(song) }
         }
     }
+
 
     class SongDiffCallback : DiffUtil.ItemCallback<Song>() {
         override fun areItemsTheSame(old: Song, new: Song) =

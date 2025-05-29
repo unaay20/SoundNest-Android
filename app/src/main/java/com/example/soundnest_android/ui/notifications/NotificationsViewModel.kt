@@ -1,20 +1,17 @@
 package com.example.soundnest_android.ui.notifications
 
-import android.provider.Settings.Global.getString
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.R
+import com.example.soundnest_android.restful.models.notification.NotificationResponse
 import com.example.soundnest_android.restful.services.NotificationService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.example.soundnest_android.restful.models.notification.NotificationResponse
-import com.example.soundnest_android.utils.Constants
 
 class NotificationsViewModel(private val notificationService: NotificationService) : ViewModel() {
 
@@ -38,12 +35,15 @@ class NotificationsViewModel(private val notificationService: NotificationServic
             is ApiResult.Success -> {
                 _notifications.value = result.data ?: emptyList()
             }
+
             is ApiResult.HttpError -> {
                 Log.e(Constants.NOTIFICATIONS_ACTIVITY, "HTTP error: ${result.message}")
             }
+
             is ApiResult.NetworkError -> {
                 Log.e(Constants.NOTIFICATIONS_ACTIVITY, "Network error: ${result.exception}")
             }
+
             is ApiResult.UnknownError -> {
                 Log.e(Constants.NOTIFICATIONS_ACTIVITY, "Unknown error: ${result.exception}")
             }

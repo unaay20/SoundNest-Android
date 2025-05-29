@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_song_comments"
@@ -13,7 +12,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -44,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ivArtwork"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginVertical="8dp"/>
+        android:layout_marginVertical="8dp" />
 
     <TextView
         android:id="@+id/rvCommentsLabel"
@@ -67,7 +66,7 @@
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/rvCommentsLabel"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvComments"
@@ -76,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvNoComments"
         app:layout_constraintBottom_toTopOf="@+id/comment_input_row"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
         android:id="@+id/comment_input_row"
@@ -99,7 +98,7 @@
             android:hint="@string/hint_new_comment"
             android:background="@drawable/bg_comment_input"
             android:padding="12dp"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine" />
 
         <Button
             android:id="@+id/btnCancelComment"
@@ -108,7 +107,7 @@
             android:text="@string/btn_cancel"
             android:visibility="gone"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/btnSubmitComment"
@@ -116,7 +115,7 @@
             android:layout_height="wrap_content"
             android:text="@string/btn_send"
             android:textColor="@color/black"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

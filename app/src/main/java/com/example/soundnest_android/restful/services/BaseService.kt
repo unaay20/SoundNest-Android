@@ -12,11 +12,13 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 
-open class BaseService(baseUrl : String, tokenProvider: TokenProvider? = null) {
-    protected val retrofit : Retrofit
+open class BaseService(baseUrl: String, tokenProvider: TokenProvider? = null) {
+    protected val retrofit: Retrofit
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     private val errorAdapter = moshi.adapter(ErrorResponse::class.java)
+
     data class ErrorResponse(val message: String)
+
     val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
@@ -46,7 +48,8 @@ open class BaseService(baseUrl : String, tokenProvider: TokenProvider? = null) {
                 ApiResult.Success(response.body())
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorBody(errorBody) ?: "HTTP ${response.code()} - ${response.errorBody()}"
+                val errorMessage =
+                    parseErrorBody(errorBody) ?: "HTTP ${response.code()} - ${response.errorBody()}"
                 ApiResult.HttpError(response.code(), errorMessage)
             }
         } catch (e: IOException) {

@@ -32,9 +32,26 @@ class NotificationsAdapter(
                 ?: "New notification"
 
             when (notification.relevance) {
-                "low" -> container.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.purple_200))
-                "medium" -> container.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.purple_500))
-                "high" -> container.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.purple_700))
+                "low" -> container.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.purple_200
+                    )
+                )
+
+                "medium" -> container.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.purple_500
+                    )
+                )
+
+                "high" -> container.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.purple_700
+                    )
+                )
             }
         }
     }

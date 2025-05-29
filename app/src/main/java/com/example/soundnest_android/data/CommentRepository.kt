@@ -1,10 +1,10 @@
 package com.example.soundnest_android.data
 
+import com.example.soundnest_android.business_logic.Comment
 import com.example.soundnest_android.restful.models.comment.CommentResponse
 import com.example.soundnest_android.restful.models.comment.CreateCommentRequest
 import com.example.soundnest_android.restful.services.CommentService
 import com.example.soundnest_android.restful.utils.ApiResult
-import com.example.soundnest_android.business_logic.Comment
 
 class CommentRepository(
     private val service: CommentService
@@ -12,11 +12,11 @@ class CommentRepository(
 
     private fun mapResponse(resp: CommentResponse): Comment =
         Comment(
-            id        = resp.id,
-            songId    = resp.songId,
-            user      = resp.user,
-            message   = resp.message,
-            parentId  = resp.parentId,
+            id = resp.id,
+            songId = resp.songId,
+            user = resp.user,
+            message = resp.message,
+            parentId = resp.parentId,
             timestamp = resp.timestamp,
             responses = resp.responses
                 ?.map { mapResponse(it) }
@@ -24,16 +24,17 @@ class CommentRepository(
         )
 
     suspend fun getCommentsForSong(songId: String): ApiResult<List<Comment>> {
-        return when(val apiResult = service.fetchComments(songId)) {
+        return when (val apiResult = service.fetchComments(songId)) {
             is ApiResult.Success -> {
                 val domain = apiResult.data
                     ?.map { mapResponse(it) }
                     ?: emptyList()
                 ApiResult.Success(domain)
             }
-            is ApiResult.HttpError   -> ApiResult.HttpError(apiResult.code, apiResult.message)
-            is ApiResult.NetworkError-> ApiResult.NetworkError(apiResult.exception)
-            is ApiResult.UnknownError-> ApiResult.UnknownError(apiResult.exception)
+
+            is ApiResult.HttpError -> ApiResult.HttpError(apiResult.code, apiResult.message)
+            is ApiResult.NetworkError -> ApiResult.NetworkError(apiResult.exception)
+            is ApiResult.UnknownError -> ApiResult.UnknownError(apiResult.exception)
         }
     }
 
@@ -51,11 +52,11 @@ class CommentRepository(
 
     private fun CommentResponse.toDomain(): Comment =
         Comment(
-            id        = this.id,
-            songId    = this.songId,
-            user      = this.user,
-            message   = this.message,
-            parentId  = this.parentId,
+            id = this.id,
+            songId = this.songId,
+            user = this.user,
+            message = this.message,
+            parentId = this.parentId,
             timestamp = this.timestamp
         )
 }

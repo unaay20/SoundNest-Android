@@ -5,8 +5,12 @@ object GrpcRoutes {
     private var port: Int = 50051
 
     fun getHost(): String = host
-    fun setHost(value: String) { host = value }
+    fun setHost(value: String) {
+        host = value
+    }
 
     fun getPort(): Int = port
-    fun setPort(value: Int) { port = value }
+    fun setPort(value: Int) {
+        port = value
+    }
 }

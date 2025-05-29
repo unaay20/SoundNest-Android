@@ -1,5 +1,6 @@
 package com.example.soundnest_android
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -13,11 +14,9 @@ import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.network.ApiService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.AuthService
-import android.Manifest
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.ViewPagerAdapter
 import com.example.soundnest_android.ui.player.PlayerControlFragment
-import com.example.soundnest_android.ui.player.PlayerManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
@@ -74,9 +73,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    suspend fun ConfigFCM(){
+    suspend fun ConfigFCM() {
         val tokenProvider = SharedPrefsTokenProvider(this)
-        var authService : AuthService = AuthService(RestfulRoutes.getBaseUrl(), tokenProvider)
+        var authService: AuthService = AuthService(RestfulRoutes.getBaseUrl(), tokenProvider)
         val prefs = getSharedPreferences("fcm_prefs", android.content.Context.MODE_PRIVATE)
         val fcmToken = prefs.getString("fcm_token", null)
 
@@ -87,12 +86,15 @@ class MainActivity : AppCompatActivity() {
                 is ApiResult.Success<Unit?> -> {
                     Log.d("MainActivity", "FCM Token sent successfully.")
                 }
+
                 is ApiResult.HttpError -> {
                     Log.e("MainActivity", "FCM TOKEN HTTP ${r.code}: ${r.message}")
                 }
+
                 is ApiResult.NetworkError -> {
                     Log.e("MainActivity", "FCM TOKEN RED: ${r.exception}")
                 }
+
                 is ApiResult.UnknownError -> {
                     Log.e("MainActivity", "FCM TOKEN ERROR: ${r.exception}")
                 }
@@ -101,6 +103,7 @@ class MainActivity : AppCompatActivity() {
             Log.w("MainActivity", "FCM TOKEN not found in prefs")
         }
     }
+
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

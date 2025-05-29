@@ -1,11 +1,14 @@
 package com.example.soundnest_android.ui.profile
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.UserProfile
-import com.example.soundnest_android.grpc.services.UserImageGrpcService
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
+import com.example.soundnest_android.grpc.services.UserImageGrpcService
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -24,8 +27,8 @@ class ProfileViewModel(
     private val _profile = MutableLiveData<UserProfile>().apply {
         value = UserProfile(
             username = prefs.username.orEmpty(),
-            email    = prefs.email.orEmpty(),
-            role     = prefs.role,
+            email = prefs.email.orEmpty(),
+            role = prefs.role,
             additionalInformation = prefs.getAdditionalInformation()
         )
     }
@@ -39,19 +42,19 @@ class ProfileViewModel(
 
     fun loadProfileImage(userId: Int) = viewModelScope.launch {
         when (val res = imageService.downloadImage(userId)) {
-            is GrpcResult.Success    -> _photoBytes.value = res.data?.imageData?.toByteArray()
-            is GrpcResult.GrpcError  -> _error.value = "gRPC error: ${res.message}"
-            is GrpcResult.NetworkError-> _error.value = "Network error: ${res.exception.message}"
-            is GrpcResult.UnknownError-> _error.value = "Unknown: ${res.exception.message}"
+            is GrpcResult.Success -> _photoBytes.value = res.data?.imageData?.toByteArray()
+            is GrpcResult.GrpcError -> _error.value = "gRPC error: ${res.message}"
+            is GrpcResult.NetworkError -> _error.value = "Network error: ${res.exception.message}"
+            is GrpcResult.UnknownError -> _error.value = "Unknown: ${res.exception.message}"
         }
     }
 
     fun uploadProfileImage(userId: Int, bytes: ByteArray, ext: String) = viewModelScope.launch {
         when (val res = imageService.uploadImage(userId, bytes, ext)) {
-            is GrpcResult.Success    -> loadProfileImage(userId)
-            is GrpcResult.GrpcError  -> _error.value = "gRPC error: ${res.message}"
-            is GrpcResult.NetworkError-> _error.value = "Network error: ${res.exception.message}"
-            is GrpcResult.UnknownError-> _error.value = "Unknown: ${res.exception.message}"
+            is GrpcResult.Success -> loadProfileImage(userId)
+            is GrpcResult.GrpcError -> _error.value = "gRPC error: ${res.message}"
+            is GrpcResult.NetworkError -> _error.value = "Network error: ${res.exception.message}"
+            is GrpcResult.UnknownError -> _error.value = "Unknown: ${res.exception.message}"
         }
     }
 

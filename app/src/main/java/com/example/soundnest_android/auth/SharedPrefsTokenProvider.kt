@@ -1,14 +1,12 @@
 package com.example.soundnest_android.auth
 
 import android.content.Context
+import android.util.Base64
 import com.auth0.android.jwt.JWT
 import com.example.soundnest_android.R
-import android.util.Base64
-import com.example.soundnest_android.restful.models.user.AdditionalInformation
-import org.json.JSONObject
 import com.example.soundnest_android.restful.utils.TokenProvider
-import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import org.json.JSONObject
 
 class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
@@ -88,10 +86,12 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     }
 
     fun saveClaims(claims: Map<String, Any>) {
-        val headerJson = JSONObject(mapOf(
-            "alg" to "none",
-            "typ" to "JWT"
-        )).toString()
+        val headerJson = JSONObject(
+            mapOf(
+                "alg" to "none",
+                "typ" to "JWT"
+            )
+        ).toString()
 
         val payloadJson = JSONObject(claims).toString()
 
@@ -114,7 +114,7 @@ class SharedPrefsTokenProvider(private val context: Context) : TokenProvider {
     fun getAuthHeader(): String? =
         getToken()?.let { "Bearer $it" }
 
-    fun getUserId(): Int{
+    fun getUserId(): Int {
         return id ?: -1
     }
 }

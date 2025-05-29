@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_root"
     android:layout_width="match_parent"
@@ -40,7 +39,7 @@
                 android:text="Título de la canción"
                 android:textSize="16sp"
                 android:textColor="@android:color/darker_gray"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_artist"
@@ -48,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="Artista"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"/>
+                android:textColor="@android:color/darker_gray" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
