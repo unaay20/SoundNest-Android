@@ -40,6 +40,10 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 }
 
@@ -73,7 +77,14 @@ dependencies {
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
     implementation("com.auth0.android:jwtdecode:2.0.1")
     implementation("io.grpc:grpc-okhttp:1.63.0")
+    val composeBom = platform("androidx.compose:compose-bom:2025.05.01")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+    testImplementation(composeBom)
 
+    implementation("androidx.activity:activity-compose")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material:material")
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-messaging")
     testImplementation(libs.junit)

@@ -94,5 +94,15 @@
             android:name=".ui.search.SearchResultActivity"
             android:exported="true"
             android:label="@string/app_name" />
+
+        <activity
+            android:name=".ui.stats.StatsActivity"
+            android:exported="true"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".ui.stats.StatsGraphicsActivity"
+            android:exported="true"
+            android:label="@string/app_name" />
     </application>
 </manifest>
