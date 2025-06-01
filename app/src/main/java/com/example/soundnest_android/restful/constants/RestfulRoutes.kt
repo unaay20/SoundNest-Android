@@ -2,7 +2,6 @@ package com.example.soundnest_android.restful.constants
 
 object RestfulRoutes {
     //http://192.168.100.42/
-    //https://10.0.2.2:6969/
     //https://localhost:6969/
     //https://allowing-walrus-classic.ngrok-free.app/
     //https://100.65.158.22/
@@ -40,6 +39,8 @@ object RestfulRoutes {
     const val SONG_GET_LIST_BY_IDS = "api/songs/list/get"
     const val SONG_DELETE = "api/songs/{idsong}/delete"
     const val SONG_PATCH_SONG_IMAGE = "api/songs/{idsong}/image"
+    const val SONG_PATCH_SONG_BASE64_IMAGE = "api/songs/{idsong}/base64/image"
+    const val SONG_PATCH_DESCRIPTION       = "api/songs/edit/description/{idsong}"
     const val SONG_GET_LATEST_SONG = "api/songs/user/{idAppUser}/lastest"
     const val SONG_GET_SONGS_BY_USERID = "api/songs/user/{idAppUser}"
     const val SONG_GET_SONG_SEARCH_FILTERS = "api/songs/search"
@@ -51,11 +52,15 @@ object RestfulRoutes {
     const val SONG_GET_EXTENSIONS = "songs/extensions"
 
     //Playlist endpoints
+    const val PLAYLIST_PATCH_CLEAN = "api/playlist/list/{idPlaylist}/clean"
+    const val PLAYLIST_PATCH_EDIT = "api/playlist/edit/{idPlaylist}"
+    const val PLAYLIST_GET_BY_ID = "api/playlist/one/{idPlaylist}"
     const val PLAYLIST_GET_BY_USERID = "api/playlist/{iduser}/user"
     const val PLAYLIST_PATCH_REMOVE_SONG = "api/playlist/{idsong}/{idPlaylist}/remove"
     const val PLAYLIST_PATCH_ADD_SONG = "api/playlist/{idsong}/{idPlaylist}/add"
     const val PLAYLIST_DELETE = "api/playlist/{idPlaylist}/delete/"
     const val PLAYLIST_PUT_NEW_PLAYLIST = "api/playlist/upload"
+    const val PLAYLIST_PUT_NEW_PLAYLIST_BASE64 = "api/playlist/base64/upload"
 
     //Visualization endpoints
     const val VISUALIZATION_INCREMENT = "api/visit/{idsong}/increment"
