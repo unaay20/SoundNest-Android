@@ -40,7 +40,7 @@ object RestfulRoutes {
     const val SONG_DELETE = "api/songs/{idsong}/delete"
     const val SONG_PATCH_SONG_IMAGE = "api/songs/{idsong}/image"
     const val SONG_PATCH_SONG_BASE64_IMAGE = "api/songs/{idsong}/base64/image"
-    const val SONG_PATCH_DESCRIPTION       = "api/songs/edit/description/{idsong}"
+    const val SONG_PATCH_DESCRIPTION = "api/songs/edit/description/{idsong}"
     const val SONG_GET_LATEST_SONG = "api/songs/user/{idAppUser}/lastest"
     const val SONG_GET_SONGS_BY_USERID = "api/songs/user/{idAppUser}"
     const val SONG_GET_SONG_SEARCH_FILTERS = "api/songs/search"
@@ -67,6 +67,9 @@ object RestfulRoutes {
     const val VISUALIZATION_GET_BY_MONTH = "api/visit/top/{year}/{month}"
     const val VISUALIZATION_GET_BY_SONG_ID_IN_MONTH = "api/visit/{idsong}/{year}/{month}"
     const val VISUALIZATION_GET_BY_SONG_ID = "api/visit/{idsong}"
+    const val VISIT_TOP_SONGS_USER = "api/visit/user/{idAppUser}/top-songs"
+    const val VISIT_TOP_SONGS_GLOBAL = "api/visit/global/top-songs"
+    const val VISIT_TOP_GENRES_GLOBAL = "api/visit/global/top-genres"
 
     fun getBaseUrl(): String = baseUrl
     fun setBaseUrl(value: String) {
