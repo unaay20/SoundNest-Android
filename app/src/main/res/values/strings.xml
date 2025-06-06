@@ -101,4 +101,5 @@
     <string name="desc_random_song">Random song</string>
     <string name="btn_play">Play</string>
     <string name="lbl_clear_all">Clear all</string>
+    <string name="desc_stats">See stats</string>
 </resources>

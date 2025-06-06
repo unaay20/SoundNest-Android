@@ -18,6 +18,7 @@ import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.FragmentProfileBinding
 import com.example.soundnest_android.ui.edit_profile.EditProfileActivity
 import com.example.soundnest_android.ui.login.LoginActivity
+import com.example.soundnest_android.ui.stats.StatsActivity
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
@@ -105,6 +106,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
             )
+        }
+
+        binding.fabStats.setOnClickListener {
+            startActivity(Intent(requireContext(), StatsActivity::class.java))
         }
     }
 

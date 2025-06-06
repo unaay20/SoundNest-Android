@@ -4,7 +4,8 @@
     android:id="@+id/profile_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:paddingBottom="130dp">
 
     <ImageView
         android:id="@+id/ivProfilePhoto"
@@ -107,6 +108,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/white" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBottom130"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="120dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/desc_stats"
+        android:src="@drawable/ic_baseline_insert_chart_24"
+        app:backgroundTint="@color/accent_purple"
+        app:layout_constraintBottom_toTopOf="@id/guidelineBottom130"
+        app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
