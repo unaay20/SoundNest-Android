@@ -14,12 +14,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.documentfile.provider.DocumentFile
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.ui.comments.SongCommentsActivity
 import java.io.File
 
-class SongInfoActivity : AppCompatActivity() {
+class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     private lateinit var imgBackground: ImageView
     private lateinit var infoSongImage: ImageView
     private lateinit var infoSongTitle: TextView
@@ -74,20 +75,27 @@ class SongInfoActivity : AppCompatActivity() {
         infoSongTitle.text = song.title
         infoArtistName.text = song.artist
 
-        Glide.with(this)
-            .load(song.coverUrl)
-            .into(imgBackground)
-
-        Glide.with(this)
-            .load(song.coverUrl)
-            .centerCrop()
-            .into(infoSongImage)
+        Glide.with(this).load(song.coverUrl).into(imgBackground)
+        Glide.with(this).load(song.coverUrl).centerCrop().into(infoSongImage)
 
         player?.duration?.let { duration ->
             seekBar.max = duration
             tvTotalTime.text = formatTime(duration)
         }
+
         handler.post(updateRunnable)
+
+        val options = RequestOptions()
+            .placeholder(R.drawable.img_soundnest_logo_svg)
+            .error(R.drawable.img_soundnest_logo_svg)
+        Glide.with(this)
+            .load(song.coverUrl)
+            .apply(options)
+            .into(imgBackground)
+        Glide.with(this)
+            .load(song.coverUrl)
+            .apply(options.centerCrop())
+            .into(infoSongImage)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(sb: SeekBar) {
@@ -106,24 +114,47 @@ class SongInfoActivity : AppCompatActivity() {
 
         btnPlayPause.setOnClickListener {
             val playing = PlayerManager.togglePlayPause()
-            btnPlayPause.setImageResource(
-                if (playing) R.drawable.ic_baseline_pause
-                else R.drawable.ic_baseline_play
-            )
-            if (playing) handler.post(updateRunnable)
-            else handler.removeCallbacks(updateRunnable)
+            updatePlayPauseButton(playing)
+            if (playing) handler.post(updateRunnable) else handler.removeCallbacks(updateRunnable)
         }
 
-        btnDownload.setOnClickListener {
-            pickDirLauncher.launch(null)
-        }
-
+        btnDownload.setOnClickListener { pickDirLauncher.launch(null) }
 
         btnComments.setOnClickListener {
-            val intent = Intent(this, SongCommentsActivity::class.java)
-            intent.putExtra("EXTRA_SONG_OBJ", song)
-            startActivity(intent)
+            startActivity(Intent(this, SongCommentsActivity::class.java).apply {
+                putExtra("EXTRA_SONG_OBJ", song)
+            })
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PlayerManager.playerStateListener = this
+        updatePlayPauseButton(PlayerManager.isPlaying())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (PlayerManager.playerStateListener == this) {
+            PlayerManager.playerStateListener = null
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(updateRunnable)
+    }
+
+    override fun onTrackStarted() = runOnUiThread { updatePlayPauseButton(true) }
+    override fun onTrackPaused() = runOnUiThread { updatePlayPauseButton(false) }
+    override fun onTrackResumed() = runOnUiThread { updatePlayPauseButton(true) }
+    override fun onTrackCompleted() = runOnUiThread { updatePlayPauseButton(false) }
+    override fun onError() = runOnUiThread { updatePlayPauseButton(false) }
+
+    private fun updatePlayPauseButton(isPlaying: Boolean) {
+        btnPlayPause.setImageResource(
+            if (isPlaying) R.drawable.ic_baseline_pause else R.drawable.ic_baseline_play
+        )
     }
 
     private fun saveToDirectory(treeUri: Uri) {
@@ -131,7 +162,6 @@ class SongInfoActivity : AppCompatActivity() {
             treeUri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
-
         val docTree = DocumentFile.fromTreeUri(this, treeUri)
         val filename = "${song.title}.mp3"
         docTree?.findFile(filename)?.delete()
@@ -139,9 +169,7 @@ class SongInfoActivity : AppCompatActivity() {
         if (newFile != null) {
             try {
                 contentResolver.openOutputStream(newFile.uri).use { out ->
-                    File(localFilePath!!).inputStream().use { input ->
-                        input.copyTo(out!!)
-                    }
+                    File(localFilePath!!).inputStream().use { input -> input.copyTo(out!!) }
                 }
                 Toast.makeText(this, "Saved in ${newFile.uri}", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
@@ -150,11 +178,6 @@ class SongInfoActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Impossible to create file.", Toast.LENGTH_LONG).show()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacks(updateRunnable)
     }
 
     private fun formatTime(ms: Int): String {

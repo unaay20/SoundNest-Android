@@ -40,7 +40,6 @@ object RestfulRoutes {
     const val SONG_DELETE = "api/songs/{idsong}/delete"
     const val SONG_PATCH_SONG_IMAGE = "api/songs/{idsong}/image"
     const val SONG_PATCH_SONG_BASE64_IMAGE = "api/songs/{idsong}/base64/image"
-    const val SONG_PATCH_DESCRIPTION = "api/songs/edit/description/{idsong}"
     const val SONG_GET_LATEST_SONG = "api/songs/user/{idAppUser}/lastest"
     const val SONG_GET_SONGS_BY_USERID = "api/songs/user/{idAppUser}"
     const val SONG_GET_SONG_SEARCH_FILTERS = "api/songs/search"

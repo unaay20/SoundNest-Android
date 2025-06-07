@@ -27,10 +27,10 @@
         <ImageView
             android:id="@+id/infoSongImage"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:src="@drawable/img_soundnest_logo_svg"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -40,7 +40,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text=""
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:ellipsize="end"
@@ -54,7 +53,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text=""
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:ellipsize="end"
@@ -102,62 +100,97 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="20dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_baseline_skip_previous_24"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/seekContainer" />
-
-        <ImageButton
-            android:id="@+id/btnPlayPause"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_baseline_play"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack" />
-
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_baseline_skip_next_24"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnPlayPause"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack" />
-
         <ImageButton
             android:id="@+id/btnDownload"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="52dp"
+            android:layout_marginStart="204dp"
+            android:clickable="true"
+            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_baseline_download_24"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnNext"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintBottom_toTopOf="@id/controlPanel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/seekContainer" />
 
         <ImageButton
             android:id="@+id/btnComments"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_baseline_comment_24"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
+            app:layout_constraintBottom_toTopOf="@id/controlPanel"
             app:layout_constraintStart_toEndOf="@id/btnDownload"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@id/seekContainer" />
+
+        <ImageButton
+            android:id="@+id/btnAddPlaylist"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_baseline_add_24"
+            app:layout_constraintBottom_toTopOf="@id/controlPanel"
+            app:layout_constraintStart_toEndOf="@id/btnComments"
+            app:layout_constraintTop_toBottomOf="@id/seekContainer" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/controlPanel"
+            android:layout_width="376dp"
+            android:layout_height="93dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/seekContainer">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_baseline_skip_previous_24"
+                app:layout_constraintEnd_toStartOf="@id/btnPlayPause"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.3333" />
+
+            <ImageButton
+                android:id="@+id/btnPlayPause"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_baseline_play"
+                app:layout_constraintEnd_toStartOf="@id/btnNext"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintWidth_percent="0.3333"
+                tools:layout_editor_absoluteY="57dp" />
+
+            <ImageButton
+                android:id="@+id/btnNext"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_baseline_skip_next_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnPlayPause"
+                app:layout_constraintWidth_percent="0.3333" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

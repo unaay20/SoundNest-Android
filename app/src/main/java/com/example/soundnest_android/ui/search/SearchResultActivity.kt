@@ -18,8 +18,11 @@ import kotlinx.coroutines.launch
 
 class SearchResultActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchResultBinding
-    private val service by lazy {
-        SongService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(this))
+    private val songService by lazy {
+        SongService(
+            RestfulRoutes.getBaseUrl(),
+            SharedPrefsTokenProvider(this)
+        )
     }
     private lateinit var adapter: SongAdapter
 
@@ -28,10 +31,22 @@ class SearchResultActivity : AppCompatActivity() {
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val query = intent.getStringExtra("QUERY")?.takeIf { it.isNotBlank() }
+        val filterSong = intent.getStringExtra("FILTER_SONG")?.takeIf { it.isNotBlank() }
+        val filterArtist = intent.getStringExtra("FILTER_ARTIST")?.takeIf { it.isNotBlank() }
+        val filterGenre = intent.getIntExtra("FILTER_GENRE", -1).takeIf { it >= 0 }
+
+        val songNameParam = listOfNotNull(query, filterSong).joinToString(" ")
+
+        if (query == null && filterSong == null && filterArtist == null && filterGenre == null) {
+            Toast.makeText(this, "Introduce texto o selecciona un filtro", Toast.LENGTH_SHORT)
+                .show()
+            finish()
+            return
+        }
+
         adapter = SongAdapter(
-            onSongClick = { song ->
-                Toast.makeText(this, "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
-            },
+            onSongClick = { song -> Toast.makeText(this, song.title, Toast.LENGTH_SHORT).show() },
             isScrollingProvider = { false }
         )
         binding.rvResults.apply {
@@ -39,66 +54,52 @@ class SearchResultActivity : AppCompatActivity() {
             adapter = this@SearchResultActivity.adapter
         }
 
-        val query = intent.getStringExtra("QUERY") ?: ""
-        title = "Results for: \"$query\""
-        fetchSongs(query)
-    }
+        val titleParts = mutableListOf<String>()
+        query?.let { titleParts.add(it) }
+        filterSong?.let { titleParts.add(it) }
+        filterArtist?.let { titleParts.add("Artista: $it") }
+        filterGenre?.let { titleParts.add("Género ID: $it") }
+        val titleText = if (titleParts.isEmpty()) "Resultados" else titleParts.joinToString(", ")
+        supportActionBar?.title = "Resultados para: \"$titleText\""
 
-    private fun fetchSongs(query: String) {
         binding.progress.visibility = View.VISIBLE
         binding.tvEmpty.visibility = View.GONE
         binding.rvResults.visibility = View.GONE
 
         lifecycleScope.launch {
-            when (val result = service.search(songName = query)) {
+            when (val res = songService.search(
+                songName = songNameParam.ifBlank { null },
+                artistName = filterArtist,
+                genreId = filterGenre,
+                limit = 20,
+                offset = 0
+            )) {
                 is ApiResult.Success -> {
-                    val list = result.data
-                        ?.mapNotNull { it.toBusinessSong() }
-                        .orEmpty()
-
-                    if (list.isEmpty()) {
-                        // Sin resultados
-                        binding.tvEmpty.visibility = View.VISIBLE
-                    } else {
-                        // Mostrar lista
+                    val list = res.data.orEmpty().mapNotNull {
+                        it.toBusinessSong(RestfulRoutes.getBaseUrl())
+                    }
+                    if (list.isEmpty()) binding.tvEmpty.visibility = View.VISIBLE
+                    else {
                         adapter.submitList(list)
                         binding.rvResults.visibility = View.VISIBLE
                     }
                 }
 
-                is ApiResult.HttpError -> {
-                    Toast.makeText(
-                        this@SearchResultActivity,
-                        "Error communicating with server", Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is ApiResult.NetworkError -> {
-                    Toast.makeText(
-                        this@SearchResultActivity,
-                        "Verify your internet connection", Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is ApiResult.UnknownError -> {
-                    Toast.makeText(
-                        this@SearchResultActivity,
-                        "An unknown error occurred", Toast.LENGTH_SHORT
-                    ).show()
-                }
+                is ApiResult.HttpError -> showToast("Error HTTP ${res.code}")
+                is ApiResult.NetworkError -> showToast("Error de red: ${res.exception.message}")
+                is ApiResult.UnknownError -> showToast("Error: ${res.exception.message}")
             }
             binding.progress.visibility = View.GONE
         }
     }
 
-    private fun GetSongDetailResponse.toBusinessSong(): Song? {
-        return this.userName?.let {
-            Song(
-                id = this.idSong,
-                title = this.songName.orEmpty(),
-                artist = it,
-                coverUrl = this.pathImageUrl
-            )
-        }
+    private fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
+}
+
+private fun GetSongDetailResponse.toBusinessSong(baseUrl: String): Song? {
+    val artist = userName ?: return null
+    val cover = pathImageUrl?.let { url -> baseUrl.removeSuffix("/") + url }
+    return Song(idSong, songName.orEmpty(), artist, cover)
 }

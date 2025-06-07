@@ -51,6 +51,7 @@ class RecentSearchAdapter(
     override fun getItemCount(): Int = items.size
 
     fun addSearch(query: String) {
+        if (items.isNotEmpty() && items[0] == query) return
         val oldIndex = items.indexOf(query)
         if (oldIndex != -1) {
             items.removeAt(oldIndex)
@@ -74,4 +75,3 @@ class RecentSearchAdapter(
         notifyItemRangeRemoved(0, count)
     }
 }
-

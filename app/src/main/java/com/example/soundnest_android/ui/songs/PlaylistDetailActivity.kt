@@ -68,12 +68,13 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         lifecycleScope.launch {
             when (val r = songService.getByIds(songIds)) {
                 is ApiResult.Success -> {
+                    val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
                     val fullSongs = r.data.orEmpty().map { dto ->
                         Song(
                             id = dto.idSong,
                             title = dto.songName,
                             artist = dto.userName ?: "Desconocido",
-                            coverUrl = dto.pathImageUrl
+                            coverUrl = dto.pathImageUrl?.let { "$base$it" }
                         )
                     }
                     songAdapter.submitList(fullSongs)
