@@ -15,16 +15,16 @@ class VisitService(
 
     suspend fun getTopSongsByUser(
         idAppUser: Int,
-        limit: Int = 10
+        limit: Int = 5
     ): ApiResult<List<SongPlayCount>?> {
         return safeCall { visitApi.getTopSongsByUser(idAppUser, limit) }
     }
 
-    suspend fun getTopSongsGlobal(limit: Int = 10): ApiResult<List<SongPlayCount>?> {
+    suspend fun getTopSongsGlobal(limit: Int = 5): ApiResult<List<SongPlayCount>?> {
         return safeCall { visitApi.getTopSongsGlobal(limit) }
     }
 
-    suspend fun getTopGenresGlobal(limit: Int = 10): ApiResult<List<GenrePlayCount>?> {
+    suspend fun getTopGenresGlobal(limit: Int = 5): ApiResult<List<GenrePlayCount>?> {
         return safeCall { visitApi.getTopGenresGlobal(limit) }
     }
 }

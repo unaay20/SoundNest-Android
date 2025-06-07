@@ -2,11 +2,11 @@ package com.example.soundnest_android.ui.stats
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
 import com.example.soundnest_android.R
-
 
 class StatsActivity : ComponentActivity() {
 
@@ -16,11 +16,13 @@ class StatsActivity : ComponentActivity() {
 
         findViewById<ComposeView>(R.id.composeStatsView).setContent {
             MaterialTheme {
-                Surface {
+                Surface(
+                    modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
                     StatsScreenAll()
                 }
             }
         }
     }
 }
-

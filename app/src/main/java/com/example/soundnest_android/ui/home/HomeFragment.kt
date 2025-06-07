@@ -149,6 +149,12 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
         viewModel.loadSongs()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadSongs()
+    }
+
     private fun showSongFragment(song: Song) {
         SongDialogFragment.newInstance(song)
             .show(childFragmentManager, "dlgSong")

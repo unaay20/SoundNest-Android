@@ -12,6 +12,7 @@
         android:text="@string/publish_song"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:textColor="?attr/colorOnBackground"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -22,11 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/hint_song_name"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:boxStrokeColor="@color/accent_purple"
+        app:boxStrokeColor="?attr/colorSecondary"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +32,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSongName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnBackground" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -44,11 +42,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/hint_description_song"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:boxStrokeColor="@color/accent_purple"
+        app:boxStrokeColor="?attr/colorSecondary"
         app:layout_constraintTop_toBottomOf="@id/tilSongName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,28 +52,74 @@
             android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:textColor="?attr/colorOnBackground" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tvGenreLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/hint_genre"
+        android:textColor="?attr/colorOnBackground"
+        app:layout_constraintTop_toBottomOf="@id/tilDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <Spinner
         android:id="@+id/spinnerGenre"
-        android:layout_width="376dp"
-        android:layout_height="58dp"
-        android:layout_marginTop="8dp"
-        android:prompt="@string/hint_genre"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        app:layout_constraintTop_toBottomOf="@id/tvGenreLabel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilDescription" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <ImageView
+        android:id="@+id/ivSongImage"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_soundnest_logo_svg"
+        android:background="?attr/colorSurface"
+        android:contentDescription="@string/hint_select_image"
+        app:layout_constraintTop_toBottomOf="@id/spinnerGenre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btnSelectImage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/hint_select_image"
+        app:layout_constraintTop_toBottomOf="@id/ivSongImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnSelectFile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/select_file"
-        app:layout_constraintTop_toBottomOf="@id/spinnerGenre"
+        app:layout_constraintTop_toBottomOf="@id/btnSelectImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tvFileName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="?attr/colorOnBackground"
+        app:layout_constraintTop_toBottomOf="@id/btnSelectFile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
 
     <Button
         android:id="@+id/btnUpload"
@@ -88,6 +128,7 @@
         android:text="@string/btn_accept"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

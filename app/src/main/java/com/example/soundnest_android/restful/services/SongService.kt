@@ -1,14 +1,16 @@
 package com.example.soundnest_android.restful.services
 
 import com.example.soundnest_android.restful.models.playlist.SongIdsRequest
-import com.example.soundnest_android.restful.models.song.*
+import com.example.soundnest_android.restful.models.song.ExtensionResponse
+import com.example.soundnest_android.restful.models.song.GenreResponse
+import com.example.soundnest_android.restful.models.song.GetPopularSongResponse
+import com.example.soundnest_android.restful.models.song.GetRandomSongResponse
+import com.example.soundnest_android.restful.models.song.GetRecentSongResponse
+import com.example.soundnest_android.restful.models.song.GetSongDetailResponse
+import com.example.soundnest_android.restful.models.song.ImageBase64Request
 import com.example.soundnest_android.restful.services.interfaces.ISongService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.restful.utils.TokenProvider
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 class SongService(
     baseUrl: String,
@@ -24,13 +26,9 @@ class SongService(
         return safeCall { api.getSongsByIds(req) }
     }
 
-    suspend fun uploadImage(songId: String, imageFile: File): ApiResult<Unit?> {
-        val part = MultipartBody.Part.createFormData(
-            "imageFile",
-            imageFile.name,
-            imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-        )
-        return safeCall { api.uploadSongImage(songId, part) }
+    suspend fun uploadSongImage(idSong: Int, base64: String): ApiResult<Unit?> {
+        val req = ImageBase64Request(imageBase64 = base64)
+        return safeCall { api.uploadSongImage(idSong, req) }
     }
 
     suspend fun getLatest(userId: Int): ApiResult<GetSongDetailResponse?> =

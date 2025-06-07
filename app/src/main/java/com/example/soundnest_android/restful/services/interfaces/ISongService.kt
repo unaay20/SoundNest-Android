@@ -8,15 +8,13 @@ import com.example.soundnest_android.restful.models.song.GetPopularSongResponse
 import com.example.soundnest_android.restful.models.song.GetRandomSongResponse
 import com.example.soundnest_android.restful.models.song.GetRecentSongResponse
 import com.example.soundnest_android.restful.models.song.GetSongDetailResponse
-import okhttp3.MultipartBody
+import com.example.soundnest_android.restful.models.song.ImageBase64Request
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -31,11 +29,10 @@ interface ISongService {
         @Body request: SongIdsRequest
     ): Response<List<GetSongDetailResponse>>
 
-    @PATCH(RestfulRoutes.SONG_PATCH_SONG_IMAGE)
-    @Multipart
+    @PATCH(RestfulRoutes.SONG_PATCH_SONG_BASE64_IMAGE)
     suspend fun uploadSongImage(
-        @Path("idsong") songId: String,
-        @Part imageFile: MultipartBody.Part
+        @Path("idsong") idsong: Int,
+        @Body body: ImageBase64Request
     ): Response<Unit>
 
     @GET(RestfulRoutes.SONG_GET_LATEST_SONG)
