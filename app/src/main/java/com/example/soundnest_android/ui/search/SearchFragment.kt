@@ -3,18 +3,25 @@ package com.example.soundnest_android.ui.search
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.PopupWindow
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.databinding.FragmentSearchBinding
@@ -22,11 +29,13 @@ import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.restful.models.song.GenreResponse
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongDialogFragment
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +49,7 @@ class SearchFragment : Fragment(), PlayerHost {
     private lateinit var adapter: RecentSearchAdapter
     private val fileName = "recent_searches.txt"
     private val recentSearches = mutableListOf<String>()
+    private var genresList: List<GenreResponse> = emptyList()
 
     private val songService: SongService by lazy {
         SongService(
@@ -75,7 +85,6 @@ class SearchFragment : Fragment(), PlayerHost {
         adapter = RecentSearchAdapter(recentSearches,
             onClick = { query -> doSearch(query) },
             onDelete = { query ->
-                recentSearches.remove(query)
                 adapter.remove(query)
                 saveToFile()
             }
@@ -88,10 +97,11 @@ class SearchFragment : Fragment(), PlayerHost {
         }
 
         binding.btnClearAll.setOnClickListener {
-            recentSearches.clear()
             adapter.clearAll()
             saveToFile()
         }
+
+        binding.btnFilter.setOnClickListener { showFilterPopup() }
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -255,6 +265,64 @@ class SearchFragment : Fragment(), PlayerHost {
                 }
             }
         }
+    }
+
+    private fun showFilterPopup() {
+        val popupView = layoutInflater.inflate(R.layout.fragment_filter, null)
+        val popup = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            elevation = 10f
+            isOutsideTouchable = true
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+        popup.showAsDropDown(binding.btnFilter, 0, 0)
+
+        val etSong = popupView.findViewById<TextInputEditText>(R.id.etSongName)
+        val etArtist = popupView.findViewById<TextInputEditText>(R.id.etArtistName)
+        val spinner = popupView.findViewById<Spinner>(R.id.spinnerGenres)
+        val btnApply = popupView.findViewById<Button>(R.id.btnApplyFilter)
+
+        lifecycleScope.launch {
+            when (val res = songService.getGenres()) {
+                is ApiResult.Success -> {
+                    genresList = res.data.orEmpty()
+                    val names = genresList.map { it.genreName }
+                    spinner.adapter = ArrayAdapter(
+                        requireContext(),
+                        android.R.layout.simple_spinner_item,
+                        names
+                    ).also { it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+                }
+
+                else -> Toast.makeText(
+                    requireContext(),
+                    "Error al cargar géneros",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        btnApply.setOnClickListener {
+            val songName = etSong.text?.toString().takeIf { !it.isNullOrBlank() }
+            val artistName = etArtist.text?.toString().takeIf { !it.isNullOrBlank() }
+            val genrePos = spinner.selectedItemPosition
+
+            val genreId = genresList.getOrNull(genrePos)?.genreName
+
+            Intent(requireContext(), SearchResultActivity::class.java).also {
+                songName?.let { q -> it.putExtra("FILTER_SONG", q) }
+                artistName?.let { a -> it.putExtra("FILTER_ARTIST", a) }
+                genreId?.let { g -> it.putExtra("FILTER_GENRE", g) }
+                startActivity(it)
+            }
+            popup.dismiss()
+        }
+
+        popup.showAsDropDown(binding.btnFilter, 0, 0)
     }
 
     override fun onDestroyView() {

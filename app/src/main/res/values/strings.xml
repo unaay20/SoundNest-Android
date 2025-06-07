@@ -102,4 +102,7 @@
     <string name="btn_play">Play</string>
     <string name="lbl_clear_all">Clear all</string>
     <string name="desc_stats">See stats</string>
+    <string name="desc_filter">Filter</string>
+    <string name="lbl_apply">Apply</string>
+    <string name="lbl_select_genre">Select genre</string>
 </resources>
