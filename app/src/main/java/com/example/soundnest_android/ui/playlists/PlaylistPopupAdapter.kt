@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Playlist
 
@@ -19,8 +20,12 @@ class PlaylistPopupAdapter(
         private val tv = view.findViewById<TextView>(R.id.tvPlaylistName)
         fun bind(p: Playlist) {
             tv.text = p.name
-            // si tienes imagen, la cargas con Glide:
-            // Glide.with(img).load(p.imageUri).circleCrop().into(img)
+            Glide.with(img.context)
+                .load(p.imageUri)
+                .placeholder(R.drawable.img_soundnest_logo_svg)
+                .error(R.drawable.img_soundnest_logo_svg)
+                .centerCrop()
+                .into(img)
             itemView.setOnClickListener { onClick(p) }
         }
     }

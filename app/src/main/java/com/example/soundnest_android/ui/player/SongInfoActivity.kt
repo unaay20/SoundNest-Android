@@ -95,6 +95,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener 
         btnPlayPause = findViewById(R.id.btnPlayPause)
         btnDownload = findViewById(R.id.btnDownload)
         btnComments = findViewById(R.id.btnComments)
+        btnAddPlaylist = findViewById(R.id.btnAddPlaylist)
 
         infoSongTitle.text = song.title
         infoArtistName.text = song.artist

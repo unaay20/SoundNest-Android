@@ -1,6 +1,5 @@
 package com.example.soundnest_android.restful.services
 
-import com.example.soundnest_android.restful.models.playlist.PlaylistResponse
 import com.example.soundnest_android.restful.models.playlist.CreatePlaylistResponse
 import com.example.soundnest_android.restful.models.playlist.PlaylistsResponse
 import com.example.soundnest_android.restful.services.interfaces.IPlaylistService
@@ -25,7 +24,7 @@ class PlaylistService(
 
     suspend fun removeSongFromPlaylist(songId: String, playlistId: String): ApiResult<Unit?> =
         safeCall { api.removeSongFromPlaylist(songId, playlistId) }
-    
+
     suspend fun fetchByUser(userId: String): ApiResult<PlaylistsResponse?> =
         safeCall { api.getPlaylistsByUser(userId) }
 
