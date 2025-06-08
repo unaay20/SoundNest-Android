@@ -13,6 +13,10 @@ class VisitService(
 
     private val visitApi: IVisitService = retrofit.create(IVisitService::class.java)
 
+    suspend fun incrementVisit(idsong: Int): ApiResult<Unit?> {
+        return safeCall { visitApi.incrementVisit(idsong) }
+    }
+
     suspend fun getTopSongsByUser(
         idAppUser: Int,
         limit: Int = 5

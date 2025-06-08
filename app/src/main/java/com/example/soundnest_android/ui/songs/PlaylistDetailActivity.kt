@@ -17,7 +17,9 @@ import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
+import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.ui.player.PlayerControlFragment
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,10 +43,33 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         SongService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(this))
     }
 
+    private val visitService by lazy {
+        VisitService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(this))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playlist_detail)
 
+        supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.player_fragment_container,
+                PlayerControlFragment(),
+                "PLAYER_CONTROL"
+            )
+            .commit()
+
+        intent.getSerializableExtra("EXTRA_PLAYING_SONG")?.let { serial ->
+            val song = serial as Song
+            intent.getStringExtra("EXTRA_PLAYING_PATH")?.let { path ->
+                val file = File(path)
+                if (file.exists()) {
+                    sharedPlayer.playFromFile(song, file)
+                }
+            }
+        }
+        
         songAdapter = SongAdapter(
             onSongClick = { song ->
                 SongDialogFragment.newInstance(song)
@@ -88,6 +113,9 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
     }
 
     override fun playSong(song: Song) {
+        lifecycleScope.launch {
+            visitService.incrementVisit(song.id)
+        }
         downloadAndPlay(song)
     }
 

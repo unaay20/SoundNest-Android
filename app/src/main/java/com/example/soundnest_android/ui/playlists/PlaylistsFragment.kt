@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.FragmentPlaylistsBinding
 import com.example.soundnest_android.restful.constants.RestfulRoutes
+import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlaylistDetailActivity
 import com.example.soundnest_android.utils.UriToFileUtil
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +27,7 @@ class PlaylistsFragment : Fragment() {
     private val binding get() = _binding!!
     private val sharedPrefs by lazy { SharedPrefsTokenProvider(requireContext()) }
     private val userIdString get() = sharedPrefs.getUserId().toString()
+    private val sharedPlayer: SharedPlayerViewModel by activityViewModels()
 
     private val viewModel: PlaylistsViewModel by viewModels {
         PlaylistsViewModelFactory(
@@ -53,15 +56,18 @@ class PlaylistsFragment : Fragment() {
                 { p ->
                     val songIds = ArrayList(p.songs.map { it.id })
 
-                    startActivity(
-                        Intent(
-                            requireContext(),
-                            PlaylistDetailActivity::class.java
-                        ).apply {
+                    val intent =
+                        Intent(requireContext(), PlaylistDetailActivity::class.java).apply {
                             putExtra("EXTRA_PLAYLIST_NAME", p.name)
                             putExtra("EXTRA_PLAYLIST_IMAGE", p.imageUri)
                             putIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS", songIds)
-                        })
+
+                            sharedPlayer.pendingFile.value?.let { (song, file) ->
+                                putExtra("EXTRA_PLAYING_SONG", song)
+                                putExtra("EXTRA_PLAYING_PATH", file.absolutePath)
+                            }
+                        }
+                    startActivity(intent)
                 },
                 { p ->
                     viewModel.deletePlaylist(p)

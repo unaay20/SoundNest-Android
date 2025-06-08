@@ -26,15 +26,22 @@ import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.databinding.FragmentSearchBinding
+import com.example.soundnest_android.grpc.constants.GrpcRoutes
+import com.example.soundnest_android.grpc.http.GrpcResult
+import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
+import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongDialogFragment
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), PlayerHost {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
@@ -45,7 +52,15 @@ class SearchFragment : Fragment() {
     private lateinit var adapter: RecentSearchAdapter
     private val fileName = "recent_searches.txt"
     private val recentSearches = mutableListOf<String>()
-
+    private val songGrpc by lazy {
+        SongFileGrpcService(
+            GrpcRoutes.getHost(),
+            GrpcRoutes.getPort()
+        ) { SharedPrefsTokenProvider(requireContext()).getToken() }
+    }
+    private val visitService by lazy {
+        VisitService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(requireContext()))
+    }
     private val songService by lazy {
         SongService(
             RestfulRoutes.getBaseUrl(),
@@ -283,6 +298,35 @@ class SearchFragment : Fragment() {
                 e.printStackTrace()
             }
         }.start()
+    }
+
+    override fun playSong(song: Song) {
+        lifecycleScope.launch {
+            visitService.incrementVisit(song.id)
+        }
+        downloadAndQueue(song)
+    }
+
+
+    private fun downloadAndQueue(song: Song) {
+        val cacheFile = File(requireContext().cacheDir, "song_${song.id}.mp3")
+        if (cacheFile.exists()) {
+            sharedPlayer.playFromFile(song, cacheFile)
+            return
+        }
+        sharedPlayer.setLoading(true)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val tmpFile = File(requireContext().cacheDir, "song_${song.id}.tmp")
+            if (tmpFile.exists()) tmpFile.delete()
+            when (val res = songGrpc.downloadSongStreamTo(song.id, tmpFile.outputStream())) {
+                is GrpcResult.Success -> tmpFile.renameTo(cacheFile)
+                else -> tmpFile.delete()
+            }
+            withContext(Dispatchers.Main) {
+                sharedPlayer.setLoading(false)
+                sharedPlayer.playFromFile(song, cacheFile)
+            }
+        }
     }
 
     override fun onDestroyView() {

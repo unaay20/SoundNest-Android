@@ -22,6 +22,7 @@ import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
+import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.ui.notifications.NotificationsActivity
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlayerHost
@@ -50,6 +51,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             RestfulRoutes.getBaseUrl(),
             SharedPrefsTokenProvider(requireContext())
         )
+    }
+    private val visitService by lazy {
+        VisitService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(requireContext()))
     }
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(
@@ -161,6 +165,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
     }
 
     override fun playSong(song: Song) {
+        lifecycleScope.launch {
+            visitService.incrementVisit(song.id)
+        }
         downloadAndQueue(song)
     }
 

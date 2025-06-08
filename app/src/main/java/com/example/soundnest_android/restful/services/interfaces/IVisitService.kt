@@ -6,10 +6,14 @@ import com.example.soundnest_android.restful.models.visits.SongPlayCount
 import retrofit2.Response
 
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface IVisitService {
+    @POST(RestfulRoutes.VISUALIZATION_INCREMENT)
+    suspend fun incrementVisit(@Path("idsong") idSong: Int): Response<Unit>
+
     @GET(RestfulRoutes.VISIT_TOP_SONGS_USER)
     suspend fun getTopSongsByUser(
         @Path("idAppUser") idAppUser: Int,

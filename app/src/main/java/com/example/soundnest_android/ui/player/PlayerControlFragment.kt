@@ -62,6 +62,7 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
                 Log.d("PlayerControlFragment", "First playback attempt, delaying...")
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(500) // Delay for 500ms
+                    shared.playFromFile(song, file)
                     PlayerManager.playFile(requireContext(), file)
                 }
                 isFirstPlaybackAttemptInFragment = false

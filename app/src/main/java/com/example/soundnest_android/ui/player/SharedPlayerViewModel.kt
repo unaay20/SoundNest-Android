@@ -20,4 +20,6 @@ class SharedPlayerViewModel : ViewModel() {
     fun setLoading(loading: Boolean) {
         _isLoading.value = loading
     }
+
+    fun getPlayer() = PlayerManager.getPlayer()
 }
