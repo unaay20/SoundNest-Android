@@ -156,4 +156,50 @@ class PlaylistsViewModel(
             }
         }
     }
+
+    fun addSongToPlaylist(playlistId: String, songId: Int) {
+        viewModelScope.launch {
+            when (val result = service.addSongToPlaylist(songId.toString(), playlistId)) {
+                is ApiResult.Success -> {
+                    _playlists.value?.let { list ->
+                        val idx = list.indexOfFirst { it.id == playlistId }
+                        if (idx >= 0) {
+                            val updated = list[idx].copy(
+                                songs = list[idx].songs + Song(songId, /* title… */ "", "", null)
+                            )
+                            list[idx] = updated
+                            _playlists.value = list
+                        }
+                    }
+                }
+
+                is ApiResult.HttpError -> _error.value = "HTTP error: ${result.message}"
+                is ApiResult.NetworkError -> _error.value = "Error de red al añadir canción"
+                is ApiResult.UnknownError -> _error.value = "Error desconocido al añadir canción"
+            }
+        }
+    }
+
+    fun removeSongFromPlaylist(playlistId: String, songId: Int) {
+        viewModelScope.launch {
+            when (val result = service.removeSongFromPlaylist(songId.toString(), playlistId)) {
+                is ApiResult.Success -> {
+                    _playlists.value?.let { list ->
+                        val idx = list.indexOfFirst { it.id == playlistId }
+                        if (idx >= 0) {
+                            val updated = list[idx].copy(
+                                songs = list[idx].songs.filterNot { it.id == songId }
+                            )
+                            list[idx] = updated
+                            _playlists.value = list
+                        }
+                    }
+                }
+
+                is ApiResult.HttpError -> _error.value = "HTTP error: ${result.message}"
+                is ApiResult.NetworkError -> _error.value = "Error de red al eliminar canción"
+                is ApiResult.UnknownError -> _error.value = "Error desconocido al eliminar canción"
+            }
+        }
+    }
 }

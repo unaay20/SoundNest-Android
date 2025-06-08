@@ -21,13 +21,13 @@ class RecentSearchAdapter(
         init {
             itemView.setOnClickListener {
                 val pos = adapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
+                if (pos != RecyclerView.NO_POSITION && pos < items.size) {
                     onClick(items[pos])
                 }
             }
             ivDelete.setOnClickListener {
                 val pos = adapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
+                if (pos != RecyclerView.NO_POSITION && pos < items.size) {
                     onDelete(items[pos])
                 }
             }

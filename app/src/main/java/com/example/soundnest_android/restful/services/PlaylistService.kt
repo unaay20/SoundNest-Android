@@ -20,6 +20,12 @@ class PlaylistService(
 
     private val api = retrofit.create(IPlaylistService::class.java)
 
+    suspend fun addSongToPlaylist(songId: String, playlistId: String): ApiResult<Unit?> =
+        safeCall { api.addSongToPlaylist(songId, playlistId) }
+
+    suspend fun removeSongFromPlaylist(songId: String, playlistId: String): ApiResult<Unit?> =
+        safeCall { api.removeSongFromPlaylist(songId, playlistId) }
+    
     suspend fun fetchByUser(userId: String): ApiResult<PlaylistsResponse?> =
         safeCall { api.getPlaylistsByUser(userId) }
 

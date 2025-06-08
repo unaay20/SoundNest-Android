@@ -5,19 +5,33 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.soundnest_android.R
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.ui.comments.SongCommentsActivity
+import com.example.soundnest_android.ui.playlists.PlaylistPopupAdapter
+import com.example.soundnest_android.ui.playlists.PlaylistsViewModel
+import com.example.soundnest_android.ui.playlists.PlaylistsViewModelFactory
+import kotlinx.coroutines.launch
 import java.io.File
 
 class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
@@ -31,6 +45,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener 
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnDownload: ImageButton
     private lateinit var btnComments: ImageButton
+    private lateinit var btnAddPlaylist: ImageButton
 
     private val player by lazy { PlayerManager.getPlayer() }
     private val handler = Handler(Looper.getMainLooper())
@@ -52,6 +67,15 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener 
 
     private lateinit var song: Song
     private var localFilePath: String? = null
+
+    private val playlistViewModel: PlaylistsViewModel by viewModels {
+        PlaylistsViewModelFactory(
+            application = application,
+            baseUrl = RestfulRoutes.getBaseUrl(),
+            tokenProvider = SharedPrefsTokenProvider(this),
+            userId = SharedPrefsTokenProvider(this).getUserId().toString()
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,6 +149,10 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener 
                 putExtra("EXTRA_SONG_OBJ", song)
             })
         }
+
+        btnAddPlaylist.setOnClickListener {
+            showPlaylistPopup(it as View)
+        }
     }
 
     override fun onResume() {
@@ -183,5 +211,51 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener 
     private fun formatTime(ms: Int): String {
         val secs = ms / 1000
         return "%d:%02d".format(secs / 60, secs % 60)
+    }
+
+    private fun showPlaylistPopup(anchor: View) {
+        val popupView = layoutInflater.inflate(R.layout.fragment_popup_playlists, null)
+        val recycler = popupView.findViewById<RecyclerView>(R.id.rvPlaylistPopup)
+        recycler.layoutManager = LinearLayoutManager(this)
+
+        val popupWindow = PopupWindow(
+            popupView,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    anchor.context,
+                    R.drawable.popup_background
+                )
+            )
+            elevation = 16f
+        }
+
+        popupWindow.showAsDropDown(anchor, 0, 0)
+
+        playlistViewModel.playlists.observe(this) { list ->
+            recycler.adapter = PlaylistPopupAdapter(list) { playlist ->
+                lifecycleScope.launch {
+                    try {
+                        playlistViewModel.addSongToPlaylist(playlist.id, song.id)
+                        Toast.makeText(
+                            this@SongInfoActivity,
+                            "Añadido a “${playlist.name}”",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            this@SongInfoActivity,
+                            "Error: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    popupWindow.dismiss()
+                }
+            }
+        }
+        popupWindow.showAsDropDown(anchor, 0, 0)
     }
 }

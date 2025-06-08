@@ -31,20 +31,6 @@ class SearchResultActivity : AppCompatActivity() {
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val query = intent.getStringExtra("QUERY")?.takeIf { it.isNotBlank() }
-        val filterSong = intent.getStringExtra("FILTER_SONG")?.takeIf { it.isNotBlank() }
-        val filterArtist = intent.getStringExtra("FILTER_ARTIST")?.takeIf { it.isNotBlank() }
-        val filterGenre = intent.getIntExtra("FILTER_GENRE", -1).takeIf { it >= 0 }
-
-        val songNameParam = listOfNotNull(query, filterSong).joinToString(" ")
-
-        if (query == null && filterSong == null && filterArtist == null && filterGenre == null) {
-            Toast.makeText(this, "Introduce texto o selecciona un filtro", Toast.LENGTH_SHORT)
-                .show()
-            finish()
-            return
-        }
-
         adapter = SongAdapter(
             onSongClick = { song -> Toast.makeText(this, song.title, Toast.LENGTH_SHORT).show() },
             isScrollingProvider = { false }
@@ -54,19 +40,33 @@ class SearchResultActivity : AppCompatActivity() {
             adapter = this@SearchResultActivity.adapter
         }
 
-        val titleParts = mutableListOf<String>()
-        query?.let { titleParts.add(it) }
-        filterSong?.let { titleParts.add(it) }
-        filterArtist?.let { titleParts.add("Artista: $it") }
-        filterGenre?.let { titleParts.add("Género ID: $it") }
-        val titleText = if (titleParts.isEmpty()) "Resultados" else titleParts.joinToString(", ")
-        supportActionBar?.title = "Resultados para: \"$titleText\""
+        val query = intent.getStringExtra("QUERY")?.takeIf { it.isNotBlank() }
+        val filterSong = intent.getStringExtra("FILTER_SONG")?.takeIf { it.isNotBlank() }
+        val filterArtist = intent.getStringExtra("FILTER_ARTIST")?.takeIf { it.isNotBlank() }
+        val filterGenre = intent.getIntExtra("FILTER_GENRE", -1).takeIf { it >= 0 }
+        if (query == null && filterSong == null && filterArtist == null && filterGenre == null) {
+            Toast.makeText(this, "Introduce texto o selecciona un filtro", Toast.LENGTH_SHORT)
+                .show()
+            finish()
+            return
+        }
+
+        val parts = mutableListOf<String>().apply {
+            query?.let { add(it) }
+            filterSong?.let { add(it) }
+            filterArtist?.let { add("Artista: $it") }
+            filterGenre?.let { add("Género ID: $it") }
+        }
+        supportActionBar?.title =
+            if (parts.isEmpty()) "Resultados" else "Resultados para: \"${parts.joinToString(", ")}\""
 
         binding.progress.visibility = View.VISIBLE
         binding.tvEmpty.visibility = View.GONE
         binding.rvResults.visibility = View.GONE
 
+        // Llamada a la API
         lifecycleScope.launch {
+            val songNameParam = listOfNotNull(query, filterSong).joinToString(" ")
             when (val res = songService.search(
                 songName = songNameParam.ifBlank { null },
                 artistName = filterArtist,
@@ -78,16 +78,17 @@ class SearchResultActivity : AppCompatActivity() {
                     val list = res.data.orEmpty().mapNotNull {
                         it.toBusinessSong(RestfulRoutes.getBaseUrl())
                     }
-                    if (list.isEmpty()) binding.tvEmpty.visibility = View.VISIBLE
-                    else {
+                    if (list.isEmpty()) {
+                        binding.tvEmpty.visibility = View.VISIBLE
+                    } else {
                         adapter.submitList(list)
                         binding.rvResults.visibility = View.VISIBLE
                     }
                 }
 
                 is ApiResult.HttpError -> showToast("Error HTTP ${res.code}")
-                is ApiResult.NetworkError -> showToast("Error de red: ${res.exception.message}")
-                is ApiResult.UnknownError -> showToast("Error: ${res.exception.message}")
+                is ApiResult.NetworkError -> showToast("Error de red: ${res.exception?.message}")
+                is ApiResult.UnknownError -> showToast("Error: ${res.exception?.message}")
             }
             binding.progress.visibility = View.GONE
         }
