@@ -106,4 +106,6 @@
     <string name="desc_filter">Filtrar</string>
     <string name="lbl_apply">Aplicar</string>
     <string name="lbl_select_genre">Seleccionar género</string>
+    <string name="lbl_edit_playlist">Editar playlist</string>
+    <string name="btn_save">Guardar</string>
 </resources>

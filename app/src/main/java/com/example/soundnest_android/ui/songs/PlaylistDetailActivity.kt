@@ -1,7 +1,7 @@
 package com.example.soundnest_android.ui.songs
 
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -53,11 +53,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
 
         supportFragmentManager
             .beginTransaction()
-            .replace(
-                R.id.player_fragment_container,
-                PlayerControlFragment(),
-                "PLAYER_CONTROL"
-            )
+            .replace(R.id.player_fragment_container, PlayerControlFragment(), "PLAYER_CONTROL")
             .commit()
 
         intent.getSerializableExtra("EXTRA_PLAYING_SONG")?.let { serial ->
@@ -69,7 +65,11 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                 }
             }
         }
-        
+
+        val rvSongs = findViewById<RecyclerView>(R.id.rvSongs)
+        val tvEmpty = findViewById<TextView>(R.id.tvEmptySongs)
+        val tvPlaylistName = findViewById<TextView>(R.id.tvPlaylistName)
+
         songAdapter = SongAdapter(
             onSongClick = { song ->
                 SongDialogFragment.newInstance(song)
@@ -77,18 +77,25 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
             },
             isScrollingProvider = { false }
         )
-
-        findViewById<RecyclerView>(R.id.rvSongs).apply {
+        rvSongs.apply {
             layoutManager = LinearLayoutManager(this@PlaylistDetailActivity)
             adapter = songAdapter
         }
 
-        findViewById<TextView>(R.id.tvPlaylistName).text =
+        tvPlaylistName.text =
             intent.getStringExtra("EXTRA_PLAYLIST_NAME") ?: "Playlist"
 
         val songIds = intent.getIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS")
             ?: arrayListOf()
-        Log.d("PlaylistDetail", "songIds recibidos: $songIds")
+
+        if (songIds.isEmpty()) {
+            tvEmpty.visibility = View.VISIBLE
+            rvSongs.visibility = View.GONE
+            return
+        } else {
+            tvEmpty.visibility = View.GONE
+            rvSongs.visibility = View.VISIBLE
+        }
 
         lifecycleScope.launch {
             when (val r = songService.getByIds(songIds)) {

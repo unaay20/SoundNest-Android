@@ -33,6 +33,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
         val descEt = view.findViewById<EditText>(R.id.editTextPlaylistDescription)
         playlistImageView = view.findViewById(R.id.editTextPlaylistImage)
         playlistImageView.setOnClickListener { pickImageLauncher.launch("image/*") }
+
         builder
             .setView(view)
             .setTitle(R.string.lbl_create_playlist)
@@ -57,23 +58,28 @@ class NewPlaylistDialogFragment : DialogFragment() {
             null,
             null
         ) ?: return
+
         var name = ""
         var size = 0L
+
         cursor.use {
             if (it.moveToFirst()) {
                 name = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 size = it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
             }
         }
+
         if (size > MAX_SIZE_BYTES) {
             Toast.makeText(requireContext(), "El archivo excede 20 MB", Toast.LENGTH_SHORT).show()
             return
         }
+
         val ext = name.substringAfterLast('.', "").lowercase()
-        if (ext != "jpg" && ext != "jpeg" && ext != "png") {
+        if (ext !in listOf("jpg", "jpeg", "png")) {
             Toast.makeText(requireContext(), "Solo PNG o JPG", Toast.LENGTH_SHORT).show()
             return
         }
+
         resolver.openInputStream(uri)?.use { stream ->
             val bitmap = BitmapFactory.decodeStream(stream)
             playlistImageView.scaleType = ImageView.ScaleType.CENTER_CROP

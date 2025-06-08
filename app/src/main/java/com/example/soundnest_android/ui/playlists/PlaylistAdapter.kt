@@ -12,10 +12,16 @@ import com.example.soundnest_android.business_logic.Playlist
 import com.squareup.picasso.Picasso
 
 class PlaylistAdapter(
-    private val items: MutableList<Playlist>,
+    private var items: List<Playlist>,
     private val onItemClick: (Playlist) -> Unit,
-    private val onItemLongClick: (Playlist) -> Unit
+    private val onItemEdit: (Playlist) -> Unit,
+    private val onItemDelete: (Playlist) -> Unit
 ) : RecyclerView.Adapter<PlaylistAdapter.PlaylistVH>() {
+
+    fun setItems(newItems: List<Playlist>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistVH {
         val view = LayoutInflater.from(parent.context)
@@ -23,10 +29,13 @@ class PlaylistAdapter(
         return PlaylistVH(view)
     }
 
+    override fun getItemCount(): Int = items.size
+
     override fun onBindViewHolder(holder: PlaylistVH, position: Int) {
         val playlist = items[position]
         holder.tvName.text = playlist.name
         holder.tvCount.text = "${playlist.songs.size} songs"
+
         Picasso.get()
             .load(playlist.imageUri)
             .placeholder(R.drawable.img_soundnest_logo_svg)
@@ -34,28 +43,22 @@ class PlaylistAdapter(
             .fit()
             .centerCrop()
             .into(holder.ivImage)
+
         holder.itemView.setOnClickListener { onItemClick(playlist) }
+
         holder.itemView.setOnLongClickListener {
-            val popup = PopupMenu(it.context, it)
-            popup.menuInflater.inflate(R.menu.playlist_menu, popup.menu)
-            popup.setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.menu_delete_playlist) {
-                    onItemLongClick(playlist)
-                    true
-                } else false
+            PopupMenu(it.context, it).apply {
+                menuInflater.inflate(R.menu.playlist_menu, menu)
+                setOnMenuItemClickListener { mi ->
+                    when (mi.itemId) {
+                        R.id.menu_edit_playlist -> onItemEdit(playlist).let { true }
+                        R.id.menu_delete_playlist -> onItemDelete(playlist).let { true }
+                        else -> false
+                    }
+                }
+                show()
             }
-            popup.show()
             true
-        }
-    }
-
-    override fun getItemCount(): Int = items.size
-
-    fun removeItem(playlist: Playlist) {
-        val pos = items.indexOf(playlist)
-        if (pos != -1) {
-            items.removeAt(pos)
-            notifyItemRemoved(pos)
         }
     }
 

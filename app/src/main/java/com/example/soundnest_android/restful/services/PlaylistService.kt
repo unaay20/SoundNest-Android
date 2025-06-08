@@ -1,16 +1,13 @@
 package com.example.soundnest_android.restful.services
 
 import com.example.soundnest_android.restful.models.playlist.CreatePlaylistResponse
+import com.example.soundnest_android.restful.models.playlist.EditPlaylistRequest
 import com.example.soundnest_android.restful.models.playlist.PlaylistsResponse
 import com.example.soundnest_android.restful.services.interfaces.IPlaylistService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.restful.utils.TokenProvider
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
+import okhttp3.RequestBody
 
 class PlaylistService(
     baseUrl: String,
@@ -32,24 +29,30 @@ class PlaylistService(
         safeCall { api.deletePlaylist(playlistId) }
 
     suspend fun createPlaylist(
-        name: String,
-        description: String?,
-        imageFile: File
-    ): ApiResult<CreatePlaylistResponse?> {
-        val nameBody = name.toRequestBody("text/plain".toMediaType())
-        val descBody = description?.toRequestBody("text/plain".toMediaType())
-
-        val imagePart = MultipartBody.Part.createFormData(
-            "image",
-            imageFile.name,
-            imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+        playlistName: RequestBody,
+        description: RequestBody?,
+        image: MultipartBody.Part
+    ): ApiResult<CreatePlaylistResponse?> = safeCall {
+        api.createPlaylist(
+            playlistName = playlistName,
+            description = description,
+            image = image
         )
+    }
 
+    suspend fun editPlaylist(
+        idPlaylist: String,
+        newName: String,
+        newDescription: String?
+    ): ApiResult<CreatePlaylistResponse?> {
+        val req = EditPlaylistRequest(
+            playlistName = newName,
+            description = newDescription
+        )
         return safeCall {
-            api.createPlaylist(
-                image = imagePart,
-                playlistName = nameBody,
-                description = descBody
+            api.editPlaylist(
+                idPlaylist,
+                req
             )
         }
     }

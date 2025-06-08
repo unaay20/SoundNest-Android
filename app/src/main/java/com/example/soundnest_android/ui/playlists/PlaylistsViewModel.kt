@@ -14,7 +14,12 @@ import com.example.soundnest_android.restful.utils.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.net.URLConnection
 
 class PlaylistsViewModel(
     application: Application,
@@ -91,42 +96,41 @@ class PlaylistsViewModel(
                 }
                 return@launch
             }
-            val result = service.createPlaylist(name, description, imageFile)
+
+            val mimeType = getMimeType(imageFile) ?: "image/jpeg"
+            val requestBody = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())
+            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
+            val namePart = name.toRequestBody("text/plain".toMediaTypeOrNull())
+            val descPart = description.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val result = service.createPlaylist(namePart, descPart, imagePart)
+
             withContext(Dispatchers.Main) {
                 when (result) {
-                    is ApiResult.Success -> result.data?.let {
-                        val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
-                        val nueva = Playlist(
-                            id = it.idPlaylist,
-                            name = it.name,
-                            description = it.description,
-                            songs = emptyList(), // al crear no traemos canciones
-                            imageUri = "$base/uploads/${it.pathImageUrl}"
-                        )
-                        _playlists.value?.apply {
-                            add(nueva)
-                            _playlists.value = this
-                        }
+                    is ApiResult.Success -> {
+                        loadPlaylists()
                     }
 
                     is ApiResult.HttpError -> {
-                        Log.e(TAG, "Error HTTP: ${result.message}")
                         _error.value = "Error HTTP: ${result.message}"
                     }
 
                     is ApiResult.NetworkError -> {
-                        Log.e(TAG, "Error de red", result.exception)
                         _error.value = "Error de red"
                     }
 
                     is ApiResult.UnknownError -> {
-                        Log.e(TAG, "Error desconocido", result.exception)
                         _error.value = "Error desconocido"
                     }
                 }
             }
         }
     }
+
+    private fun getMimeType(file: File): String? {
+        return URLConnection.guessContentTypeFromName(file.name)
+    }
+
 
     fun deletePlaylist(playlist: Playlist) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -199,6 +203,50 @@ class PlaylistsViewModel(
                 is ApiResult.HttpError -> _error.value = "HTTP error: ${result.message}"
                 is ApiResult.NetworkError -> _error.value = "Error de red al eliminar canción"
                 is ApiResult.UnknownError -> _error.value = "Error desconocido al eliminar canción"
+            }
+        }
+    }
+
+    fun editPlaylist(id: String, newName: String, newDescription: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = service.editPlaylist(id, newName, newDescription)
+            withContext(Dispatchers.Main) {
+                when (result) {
+                    is ApiResult.Success -> {
+                        val dto = result.data!!.playlist
+                        val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
+                        val updatedPlaylist = Playlist(
+                            id = dto.idPlaylist,
+                            name = dto.name,
+                            description = dto.description,
+                            songs = _playlists.value
+                                ?.firstOrNull { it.id == id }
+                                ?.songs
+                                ?: emptyList(),
+                            imageUri = "$base${dto.pathImageUrl}"
+                        )
+
+                        _playlists.value?.apply {
+                            val idx = indexOfFirst { it.id == id }
+                            if (idx >= 0) {
+                                this[idx] = updatedPlaylist
+                                _playlists.value = this
+                            }
+                        }
+                    }
+
+                    is ApiResult.HttpError -> {
+                        _error.value = "Error al editar playlist: ${result.message}"
+                    }
+
+                    is ApiResult.NetworkError -> {
+                        _error.value = "Error de red al editar playlist"
+                    }
+
+                    is ApiResult.UnknownError -> {
+                        _error.value = "Error desconocido al editar playlist"
+                    }
+                }
             }
         }
     }

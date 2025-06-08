@@ -30,6 +30,32 @@
         app:layout_constraintTop_toBottomOf="@id/navigation_playlists"
         app:layout_constraintVertical_bias="0.0" />
 
+    <ImageView
+        android:id="@+id/img_arrow_create_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_downward"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/fabAddPlaylist"
+        app:layout_constraintEnd_toEndOf="@id/fabAddPlaylist"
+        app:layout_constraintStart_toStartOf="@id/fabAddPlaylist"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginBottom="8dp"
+        app:tint="@color/accent_purple" />
+
+    <TextView
+        android:id="@+id/tv_no_playlists_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aún no tienes una playlist,\npresiona aquí para crear una"
+        android:textColor="@color/accent_purple"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/img_arrow_create_playlist"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddPlaylist"
         android:layout_width="wrap_content"
