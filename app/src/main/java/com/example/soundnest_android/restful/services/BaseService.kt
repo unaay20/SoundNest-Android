@@ -1,15 +1,15 @@
 package com.example.soundnest_android.restful.services
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.restful.utils.AuthInterceptor
 import com.example.soundnest_android.restful.utils.TokenProvider
 import com.example.soundnest_android.restful.utils.createUnsafeOkHttpClient
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 
 open class BaseService(baseUrl: String, tokenProvider: TokenProvider? = null) {

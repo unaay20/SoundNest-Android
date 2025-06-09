@@ -1,13 +1,12 @@
 package com.example.soundnest_android.restful.services
 
-import com.example.soundnest_android.restful.models.user.EditUserRequest
 import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.models.user.EditUserPasswordRequest
+import com.example.soundnest_android.restful.models.user.EditUserRequest
 import com.example.soundnest_android.restful.models.user.NewUserRequest
 import com.example.soundnest_android.restful.services.interfaces.IUserService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.restful.utils.TokenProvider
-import org.checkerframework.checker.units.qual.A
 
 class UserService(
     baseUrl: String,

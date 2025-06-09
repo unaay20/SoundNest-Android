@@ -3,6 +3,7 @@ package com.example.soundnest_android.restful.services.interfaces
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.playlist.CreatePlaylistResponse
 import com.example.soundnest_android.restful.models.playlist.EditPlaylistRequest
+import com.example.soundnest_android.restful.models.playlist.EditPlaylistResponse
 import com.example.soundnest_android.restful.models.playlist.PlaylistsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -46,6 +47,6 @@ interface IPlaylistService {
     @PATCH(RestfulRoutes.PLAYLIST_PATCH_EDIT)
     suspend fun editPlaylist(
         @Path("idPlaylist") idPlaylist: String,
-        @Body request: EditPlaylistRequest
-    ): Response<CreatePlaylistResponse>
+        @Body body: EditPlaylistRequest
+    ): Response<EditPlaylistResponse>
 }

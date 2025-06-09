@@ -31,8 +31,8 @@ class PlaylistsViewModel(
         private const val TAG = "PlaylistsViewModel"
     }
 
-    private val _playlists = MutableLiveData<MutableList<Playlist>>(mutableListOf())
-    val playlists: LiveData<MutableList<Playlist>> = _playlists
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> = _playlists
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
@@ -63,10 +63,9 @@ class PlaylistsViewModel(
                                     name = dto.name,
                                     description = dto.description,
                                     songs = songs,
-                                    imageUri = "$base${dto.pathImageUrl}"
+                                    imageUri = dto.pathImageUrl?.let { "$base$it" }
                                 )
                             }
-                            .toMutableList()
                     }
 
                     is ApiResult.HttpError -> {
@@ -97,13 +96,14 @@ class PlaylistsViewModel(
                 return@launch
             }
 
-            val mimeType = getMimeType(imageFile) ?: "image/jpeg"
+            val mimeType = getMimeType(imageFile) ?: "image/jpeg" // Default MIME type
             val requestBody = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())
             val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
             val namePart = name.toRequestBody("text/plain".toMediaTypeOrNull())
             val descPart = description.toRequestBody("text/plain".toMediaTypeOrNull())
 
             val result = service.createPlaylist(namePart, descPart, imagePart)
+
 
             withContext(Dispatchers.Main) {
                 when (result) {
@@ -132,14 +132,14 @@ class PlaylistsViewModel(
     }
 
 
-    fun deletePlaylist(playlist: Playlist) {
+    fun deletePlaylist(playlistToDelete: Playlist) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = service.deletePlaylist(playlist.id)
+            val result = service.deletePlaylist(playlistToDelete.id)
             withContext(Dispatchers.Main) {
                 when (result) {
-                    is ApiResult.Success -> _playlists.value?.apply {
-                        remove(playlist)
-                        _playlists.value = this
+                    is ApiResult.Success -> {
+                        val currentList = _playlists.value.orEmpty()
+                        _playlists.value = currentList.filterNot { it.id == playlistToDelete.id }
                     }
 
                     is ApiResult.HttpError -> {
@@ -165,21 +165,42 @@ class PlaylistsViewModel(
         viewModelScope.launch {
             when (val result = service.addSongToPlaylist(songId.toString(), playlistId)) {
                 is ApiResult.Success -> {
-                    _playlists.value?.let { list ->
-                        val idx = list.indexOfFirst { it.id == playlistId }
-                        if (idx >= 0) {
-                            val updated = list[idx].copy(
-                                songs = list[idx].songs + Song(songId, /* title… */ "", "", null)
-                            )
-                            list[idx] = updated
-                            _playlists.value = list
-                        }
+                    val currentPlaylists = _playlists.value.orEmpty()
+                    val playlistIndex = currentPlaylists.indexOfFirst { it.id == playlistId }
+
+                    if (playlistIndex != -1) {
+                        val targetPlaylist = currentPlaylists[playlistIndex]
+                        val newSong =
+                            Song(songId, /* title… */ "Unknown Title", "Unknown Artist", null)
+
+                        val updatedPlaylist = targetPlaylist.copy(
+                            songs = targetPlaylist.songs + newSong
+                        )
+
+                        val newPlaylists = currentPlaylists.toMutableList().apply {
+                            this[playlistIndex] = updatedPlaylist
+                        }.toList()
+
+                        _playlists.value = newPlaylists
+                    } else {
+                        Log.w(TAG, "addSongToPlaylist: Playlist with ID $playlistId not found.")
                     }
                 }
 
-                is ApiResult.HttpError -> _error.value = "HTTP error: ${result.message}"
-                is ApiResult.NetworkError -> _error.value = "Error de red al añadir canción"
-                is ApiResult.UnknownError -> _error.value = "Error desconocido al añadir canción"
+                is ApiResult.HttpError -> {
+                    Log.e(TAG, "addSongToPlaylist HTTP error: ${result.message}")
+                    _error.value = "HTTP error: ${result.message}"
+                }
+
+                is ApiResult.NetworkError -> {
+                    Log.e(TAG, "addSongToPlaylist Network error", result.exception)
+                    _error.value = "Error de red al añadir canción"
+                }
+
+                is ApiResult.UnknownError -> {
+                    Log.e(TAG, "addSongToPlaylist Unknown error", result.exception)
+                    _error.value = "Error desconocido al añadir canción"
+                }
             }
         }
     }
@@ -188,66 +209,64 @@ class PlaylistsViewModel(
         viewModelScope.launch {
             when (val result = service.removeSongFromPlaylist(songId.toString(), playlistId)) {
                 is ApiResult.Success -> {
-                    _playlists.value?.let { list ->
-                        val idx = list.indexOfFirst { it.id == playlistId }
-                        if (idx >= 0) {
-                            val updated = list[idx].copy(
-                                songs = list[idx].songs.filterNot { it.id == songId }
-                            )
-                            list[idx] = updated
-                            _playlists.value = list
-                        }
+                    val currentPlaylists = _playlists.value.orEmpty()
+                    val playlistIndex = currentPlaylists.indexOfFirst { it.id == playlistId }
+
+                    if (playlistIndex != -1) {
+                        val targetPlaylist = currentPlaylists[playlistIndex]
+                        val updatedSongs = targetPlaylist.songs.filterNot { it.id == songId }
+
+                        val updatedPlaylist = targetPlaylist.copy(
+                            songs = updatedSongs
+                        )
+
+                        val newPlaylists = currentPlaylists.toMutableList().apply {
+                            this[playlistIndex] = updatedPlaylist
+                        }.toList()
+
+                        _playlists.value = newPlaylists
+                    } else {
+                        Log.w(
+                            TAG,
+                            "removeSongFromPlaylist: Playlist with ID $playlistId not found."
+                        )
                     }
                 }
 
-                is ApiResult.HttpError -> _error.value = "HTTP error: ${result.message}"
-                is ApiResult.NetworkError -> _error.value = "Error de red al eliminar canción"
-                is ApiResult.UnknownError -> _error.value = "Error desconocido al eliminar canción"
+                is ApiResult.HttpError -> {
+                    Log.e(TAG, "removeSongFromPlaylist HTTP error: ${result.message}")
+                    _error.value = "HTTP error: ${result.message}"
+                }
+
+                is ApiResult.NetworkError -> {
+                    Log.e(TAG, "removeSongFromPlaylist Network error", result.exception)
+                    _error.value = "Error de red al eliminar canción"
+                }
+
+                is ApiResult.UnknownError -> {
+                    Log.e(TAG, "removeSongFromPlaylist Unknown error", result.exception)
+                    _error.value = "Error desconocido al eliminar canción"
+                }
             }
         }
     }
 
     fun editPlaylist(id: String, newName: String, newDescription: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = service.editPlaylist(id, newName, newDescription)
-            withContext(Dispatchers.Main) {
-                when (result) {
-                    is ApiResult.Success -> {
-                        val dto = result.data!!.playlist
-                        val base = RestfulRoutes.getBaseUrl().removeSuffix("/")
-                        val updatedPlaylist = Playlist(
-                            id = dto.idPlaylist,
-                            name = dto.name,
-                            description = dto.description,
-                            songs = _playlists.value
-                                ?.firstOrNull { it.id == id }
-                                ?.songs
-                                ?: emptyList(),
-                            imageUri = "$base${dto.pathImageUrl}"
-                        )
-
-                        _playlists.value?.apply {
-                            val idx = indexOfFirst { it.id == id }
-                            if (idx >= 0) {
-                                this[idx] = updatedPlaylist
-                                _playlists.value = this
-                            }
-                        }
-                    }
-
-                    is ApiResult.HttpError -> {
-                        _error.value = "Error al editar playlist: ${result.message}"
-                    }
-
-                    is ApiResult.NetworkError -> {
-                        _error.value = "Error de red al editar playlist"
-                    }
-
-                    is ApiResult.UnknownError -> {
-                        _error.value = "Error desconocido al editar playlist"
-                    }
+            when (val result = service.editPlaylist(id, newName, newDescription)) {
+                is ApiResult.Success -> {
+                    loadPlaylists()
                 }
+
+                is ApiResult.HttpError -> _error.postValue("Error al editar: ${result.message}")
+                is ApiResult.NetworkError -> _error.postValue("Problema de red")
+                is ApiResult.UnknownError -> _error.postValue("Error inesperado al editar")
             }
         }
+    }
+
+
+    fun clearError() {
+        _error.value = null
     }
 }

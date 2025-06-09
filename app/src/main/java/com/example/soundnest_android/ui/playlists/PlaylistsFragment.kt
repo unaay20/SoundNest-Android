@@ -64,6 +64,13 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
             binding.imgArrowCreatePlaylist.visibility = binding.tvNoPlaylistsHint.visibility
         }
 
+        viewModel.error.observe(viewLifecycleOwner) { errMsg ->
+            errMsg?.let {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+                viewModel.clearError()
+            }
+        }
+
         binding.fabAddPlaylist.setOnClickListener {
             NewPlaylistDialogFragment().apply {
                 onPlaylistCreated = { name, desc, uriStr ->

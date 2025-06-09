@@ -2,6 +2,7 @@ package com.example.soundnest_android.restful.services
 
 import com.example.soundnest_android.restful.models.playlist.CreatePlaylistResponse
 import com.example.soundnest_android.restful.models.playlist.EditPlaylistRequest
+import com.example.soundnest_android.restful.models.playlist.EditPlaylistResponse
 import com.example.soundnest_android.restful.models.playlist.PlaylistsResponse
 import com.example.soundnest_android.restful.services.interfaces.IPlaylistService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -44,16 +45,11 @@ class PlaylistService(
         idPlaylist: String,
         newName: String,
         newDescription: String?
-    ): ApiResult<CreatePlaylistResponse?> {
+    ): ApiResult<EditPlaylistResponse?> {
         val req = EditPlaylistRequest(
             playlistName = newName,
             description = newDescription
         )
-        return safeCall {
-            api.editPlaylist(
-                idPlaylist,
-                req
-            )
-        }
+        return safeCall { api.editPlaylist(idPlaylist, req) }
     }
 }
