@@ -1,9 +1,7 @@
 package com.example.soundnest_android.ui.player
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -12,7 +10,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupWindow
@@ -55,6 +52,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         ) { SharedPrefsTokenProvider(this).getToken() }
     }
     private var isPlayerPrepared = false
+    private var isUserSeeking = false
     private lateinit var imgBackground: ImageView
     private lateinit var infoSongImage: ImageView
     private lateinit var infoSongTitle: TextView
@@ -81,18 +79,16 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     private val updateRunnable = object : Runnable {
         override fun run() {
             try {
-                player?.currentPosition?.let { current ->
-                    ObjectAnimator.ofInt(seekBar, "progress", lastProgress, current).apply {
-                        duration = 500L
-                        interpolator = LinearInterpolator()
-                        start()
-                    }
-                    lastProgress = current
-                    tvCurrentTime.text = formatTime(current)
+                if (!isUserSeeking && isPlayerPrepared && player?.isPlaying == true) {
+                    val pos = player!!.currentPosition
+                    seekBar.progress = pos
+                    tvCurrentTime.text = formatTime(pos)
+                    handler.postDelayed(this, 100)
+                } else {
+                    handler.postDelayed(this, 500)
                 }
+            } catch (_: IllegalStateException) {
                 handler.postDelayed(this, 500)
-            } catch (e: IllegalStateException) {
-                handler.removeCallbacks(this)
             }
         }
     }
@@ -129,6 +125,13 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         localFilePath = intent.getStringExtra("EXTRA_FILE_PATH")
 
         initializeViews()
+
+        player?.apply {
+            setOnPreparedListener { mp ->
+                onTrackStarted()
+            }
+        }
+
         setupObservers()
         setupClickListeners()
         seekBar.isEnabled = false
@@ -255,26 +258,21 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     }
 
     private fun setupSeekBar() {
-        seekBar.isEnabled = false
-
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(sb: SeekBar) {
-                handler.removeCallbacks(updateRunnable)
+                isUserSeeking = true
             }
 
             override fun onStopTrackingTouch(sb: SeekBar) {
-                handler.removeCallbacks(updateRunnable)
-                if (!isPlayerPrepared) return
-
-                try {
+                isUserSeeking = false
+                if (isPlayerPrepared) {
                     player?.seekTo(sb.progress)
-                } catch (ise: IllegalStateException) {
+                    tvCurrentTime.text = formatTime(sb.progress)
                 }
-                handler.post(updateRunnable)
             }
 
-            override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {
-                if (fromUser) tvCurrentTime.text = formatTime(p)
+            override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser) tvCurrentTime.text = formatTime(progress)
             }
         })
     }
@@ -288,34 +286,20 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                 private val SWIPE_VELOCITY_THRESHOLD = 100
 
                 override fun onFling(
-                    e1: MotionEvent?,
-                    e2: MotionEvent,
-                    velocityX: Float,
-                    velocityY: Float
+                    e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float
                 ): Boolean {
-                    if (e1 == null || e2 == null)
-                        return super.onFling(e1, e2, velocityX, velocityY)
-
-                    val diffY = e2.y - e1.y
-                    val diffX = e2.x - e1.x
-                    if (kotlin.math.abs(diffY) > kotlin.math.abs(diffX) &&
-                        kotlin.math.abs(diffY) > SWIPE_THRESHOLD &&
+                    if (e1 != null &&
+                        kotlin.math.abs(e2.y - e1.y) > SWIPE_THRESHOLD &&
                         kotlin.math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD &&
-                        diffY > 0
+                        e2.y - e1.y > 0
                     ) {
                         finishAfterTransition()
                         overridePendingTransition(0, R.anim.slide_out_down)
                         return true
                     }
-                    return super.onFling(e1, e2, velocityX, velocityY)
+                    return false
                 }
-            }
-        )
-
-        findViewById<View>(android.R.id.content).setOnTouchListener { _, ev ->
-            gestureDetector.onTouchEvent(ev)
-            true
-        }
+            })
     }
 
     private fun updateUI(newSong: Song) {
@@ -365,9 +349,30 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         PlayerManager.playerStateListener = this
         updatePlayPauseButton(PlayerManager.isPlaying())
 
+        player?.let { mp ->
+            try {
+                isPlayerPrepared = true
+
+                val dur = mp.duration
+                if (dur > 0) {
+                    seekBar.max = dur
+                    tvTotalTime.text = formatTime(dur)
+                }
+                val pos = mp.currentPosition
+                seekBar.progress = pos
+                tvCurrentTime.text = formatTime(pos)
+
+                seekBar.isEnabled = true
+
+                handler.post(updateRunnable)
+            } catch (_: IllegalStateException) {
+            }
+        }
+
         isInPlaylistMode = (sharedPlayer.playlist.value?.size ?: 0) > 1
         updateButtonVisibility()
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -381,47 +386,42 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     override fun onTrackStarted() = runOnUiThread {
         isPlayerPrepared = true
-
         seekBar.isEnabled = true
-
-        try {
-            player?.duration?.let { dur ->
-                seekBar.max = dur
-                tvTotalTime.text = formatTime(dur)
-            }
-        } catch (_: IllegalStateException) { /* no listo, lo ignoramos */
-        }
-
-        lastProgress = 0
-        seekBar.progress = 0
-
+        initDuration()
         handler.post(updateRunnable)
     }
 
-
-    override fun onTrackPaused() = runOnUiThread {
-        sharedPlayer.setIsPlaying(false)
-        updatePlayPauseButton(false)
+    private fun initDuration() {
+        handler.postDelayed({
+            try {
+                val dur = player?.duration ?: 0
+                if (dur > 0) {
+                    seekBar.max = dur
+                    tvTotalTime.text = formatTime(dur)
+                } else {
+                    initDuration()
+                }
+            } catch (_: IllegalStateException) {
+                initDuration()
+            }
+        }, 100)
     }
 
     override fun onTrackResumed() = runOnUiThread {
-        sharedPlayer.setIsPlaying(true)
-        updatePlayPauseButton(true)
+        handler.post(updateRunnable)
+    }
+
+    override fun onTrackPaused() = runOnUiThread {
+        handler.removeCallbacks(updateRunnable)
     }
 
     override fun onTrackCompleted() = runOnUiThread {
-        isPlayerPrepared = false
         handler.removeCallbacks(updateRunnable)
-        sharedPlayer.setIsPlaying(false)
-        updatePlayPauseButton(false)
-        if (isInPlaylistMode) {
-            playNext()
-        }
+        if (isInPlaylistMode) playNext()
     }
 
     override fun onError() = runOnUiThread {
-        sharedPlayer.setIsPlaying(false)
-        updatePlayPauseButton(false)
+        handler.removeCallbacks(updateRunnable)
     }
 
     private fun updatePlayPauseButton(isPlaying: Boolean) {
@@ -557,14 +557,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         }
     }
 
-
-    fun onPrepared(mp: MediaPlayer) {
-        handler.post(updateRunnable)
-        try {
-            val dur = mp.duration
-            seekBar.max = dur
-            tvTotalTime.text = formatTime(dur)
-        } catch (e: IllegalStateException) { /* ignore */
-        }
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (gestureDetector.onTouchEvent(ev)) return true
+        return super.dispatchTouchEvent(ev)
     }
 }

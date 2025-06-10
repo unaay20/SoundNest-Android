@@ -11,8 +11,9 @@
         android:id="@+id/img_background_blur"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_main"
         android:scaleType="centerCrop"
-        android:src="@drawable/img_soundnest_logo_svg" />
+        android:src="@null" />
 
     <View
         android:layout_width="match_parent"
@@ -83,7 +84,7 @@
 
             <SeekBar
                 android:id="@+id/seekBar"
-                android:layout_width="294dp"
+                android:layout_width="0dp"
                 android:layout_height="28dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
@@ -139,9 +140,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_baseline_add_24"
             app:layout_constraintBottom_toTopOf="@id/controlPanel"
             app:layout_constraintStart_toEndOf="@id/btnComments"

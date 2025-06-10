@@ -2,18 +2,18 @@
 
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <size android:height="4dp"/>
-            <solid android:color="@color/background_main"/>
-            <corners android:radius="2dp"/>
+            <size android:height="4dp" />
+            <solid android:color="@color/background_main" />
+            <corners android:radius="2dp" />
         </shape>
     </item>
 
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape android:shape="rectangle">
-                <size android:height="4dp"/>
-                <solid android:color="@color/background_main"/>
-                <corners android:radius="2dp"/>
+                <size android:height="4dp" />
+                <solid android:color="@color/background_main" />
+                <corners android:radius="2dp" />
             </shape>
         </clip>
     </item>
@@ -21,13 +21,13 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <size android:height="4dp"/>
+                <size android:height="4dp" />
                 <gradient
                     android:startColor="@color/accent_orange"
                     android:centerColor="@color/accent_pink"
                     android:endColor="@color/accent_purple"
-                    android:angle="0"/>
-                <corners android:radius="2dp"/>
+                    android:angle="0" />
+                <corners android:radius="2dp" />
             </shape>
         </clip>
     </item>

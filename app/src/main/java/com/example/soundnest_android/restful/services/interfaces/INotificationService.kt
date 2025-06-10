@@ -4,7 +4,12 @@ import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.models.notification.CreateNotificationRequest
 import com.example.soundnest_android.restful.models.notification.NotificationResponse
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface INotificationService {
     @POST(RestfulRoutes.NOTIFICATION_CREATE)
