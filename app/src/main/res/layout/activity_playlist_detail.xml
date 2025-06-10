@@ -55,6 +55,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/guideline_bottom" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_play_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="40dp"
+        android:contentDescription="Reproducir playlist"
+        android:src="@drawable/ic_baseline_play"
+        app:layout_constraintBottom_toTopOf="@id/player_fragment_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/accent_purple" />
+
     <FrameLayout
         android:id="@+id/player_fragment_container"
         android:layout_width="match_parent"

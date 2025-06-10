@@ -20,7 +20,9 @@ import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.player.PlayerControlFragment
+import com.example.soundnest_android.ui.player.PlayerManager
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,6 +31,7 @@ import java.io.File
 class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
 
     private lateinit var songAdapter: SongAdapter
+    private var playlistSongs: List<Song> = emptyList()
 
     private val sharedPlayer: SharedPlayerViewModel by viewModels()
 
@@ -71,10 +74,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         val tvPlaylistName = findViewById<TextView>(R.id.tvPlaylistName)
 
         songAdapter = SongAdapter(
-            onSongClick = { song ->
-                SongDialogFragment.newInstance(song)
-                    .show(supportFragmentManager, "dlgSong")
-            },
+            onSongClick = { },
             isScrollingProvider = { false }
         )
         rvSongs.apply {
@@ -97,6 +97,11 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
             rvSongs.visibility = View.VISIBLE
         }
 
+        val fabPlay = findViewById<FloatingActionButton>(R.id.fab_play_playlist)
+        fabPlay.setOnClickListener {
+            playPlaylist()
+        }
+
         lifecycleScope.launch {
             when (val r = songService.getByIds(songIds)) {
                 is ApiResult.Success -> {
@@ -109,7 +114,9 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                             coverUrl = dto.pathImageUrl?.let { "$base$it" }
                         )
                     }
+                    playlistSongs = fullSongs
                     songAdapter.submitList(fullSongs)
+                    sharedPlayer.setPlaylist(playlistSongs)
                 }
 
                 is ApiResult.HttpError -> toast("HTTP ${r.code}: ${r.message}")
@@ -119,6 +126,32 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         }
     }
 
+    private fun playPlaylist() {
+        if (playlistSongs.isEmpty()) return
+
+        sharedPlayer.setPlaylist(playlistSongs)
+
+        downloadAndPlay(playlistSongs[0])
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            for (i in 1..minOf(2, playlistSongs.lastIndex)) {
+                val tmpFile = File(cacheDir, "song_${playlistSongs[i].id}.tmp")
+                if (tmpFile.exists()) tmpFile.delete()
+
+                val res = grpcService.downloadSongStreamTo(
+                    playlistSongs[i].id,
+                    tmpFile.outputStream()
+                )
+
+                if (res is GrpcResult.Success) {
+                    val finalFile = File(cacheDir, "song_${playlistSongs[i].id}.mp3")
+                    tmpFile.renameTo(finalFile)
+                }
+            }
+        }
+
+    }
+
     override fun playSong(song: Song) {
         lifecycleScope.launch {
             visitService.incrementVisit(song.id)
@@ -126,16 +159,40 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         downloadAndPlay(song)
     }
 
+    override fun playNext() {
+        val list = playlistSongs
+        val idx = sharedPlayer.currentIndex.value ?: return
+        if (idx + 1 < list.size) {
+            downloadAndPlay(list[idx + 1])
+            sharedPlayer.setCurrentIndex(idx + 1)
+        } else {
+            PlayerManager.getPlayer()?.seekTo(PlayerManager.getPlayer()!!.duration)
+        }
+    }
+
+    override fun playPrevious() {
+        val list = playlistSongs
+        val idx = sharedPlayer.currentIndex.value ?: return
+        if (idx - 1 >= 0) {
+            downloadAndPlay(list[idx - 1])
+            sharedPlayer.setCurrentIndex(idx - 1)
+        } else {
+            PlayerManager.getPlayer()?.seekTo(0)
+        }
+    }
+
+
     private fun downloadAndPlay(song: Song) {
-        val cacheFile = File(cacheDir, "song_${song.id}.mp3")
+        val cacheFile = File(cacheDir, "song_${'$'}{song.id}.mp3")
         if (cacheFile.exists()) {
             sharedPlayer.playFromFile(song, cacheFile)
+            sharedPlayer.setCurrentIndex(playlistSongs.indexOf(song))
             return
         }
 
         sharedPlayer.setLoading(true)
         lifecycleScope.launch(Dispatchers.IO) {
-            val tmp = File(cacheDir, "song_${song.id}.tmp").also { if (it.exists()) it.delete() }
+            val tmp = File(cacheDir, "song_${'$'}{song.id}.tmp").apply { if (exists()) delete() }
             when (val res = grpcService.downloadSongStreamTo(song.id, tmp.outputStream())) {
                 is GrpcResult.Success -> tmp.renameTo(cacheFile)
                 else -> tmp.delete()
@@ -143,6 +200,25 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
                 sharedPlayer.playFromFile(song, cacheFile)
+                sharedPlayer.setCurrentIndex(playlistSongs.indexOfFirst { it.id == song.id })
+
+                val currentIndex = playlistSongs.indexOfFirst { it.id == song.id }
+                val nextIndex = currentIndex + 3
+                if (nextIndex < playlistSongs.size) {
+                    preloadSong(playlistSongs[nextIndex])
+                }
+            }
+        }
+    }
+
+    private fun preloadSong(song: Song) {
+        val cacheFile = File(cacheDir, "song_${'$'}{song.id}.mp3")
+        if (cacheFile.exists()) return
+        lifecycleScope.launch(Dispatchers.IO) {
+            val tmp = File(cacheDir, "song_${'$'}{song.id}.tmp").apply { if (exists()) delete() }
+            when (val res = grpcService.downloadSongStreamTo(song.id, tmp.outputStream())) {
+                is GrpcResult.Success -> tmp.renameTo(cacheFile)
+                else -> tmp.delete()
             }
         }
     }

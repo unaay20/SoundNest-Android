@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Song
+import com.example.soundnest_android.ui.songs.PlayerHost
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,6 +29,8 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
     private lateinit var artistName: TextView
     private lateinit var btnPlayPause: ImageButton
     private lateinit var progressLoading: ProgressBar
+    private lateinit var btnNext: ImageButton
+    private lateinit var btnPrevious: ImageButton
     private var currentSong: Song? = null
     private var currentFile: File? = null
     private var isFirstPlaybackAttemptInFragment: Boolean = true
@@ -40,6 +43,8 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         artistName = view.findViewById(R.id.artistName)
         btnPlayPause = view.findViewById(R.id.btnPlayPause)
         progressLoading = view.findViewById(R.id.progress_loading)
+        btnPrevious = view.findViewById(R.id.btnBack)
+        btnNext = view.findViewById(R.id.btnNext)
 
         PlayerManager.playerStateListener = this
 
@@ -51,12 +56,34 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
             }
         }
 
+        shared.isPlayingLive.observe(viewLifecycleOwner) { playing ->
+            btnPlayPause.setImageResource(
+                if (playing) R.drawable.ic_baseline_pause else R.drawable.ic_baseline_play
+            )
+        }
+
+        shared.currentIndex.observe(viewLifecycleOwner) { idx ->
+            shared.playlist.value?.getOrNull(idx)?.let { song ->
+                val file = File(requireContext().cacheDir, "song_${song.id}.mp3")
+                shared.playFromFile(song, file)
+                if (file.exists()) {
+                    PlayerManager.playFile(requireContext(), file)
+                }
+            }
+        }
+
         shared.pendingFile.observe(viewLifecycleOwner) { (song, file) ->
             currentSong = song
             currentFile = file
             songTitle.text = song.title
             artistName.text = song.artist
-            Glide.with(this).load(song.coverUrl).circleCrop().into(songImage)
+            Glide.with(this)
+                .load(song.coverUrl)
+                .placeholder(R.drawable.img_soundnest_logo_svg)
+                .error(R.drawable.img_soundnest_logo_svg)
+                .circleCrop()
+                .into(songImage)
+
 
             if (isFirstPlaybackAttemptInFragment) {
                 Log.d("PlayerControlFragment", "First playback attempt, delaying...")
@@ -72,8 +99,20 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         }
 
         btnPlayPause.setOnClickListener {
-            PlayerManager.togglePlayPause()
+            val playing = PlayerManager.togglePlayPause()
+            shared.setIsPlaying(playing)
         }
+
+
+        btnNext.setOnClickListener {
+            (activity as? PlayerHost)?.playNext()
+        }
+
+        btnPrevious.setOnClickListener {
+            (activity as? PlayerHost)?.playPrevious()
+        }
+
+
 
         root.setOnClickListener {
             currentSong?.let { song ->
@@ -86,8 +125,13 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
                         ?.let { path -> putExtra("EXTRA_FILE_PATH", path) }
                 }
                 startActivity(intent)
+                requireActivity().overridePendingTransition(
+                    R.anim.slide_in_up_fadein,
+                    R.anim.fade_none
+                )
             }
         }
+
 
         updatePlayPauseButton()
     }

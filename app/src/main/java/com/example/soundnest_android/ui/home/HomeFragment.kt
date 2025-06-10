@@ -24,6 +24,7 @@ import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.ui.notifications.NotificationsActivity
+import com.example.soundnest_android.ui.player.PlayerManager
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongAdapter
@@ -169,6 +170,23 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             visitService.incrementVisit(song.id)
         }
         downloadAndQueue(song)
+    }
+
+    override fun playNext() {
+        PlayerManager.getPlayer()?.apply {
+            pause()
+            seekTo(duration)
+            seekTo(0)
+            start()
+        }
+    }
+
+    override fun playPrevious() {
+        PlayerManager.getPlayer()?.apply {
+            pause()
+            seekTo(0)
+            start()
+        }
     }
 
     private fun downloadAndQueue(song: Song) {

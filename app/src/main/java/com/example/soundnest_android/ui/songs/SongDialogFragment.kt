@@ -67,4 +67,6 @@ class SongDialogFragment : DialogFragment() {
 
 interface PlayerHost {
     fun playSong(song: Song)
+    fun playNext()
+    fun playPrevious()
 }

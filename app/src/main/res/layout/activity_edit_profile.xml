@@ -71,18 +71,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="24dp"
-            android:textColor="@color/accent_purple"
+            android:textColor="@color/red"
             android:text="@string/btn_change_password" />
-
-        <Button
-            android:id="@+id/btnCancel"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="118dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="24dp"
-            android:textColor="@color/black"
-            android:text="@string/btn_cancel" />
 
         <Button
             android:id="@+id/btnSaveProfile"
@@ -93,6 +83,5 @@
             android:layout_marginTop="24dp"
             android:textColor="@color/black"
             android:text="@string/btn_save_changes" />
-
     </LinearLayout>
 </ScrollView>

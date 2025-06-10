@@ -74,6 +74,8 @@
                 android:id="@+id/tvCurrentTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
                 android:text="0:00"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
@@ -81,18 +83,24 @@
 
             <SeekBar
                 android:id="@+id/seekBar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="294dp"
+                android:layout_height="28dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:layout_constraintStart_toEndOf="@id/tvCurrentTime"
+                android:progressDrawable="@drawable/seekbar_track"
+                android:splitTrack="false"
+                android:thumbTint="@color/accent_purple"
+                android:thumbOffset="0dp"
                 app:layout_constraintEnd_toStartOf="@id/tvTotalTime"
+                app:layout_constraintStart_toEndOf="@id/tvCurrentTime"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvTotalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="12dp"
                 android:text="0:00"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -164,18 +172,16 @@
 
             <ImageButton
                 android:id="@+id/btnPlayPause"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_play_button"
+                android:padding="12dp"
                 android:scaleType="centerInside"
-                android:clickable="true"
-                android:focusable="true"
                 android:src="@drawable/ic_baseline_play"
-                app:layout_constraintEnd_toStartOf="@id/btnNext"
                 app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintWidth_percent="0.3333"
-                tools:layout_editor_absoluteY="57dp" />
+                app:layout_constraintEnd_toStartOf="@id/btnNext"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageButton
                 android:id="@+id/btnNext"

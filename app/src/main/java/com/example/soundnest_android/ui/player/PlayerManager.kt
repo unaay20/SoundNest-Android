@@ -113,6 +113,16 @@ object PlayerManager {
         return false
     }
 
+    fun playNext() {
+        PlayerManager.getPlayer()?.let { mp ->
+            mp.seekTo(mp.duration)
+        }
+    }
+
+    fun playPrevious() {
+        PlayerManager.getPlayer()?.seekTo(0)
+    }
+
     fun getPlayer(): MediaPlayer? {
         return mediaPlayer
     }

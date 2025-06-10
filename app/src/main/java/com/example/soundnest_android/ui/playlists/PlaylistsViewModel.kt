@@ -182,6 +182,7 @@ class PlaylistsViewModel(
                         }.toList()
 
                         _playlists.value = newPlaylists
+                        loadPlaylists()
                     } else {
                         Log.w(TAG, "addSongToPlaylist: Playlist with ID $playlistId not found.")
                     }

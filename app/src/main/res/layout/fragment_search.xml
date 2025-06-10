@@ -82,5 +82,15 @@
         app:tint="@color/white"
         tools:layout_editor_absoluteX="300dp"
         tools:layout_editor_absoluteY="609dp" />
+
+    <FrameLayout
+        android:id="@+id/player_control_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

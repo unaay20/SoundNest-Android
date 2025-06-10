@@ -15,4 +15,5 @@
     <color name="accent_blue">#4D9FFF</color>
     <color name="text_white">#FFFFFF</color>
     <color name="text_disabled">#A0A0B0</color>
+    <color name="red">#FF0000</color>
 </resources>

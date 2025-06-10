@@ -16,6 +16,8 @@ import android.widget.Button
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,21 +29,17 @@ import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.databinding.FragmentSearchBinding
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
-import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.SongService
 import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
-import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongDialogFragment
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
-class SearchFragment : Fragment(), PlayerHost {
+class SearchFragment : Fragment() {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
@@ -66,6 +64,19 @@ class SearchFragment : Fragment(), PlayerHost {
             RestfulRoutes.getBaseUrl(),
             SharedPrefsTokenProvider(requireContext())
         )
+    }
+
+    private val playLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+            val song = data.getSerializableExtra("EXTRA_SONG_OBJ") as? Song
+            val path = data.getStringExtra("EXTRA_FILE_PATH")
+            if (song != null && path != null) {
+                sharedPlayer.playFromFile(song, File(path))
+            }
+        }
     }
 
     override fun onCreateView(
@@ -158,7 +169,7 @@ class SearchFragment : Fragment(), PlayerHost {
         recentSearches.add(0, query)
         saveToFile()
 
-        startActivity(
+        playLauncher.launch(
             Intent(requireContext(), SearchResultActivity::class.java)
                 .putExtra("QUERY", query)
         )
@@ -298,35 +309,6 @@ class SearchFragment : Fragment(), PlayerHost {
                 e.printStackTrace()
             }
         }.start()
-    }
-
-    override fun playSong(song: Song) {
-        lifecycleScope.launch {
-            visitService.incrementVisit(song.id)
-        }
-        downloadAndQueue(song)
-    }
-
-
-    private fun downloadAndQueue(song: Song) {
-        val cacheFile = File(requireContext().cacheDir, "song_${song.id}.mp3")
-        if (cacheFile.exists()) {
-            sharedPlayer.playFromFile(song, cacheFile)
-            return
-        }
-        sharedPlayer.setLoading(true)
-        lifecycleScope.launch(Dispatchers.IO) {
-            val tmpFile = File(requireContext().cacheDir, "song_${song.id}.tmp")
-            if (tmpFile.exists()) tmpFile.delete()
-            when (val res = songGrpc.downloadSongStreamTo(song.id, tmpFile.outputStream())) {
-                is GrpcResult.Success -> tmpFile.renameTo(cacheFile)
-                else -> tmpFile.delete()
-            }
-            withContext(Dispatchers.Main) {
-                sharedPlayer.setLoading(false)
-                sharedPlayer.playFromFile(song, cacheFile)
-            }
-        }
     }
 
     override fun onDestroyView() {
