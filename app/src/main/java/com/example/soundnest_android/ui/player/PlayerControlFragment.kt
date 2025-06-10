@@ -88,7 +88,7 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
             if (isFirstPlaybackAttemptInFragment) {
                 Log.d("PlayerControlFragment", "First playback attempt, delaying...")
                 viewLifecycleOwner.lifecycleScope.launch {
-                    delay(500) // Delay for 500ms
+                    delay(500)
                     shared.playFromFile(song, file)
                     PlayerManager.playFile(requireContext(), file)
                 }
@@ -117,12 +117,13 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         root.setOnClickListener {
             currentSong?.let { song ->
                 val intent = Intent(requireContext(), SongInfoActivity::class.java).apply {
-                    putExtra("EXTRA_TITLE", song.title)
-                    putExtra("EXTRA_ARTIST", song.artist)
-                    putExtra("EXTRA_COVER", song.coverUrl)
                     putExtra("EXTRA_SONG_OBJ", song)
                     currentFile?.absolutePath
                         ?.let { path -> putExtra("EXTRA_FILE_PATH", path) }
+
+                    val playlist = ArrayList(shared.playlist.value ?: emptyList<Song>())
+                    putExtra("EXTRA_PLAYLIST", playlist as java.io.Serializable)
+                    putExtra("EXTRA_INDEX", shared.currentIndex.value ?: 0)
                 }
                 startActivity(intent)
                 requireActivity().overridePendingTransition(

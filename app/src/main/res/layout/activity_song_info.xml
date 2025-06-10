@@ -149,11 +149,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/controlPanel"
-            android:layout_width="376dp"
-            android:layout_height="93dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="164dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/seekContainer">
 
@@ -163,12 +163,27 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:clickable="true"
-                android:focusable="true"
                 android:src="@drawable/ic_baseline_skip_previous_24"
-                app:layout_constraintEnd_toStartOf="@id/btnPlayPause"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnRewind10"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent="0.3333" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1666" />
+
+            <ImageButton
+                android:id="@+id/btnRewind10"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_baseline_replay_10_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnPlayPause"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1666" />
 
             <ImageButton
                 android:id="@+id/btnPlayPause"
@@ -178,10 +193,23 @@
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_baseline_play"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnForward10"
+                app:layout_constraintStart_toEndOf="@id/btnRewind10"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnForward10"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_baseline_forward_10_24"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btnNext"
+                app:layout_constraintStart_toEndOf="@id/btnPlayPause"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintWidth_percent="0.1666" />
 
             <ImageButton
                 android:id="@+id/btnNext"
@@ -189,12 +217,13 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:clickable="true"
-                android:focusable="true"
                 android:src="@drawable/ic_baseline_skip_next_24"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnPlayPause"
-                app:layout_constraintWidth_percent="0.3333" />
+                app:layout_constraintStart_toEndOf="@id/btnForward10"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1666" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

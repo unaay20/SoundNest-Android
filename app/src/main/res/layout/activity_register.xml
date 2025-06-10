@@ -34,14 +34,16 @@
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:counterMaxLength="20"
-            android:layout_marginTop="24dp">
+            android:layout_marginTop="24dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsername"
                 android:layout_width="match_parent"
                 android:textColor="@color/accent_orange"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:maxLength="20" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -83,15 +85,17 @@
             app:layout_constraintTop_toBottomOf="@id/tilEmail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:counterMaxLength="20"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/accent_orange"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:maxLength="20" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -108,7 +112,9 @@
             app:layout_constraintTop_toBottomOf="@id/tilPassword"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="100">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etAdditionalInfo"
@@ -116,6 +122,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:minLines="3"
+                android:gravity="top|start"
+                android:maxLength="200"
                 android:textColor="@color/accent_orange" />
         </com.google.android.material.textfield.TextInputLayout>
 

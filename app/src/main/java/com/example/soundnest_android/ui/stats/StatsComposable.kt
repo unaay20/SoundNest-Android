@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
-import com.example.soundnest_android.restful.models.visits.GenrePlayCount
-import com.example.soundnest_android.restful.models.visits.SongPlayCount
 import com.example.soundnest_android.restful.services.VisitService
 import com.example.soundnest_android.restful.utils.ApiResult
 
@@ -38,9 +36,7 @@ fun StatsScreenAll() {
     val context = LocalContext.current
 
     val tokenProvider = remember { SharedPrefsTokenProvider(context) }
-    val visitService = remember {
-        VisitService(RestfulRoutes.getBaseUrl(), tokenProvider)
-    }
+    val visitService = remember { VisitService(RestfulRoutes.getBaseUrl(), tokenProvider) }
     val userId: Int = tokenProvider.getUserId()
 
     var labelsUser by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -60,51 +56,72 @@ fun StatsScreenAll() {
 
     LaunchedEffect(Unit) {
         if (userId >= 0) {
-            when (val result: ApiResult<List<SongPlayCount>?> =
-                visitService.getTopSongsByUser(userId, limit = 5)  // <-- limit = 5
-            ) {
+            when (val result = visitService.getTopSongsByUser(userId, limit = 5)) {
                 is ApiResult.Success -> {
                     val dataList = result.data.orEmpty()
                     labelsUser = dataList.map { it.songName }
                     valuesUser = dataList.map { it.totalPlayCount.toFloat() }
                 }
 
-                is ApiResult.HttpError -> TODO()
-                is ApiResult.NetworkError -> TODO()
-                is ApiResult.UnknownError -> TODO()
+                is ApiResult.HttpError -> {
+                    errorUser = "Error en la petición (canciones usuario): código ${result.code}"
+                }
+
+                is ApiResult.NetworkError -> {
+                    errorUser = "Error de red. Por favor comprueba tu conexión."
+                }
+
+                is ApiResult.UnknownError -> {
+                    errorUser =
+                        "Error desconocido: ${result.exception?.localizedMessage ?: "Ocurrió un error inesperado"}"
+                }
             }
         } else {
             errorUser = "Usuario no autenticado"
         }
         isLoadingUser = false
 
-        when (val result: ApiResult<List<SongPlayCount>?> =
-            visitService.getTopSongsGlobal(limit = 5)
-        ) {
+        when (val result = visitService.getTopSongsGlobal(limit = 5)) {
             is ApiResult.Success -> {
                 val dataList = result.data.orEmpty()
                 labelsGlobal = dataList.map { it.songName }
                 valuesGlobal = dataList.map { it.totalPlayCount.toFloat() }
             }
 
-            is ApiResult.HttpError -> TODO()
-            is ApiResult.NetworkError -> TODO()
-            is ApiResult.UnknownError -> TODO()
+            is ApiResult.HttpError -> {
+                errorGlobal = "Error en la petición (canciones globales): código ${result.code}"
+            }
+
+            is ApiResult.NetworkError -> {
+                errorGlobal = "Error de red. Por favor comprueba tu conexión."
+            }
+
+            is ApiResult.UnknownError -> {
+                errorGlobal =
+                    "Error desconocido: ${result.exception?.localizedMessage ?: "Ocurrió un error inesperado"}"
+            }
         }
         isLoadingGlobal = false
 
-        when (val result: ApiResult<List<GenrePlayCount>?> =
-            visitService.getTopGenresGlobal(limit = 5)
-        ) {
+        when (val result = visitService.getTopGenresGlobal(limit = 5)) {
             is ApiResult.Success -> {
                 val dataList = result.data.orEmpty()
                 labelsGenres = dataList.map { it.genreName }
                 valuesGenres = dataList.map { it.totalPlayCount.toFloat() }
             }
 
-            is ApiResult.HttpError -> TODO()
-            is ApiResult.NetworkError -> TODO()
-            is ApiResult.UnknownError -> TODO()
+            is ApiResult.HttpError -> {
+                errorGenres = "Error en la petición (géneros globales): código ${result.code}"
+            }
+
+            is ApiResult.NetworkError -> {
+                errorGenres = "Error de red. Por favor comprueba tu conexión."
+            }
+
+            is ApiResult.UnknownError -> {
+                errorGenres =
+                    "Error desconocido: ${result.exception?.localizedMessage ?: "Ocurrió un error inesperado"}"
+            }
         }
         isLoadingGenres = false
     }
@@ -122,37 +139,15 @@ fun StatsScreenAll() {
             color = Color.Unspecified
         )
         when {
-            isLoadingUser -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            errorUser != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = errorUser!!, color = Color.Red)
-                }
-            }
-
-            else -> {
-                BarChartCompose(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
-                    labels = labelsUser,
-                    values = valuesUser
-                )
-            }
+            isLoadingUser -> LoadingPlaceholder()
+            errorUser != null -> ErrorPlaceholder(message = errorUser!!)
+            else -> BarChartCompose(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                labels = labelsUser,
+                values = valuesUser
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -163,37 +158,15 @@ fun StatsScreenAll() {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         when {
-            isLoadingGlobal -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            errorGlobal != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = errorGlobal!!, color = Color.Red)
-                }
-            }
-
-            else -> {
-                BarChartCompose(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
-                    labels = labelsGlobal,
-                    values = valuesGlobal
-                )
-            }
+            isLoadingGlobal -> LoadingPlaceholder()
+            errorGlobal != null -> ErrorPlaceholder(message = errorGlobal!!)
+            else -> BarChartCompose(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                labels = labelsGlobal,
+                values = valuesGlobal
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -204,40 +177,42 @@ fun StatsScreenAll() {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         when {
-            isLoadingGenres -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            errorGenres != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = errorGenres!!, color = Color.Red)
-                }
-            }
-
-            else -> {
-                BarChartCompose(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
-                    labels = labelsGenres,
-                    values = valuesGenres
-                )
-            }
+            isLoadingGenres -> LoadingPlaceholder()
+            errorGenres != null -> ErrorPlaceholder(message = errorGenres!!)
+            else -> BarChartCompose(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                labels = labelsGenres,
+                values = valuesGenres
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun LoadingPlaceholder() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ErrorPlaceholder(message: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = message, color = Color.Red)
     }
 }
 
@@ -261,11 +236,10 @@ fun BarChartCompose(
         val canvasHeight = size.height
 
         val yAxisMargin = 40f
-
         val chartHeight = canvasHeight - 30f
-
         val numTicks = 5
         val tickSpacing = chartHeight / numTicks
+
         val textPaint = android.graphics.Paint().apply {
             color = android.graphics.Color.GRAY
             textSize = 20f
@@ -273,7 +247,7 @@ fun BarChartCompose(
         }
         for (i in 0..numTicks) {
             val y = chartHeight - i * tickSpacing
-            val labelValue = ((i * maxValue / numTicks).toInt()).toString()
+            val labelValue = (i * maxValue / numTicks).toInt().toString()
 
             drawContext.canvas.nativeCanvas.drawText(
                 labelValue,
@@ -296,7 +270,6 @@ fun BarChartCompose(
 
         values.forEachIndexed { index, value ->
             val barColor = if (index % 2 == 0) Color(0xFFFF9800) else Color(0xFF9C27B0)
-
             val normalizedHeight = (value / maxValue) * chartHeight
             val left = yAxisMargin + index * (barSlotWidth * 2) + (barSlotWidth / 2)
             val top = chartHeight - normalizedHeight
@@ -316,11 +289,7 @@ fun BarChartCompose(
                 isFakeBoldText = true
             }
             val xPos = left + barWidth / 2
-            val yPos = if (normalizedHeight < 20f) {
-                bottom - normalizedHeight - 4f
-            } else {
-                top - 4f
-            }
+            val yPos = if (normalizedHeight < 20f) bottom - normalizedHeight - 4f else top - 4f
             drawContext.canvas.nativeCanvas.drawText(
                 value.toInt().toString(),
                 xPos,
@@ -328,19 +297,13 @@ fun BarChartCompose(
                 numberPaint
             )
 
-            val label = labels[index]
             val labelPaint = android.graphics.Paint().apply {
                 color = android.graphics.Color.BLACK
                 textSize = 20f
                 textAlign = android.graphics.Paint.Align.CENTER
             }
             val labelY = canvasHeight - 4f
-            drawContext.canvas.nativeCanvas.drawText(
-                label,
-                xPos,
-                labelY,
-                labelPaint
-            )
+            drawContext.canvas.nativeCanvas.drawText(labels[index], xPos, labelY, labelPaint)
         }
 
         drawLine(

@@ -3,6 +3,7 @@ package com.example.soundnest_android.ui.player
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -53,6 +54,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
             GrpcRoutes.getPort()
         ) { SharedPrefsTokenProvider(this).getToken() }
     }
+    private var isPlayerPrepared = false
     private lateinit var imgBackground: ImageView
     private lateinit var infoSongImage: ImageView
     private lateinit var infoSongTitle: TextView
@@ -66,6 +68,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     private lateinit var btnAddPlaylist: ImageButton
     private lateinit var btnNext: ImageButton
     private lateinit var btnPrevious: ImageButton
+    private lateinit var btnRewind10: ImageButton
+    private lateinit var btnForward10: ImageButton
 
     private lateinit var gestureDetector: GestureDetectorCompat
 
@@ -76,17 +80,20 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     private var lastProgress = 0
     private val updateRunnable = object : Runnable {
         override fun run() {
-            player?.currentPosition?.let { current ->
-                ObjectAnimator.ofInt(seekBar, "progress", lastProgress, current).apply {
-                    duration = 500L
-                    interpolator = LinearInterpolator()
-                    start()
+            try {
+                player?.currentPosition?.let { current ->
+                    ObjectAnimator.ofInt(seekBar, "progress", lastProgress, current).apply {
+                        duration = 500L
+                        interpolator = LinearInterpolator()
+                        start()
+                    }
+                    lastProgress = current
+                    tvCurrentTime.text = formatTime(current)
                 }
-                lastProgress = current
-
-                tvCurrentTime.text = formatTime(current)
+                handler.postDelayed(this, 500)
+            } catch (e: IllegalStateException) {
+                handler.removeCallbacks(this)
             }
-            handler.postDelayed(this, 500)
         }
     }
 
@@ -98,6 +105,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     private lateinit var song: Song
     private var localFilePath: String? = null
+    private var currentSong: Song? = null
+    private var isInPlaylistMode = false
 
     private val playlistViewModel: PlaylistsViewModel by viewModels {
         PlaylistsViewModelFactory(
@@ -119,6 +128,37 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
             ?: throw IllegalArgumentException("Se esperaba EXTRA_SONG_OBJ")
         localFilePath = intent.getStringExtra("EXTRA_FILE_PATH")
 
+        initializeViews()
+        setupObservers()
+        setupClickListeners()
+        seekBar.isEnabled = false
+        handler.removeCallbacks(updateRunnable)
+        setupSeekBar()
+        setupGestureDetector()
+
+        @Suppress("UNCHECKED_CAST")
+        val list = intent
+            .getSerializableExtra("EXTRA_PLAYLIST") as? ArrayList<Song>
+
+        if (list != null) {
+            sharedPlayer.setPlaylist(list)
+            val idx = intent.getIntExtra("EXTRA_INDEX", 0)
+            sharedPlayer.setCurrentIndex(idx)
+            isInPlaylistMode = list.size > 1
+        } else {
+            isInPlaylistMode = false
+        }
+
+        sharedPlayer.playlist.value?.let { list ->
+            isInPlaylistMode = list.size > 1
+        }
+        updateButtonVisibility()
+
+        val initialSong = intent.getSerializableExtra("EXTRA_SONG_OBJ") as Song
+        updateUI(initialSong)
+    }
+
+    private fun initializeViews() {
         imgBackground = findViewById(R.id.img_background_blur)
         infoSongImage = findViewById(R.id.infoSongImage)
         infoSongTitle = findViewById(R.id.infoSongTitle)
@@ -132,74 +172,73 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         btnAddPlaylist = findViewById(R.id.btnAddPlaylist)
         btnPrevious = findViewById(R.id.btnBack)
         btnNext = findViewById(R.id.btnNext)
+        btnRewind10 = findViewById(R.id.btnRewind10)
+        btnForward10 = findViewById(R.id.btnForward10)
+    }
 
-        infoSongTitle.text = song.title
-        infoArtistName.text = song.artist
+    private fun setupObservers() {
+        sharedPlayer.pendingFile.observe(this) { (newSong, file) ->
+            currentSong = newSong
+            updateUI(newSong)
 
-        Glide.with(this).load(song.coverUrl).into(imgBackground)
-        Glide.with(this).load(song.coverUrl).centerCrop().into(infoSongImage)
-
-        player?.duration?.let { duration ->
-            seekBar.max = duration
-            tvTotalTime.text = formatTime(duration)
+            file?.let {
+                PlayerManager.playFile(this, it)
+                sharedPlayer.setIsPlaying(true)
+            }
         }
 
-        sharedPlayer.pendingFile.observe(this) { (song, file) ->
-            infoSongTitle.text = song.title
-            infoArtistName.text = song.artist
-            Glide.with(this)
-                .load(song.coverUrl)
-                .placeholder(R.drawable.img_soundnest_logo_svg)
-                .circleCrop()
-                .into(infoSongImage)
-
-            PlayerManager.playFile(this, file)
+        sharedPlayer.currentIndex.observe(this) { idx ->
+            sharedPlayer.playlist.value?.getOrNull(idx)?.let { s ->
+                updateUI(s)
+                song = s
+            }
         }
 
-        handler.post(updateRunnable)
+        sharedPlayer.isPlayingLive.observe(this) { playing ->
+            updatePlayPauseButton(playing)
+        }
+    }
+
+    private fun setupClickListeners() {
+        btnRewind10.setOnClickListener {
+            player?.let { mp ->
+                try {
+                    val newPos = maxOf(0, mp.currentPosition - 10_000)
+                    mp.seekTo(newPos)
+                    tvCurrentTime.text = formatTime(newPos)
+                    seekBar.progress = newPos
+                } catch (e: IllegalStateException) {
+                    // aún no preparado → ignoro
+                }
+            }
+        }
+
+        btnForward10.setOnClickListener {
+            player?.let { mp ->
+                val newPos = minOf(mp.duration, mp.currentPosition + 10_000)
+                mp.seekTo(newPos)
+                tvCurrentTime.text = formatTime(newPos)
+                seekBar.progress = newPos
+            }
+        }
 
         btnPrevious.setOnClickListener {
-            playPrevious()
-            handler.post(updateRunnable)
+            if (isInPlaylistMode) {
+                playPrevious()
+            }
         }
-
-        btnNext.setOnClickListener {
-            playNext()
-            handler.post(updateRunnable)
-        }
-
-        val options = RequestOptions()
-            .placeholder(R.drawable.img_soundnest_logo_svg)
-            .error(R.drawable.img_soundnest_logo_svg)
-        Glide.with(this)
-            .load(song.coverUrl)
-            .apply(options)
-            .into(imgBackground)
-        Glide.with(this)
-            .load(song.coverUrl)
-            .apply(options.centerCrop())
-            .into(infoSongImage)
-
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStartTrackingTouch(sb: SeekBar) {
-                handler.removeCallbacks(updateRunnable)
-            }
-
-            override fun onStopTrackingTouch(sb: SeekBar) {
-                player?.seekTo(sb.progress)
-                handler.post(updateRunnable)
-            }
-
-            override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {
-                if (fromUser) tvCurrentTime.text = formatTime(p)
-            }
-        })
 
         btnPlayPause.setOnClickListener {
             val playing = PlayerManager.togglePlayPause()
             sharedPlayer.setIsPlaying(playing)
             updatePlayPauseButton(playing)
             if (playing) handler.post(updateRunnable) else handler.removeCallbacks(updateRunnable)
+        }
+
+        btnNext.setOnClickListener {
+            if (isInPlaylistMode) {
+                playNext()
+            }
         }
 
         btnDownload.setOnClickListener { pickDirLauncher.launch(null) }
@@ -213,7 +252,36 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         btnAddPlaylist.setOnClickListener {
             showPlaylistPopup(it as View)
         }
+    }
 
+    private fun setupSeekBar() {
+        seekBar.isEnabled = false
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(sb: SeekBar) {
+                handler.removeCallbacks(updateRunnable)
+            }
+
+            override fun onStopTrackingTouch(sb: SeekBar) {
+                handler.removeCallbacks(updateRunnable)
+                if (!isPlayerPrepared) return
+
+                try {
+                    player?.seekTo(sb.progress)
+                } catch (ise: IllegalStateException) {
+                }
+                handler.post(updateRunnable)
+            }
+
+            override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {
+                if (fromUser) tvCurrentTime.text = formatTime(p)
+            }
+        })
+    }
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupGestureDetector() {
         gestureDetector = GestureDetectorCompat(this,
             object : GestureDetector.SimpleOnGestureListener() {
                 private val SWIPE_THRESHOLD = 100
@@ -250,17 +318,60 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         }
     }
 
+    private fun updateUI(newSong: Song) {
+        infoSongTitle.text = newSong.title
+        infoArtistName.text = newSong.artist
+
+        val options = RequestOptions()
+            .placeholder(R.drawable.img_soundnest_logo_svg)
+            .error(R.drawable.img_soundnest_logo_svg)
+
+        Glide.with(this)
+            .load(newSong.coverUrl)
+            .apply(options)
+            .into(imgBackground)
+
+        Glide.with(this)
+            .load(newSong.coverUrl)
+            .apply(options.centerCrop())
+            .into(infoSongImage)
+
+        try {
+            player?.duration?.let { duration ->
+                seekBar.max = duration
+                tvTotalTime.text = formatTime(duration)
+            }
+        } catch (e: IllegalStateException) {
+            // MediaPlayer aún no preparado, lo ignoramos
+        }
+    }
+
+    private fun updateButtonVisibility() {
+        if (isInPlaylistMode) {
+            btnRewind10.visibility = View.VISIBLE
+            btnForward10.visibility = View.VISIBLE
+            btnPrevious.visibility = View.VISIBLE
+            btnNext.visibility = View.VISIBLE
+        } else {
+            btnRewind10.visibility = View.VISIBLE
+            btnForward10.visibility = View.VISIBLE
+            btnPrevious.visibility = View.GONE
+            btnNext.visibility = View.GONE
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         PlayerManager.playerStateListener = this
         updatePlayPauseButton(PlayerManager.isPlaying())
+
+        isInPlaylistMode = (sharedPlayer.playlist.value?.size ?: 0) > 1
+        updateButtonVisibility()
     }
 
     override fun onPause() {
         super.onPause()
-        if (PlayerManager.playerStateListener == this) {
-            PlayerManager.playerStateListener = null
-        }
+        PlayerManager.playerStateListener = null
     }
 
     override fun onDestroy() {
@@ -269,9 +380,24 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     }
 
     override fun onTrackStarted() = runOnUiThread {
-        sharedPlayer.setIsPlaying(true)
-        updatePlayPauseButton(true)
+        isPlayerPrepared = true
+
+        seekBar.isEnabled = true
+
+        try {
+            player?.duration?.let { dur ->
+                seekBar.max = dur
+                tvTotalTime.text = formatTime(dur)
+            }
+        } catch (_: IllegalStateException) { /* no listo, lo ignoramos */
+        }
+
+        lastProgress = 0
+        seekBar.progress = 0
+
+        handler.post(updateRunnable)
     }
+
 
     override fun onTrackPaused() = runOnUiThread {
         sharedPlayer.setIsPlaying(false)
@@ -284,15 +410,19 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     }
 
     override fun onTrackCompleted() = runOnUiThread {
+        isPlayerPrepared = false
+        handler.removeCallbacks(updateRunnable)
         sharedPlayer.setIsPlaying(false)
         updatePlayPauseButton(false)
+        if (isInPlaylistMode) {
+            playNext()
+        }
     }
 
     override fun onError() = runOnUiThread {
         sharedPlayer.setIsPlaying(false)
         updatePlayPauseButton(false)
     }
-
 
     private fun updatePlayPauseButton(isPlaying: Boolean) {
         btnPlayPause.setImageResource(
@@ -357,9 +487,10 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                         playlistViewModel.addSongToPlaylist(playlist.id, song.id)
                         Toast.makeText(
                             this@SongInfoActivity,
-                            "Añadido a “${playlist.name}”",
+                            "Añadido a ${playlist.name}",
                             Toast.LENGTH_SHORT
                         ).show()
+                        playlistViewModel.loadPlaylists()
                     } catch (e: Exception) {
                         Toast.makeText(
                             this@SongInfoActivity,
@@ -371,7 +502,6 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                 }
             }
         }
-        popupWindow.showAsDropDown(anchor, 0, 0)
     }
 
     override fun playSong(song: Song) {
@@ -379,57 +509,62 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     }
 
     override fun playNext() {
-        val list = sharedPlayer.playlist.value ?: return finishSong()
+        val list = sharedPlayer.playlist.value ?: return
         val idx = sharedPlayer.currentIndex.value ?: return
         if (idx + 1 < list.size) {
             val next = list[idx + 1]
             sharedPlayer.setCurrentIndex(idx + 1)
             downloadAndPlay(next)
-        } else {
-            finishSong()
         }
     }
 
     override fun playPrevious() {
-        val list = sharedPlayer.playlist.value ?: return restartSong()
+        val list = sharedPlayer.playlist.value ?: return
         val idx = sharedPlayer.currentIndex.value ?: return
         if (idx - 1 >= 0) {
             val prev = list[idx - 1]
             sharedPlayer.setCurrentIndex(idx - 1)
             downloadAndPlay(prev)
-        } else {
-            restartSong()
         }
     }
+
 
     private fun downloadAndPlay(song: Song) {
         val cacheFile = File(cacheDir, "song_${song.id}.mp3")
         if (cacheFile.exists()) {
             sharedPlayer.playFromFile(song, cacheFile)
+            PlayerManager.playFile(this, cacheFile)
+            sharedPlayer.setIsPlaying(true)
             return
         }
+
         sharedPlayer.setLoading(true)
         lifecycleScope.launch(Dispatchers.IO) {
-            val tmp = File(cacheDir, "song_${song.id}.tmp").apply { if (exists()) delete() }
-            when (val res = grpcService.downloadSongStreamTo(song.id, tmp.outputStream())) {
-                is GrpcResult.Success -> tmp.renameTo(cacheFile)
-                else -> tmp.delete()
-            }
+            val tmp = File(cacheDir, "song_${song.id}.tmp").apply { delete() }
+            val res = grpcService.downloadSongStreamTo(song.id, tmp.outputStream())
+            if (res is GrpcResult.Success) tmp.renameTo(cacheFile) else tmp.delete()
+
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
                 sharedPlayer.playFromFile(song, cacheFile)
-                val newIdx = sharedPlayer.playlist.value!!.indexOfFirst { it.id == song.id }
-                sharedPlayer.setCurrentIndex(newIdx)
+                PlayerManager.playFile(this@SongInfoActivity, cacheFile)
+                sharedPlayer.setIsPlaying(true)
+
+                val newIdx = sharedPlayer.playlist.value
+                    ?.indexOfFirst { it.id == song.id } ?: -1
+                if (newIdx >= 0) sharedPlayer.setCurrentIndex(newIdx)
             }
         }
     }
 
-    private fun finishSong() {
-        PlayerManager.getPlayer()?.seekTo(PlayerManager.getPlayer()!!.duration)
-    }
 
-    private fun restartSong() {
-        PlayerManager.getPlayer()?.seekTo(0)
+    fun onPrepared(mp: MediaPlayer) {
+        handler.post(updateRunnable)
+        try {
+            val dur = mp.duration
+            seekBar.max = dur
+            tvTotalTime.text = formatTime(dur)
+        } catch (e: IllegalStateException) { /* ignore */
+        }
     }
-
 }
