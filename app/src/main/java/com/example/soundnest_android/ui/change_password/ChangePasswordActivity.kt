@@ -15,7 +15,7 @@ class ChangePasswordActivity : AppCompatActivity() {
 
     private val email: String by lazy {
         intent.getStringExtra(EXTRA_EMAIL)
-            ?: throw IllegalArgumentException("Se requiere EXTRA_EMAIL en el Intent")
+            ?: throw IllegalArgumentException(R.string.exception_extra_email.toString())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

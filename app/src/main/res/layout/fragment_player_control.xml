@@ -1,109 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/playerControl"
     android:layout_width="320dp"
-    android:layout_gravity="center_horizontal"
     android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/accent_purple"
-    android:clickable="true"
-    android:focusable="true">
+    android:background="@drawable/searchview_border"
+    android:padding="2dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/playerControl"
+        android:layout_width="300dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:padding="6dp"
-        android:paddingHorizontal="40dp">
+        android:layout_margin="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/background_main"
+        android:background="@drawable/searchview_border"
+        android:clickable="true"
+        android:focusable="true">
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="76dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/msg_back"
-            android:padding="12dp"
-            android:src="@drawable/ic_baseline_skip_previous_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:paddingHorizontal="40dp">
 
-        <ImageButton
-            android:id="@+id/btnPlayPause"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="0dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/msg_play_pause"
-            android:padding="12dp"
-            android:src="@drawable/ic_baseline_play"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="76dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/msg_back"
+                android:padding="12dp"
+                android:src="@drawable/ic_baseline_skip_previous_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="0dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/msg_next"
-            android:padding="12dp"
-            android:src="@drawable/ic_baseline_skip_next_24"
-            app:layout_constraintStart_toEndOf="@id/btnPlayPause"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageButton
+                android:id="@+id/btnPlayPause"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/msg_play_pause"
+                android:padding="12dp"
+                android:src="@drawable/ic_baseline_play"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/songImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/img_soundnest_logo_svg"
-            android:contentDescription="@string/msg_song_image"
-            android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnBack"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <ImageButton
+                android:id="@+id/btnNext"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/msg_next"
+                android:padding="12dp"
+                android:src="@drawable/ic_baseline_skip_next_24"
+                app:layout_constraintStart_toEndOf="@id/btnPlayPause"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/songTitle"
-            android:layout_width="336dp"
-            android:layout_height="19dp"
-            android:layout_marginStart="12dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Song Title"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:layout_constraintStart_toEndOf="@id/songImage"
-            app:layout_constraintTop_toBottomOf="@id/btnBack" />
+            <ImageView
+                android:id="@+id/songImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/img_soundnest_logo_svg"
+                android:contentDescription="@string/msg_song_image"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnBack"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-        <TextView
-            android:id="@+id/artistName"
-            android:layout_width="336dp"
-            android:layout_height="18dp"
-            android:layout_marginStart="12dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Artist Name"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/songImage"
-            app:layout_constraintTop_toBottomOf="@id/songTitle" />
+            <TextView
+                android:id="@+id/songTitle"
+                android:layout_width="336dp"
+                android:layout_height="19dp"
+                android:layout_marginStart="12dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/hint_song_name"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@id/songImage"
+                app:layout_constraintTop_toBottomOf="@id/btnBack" />
 
-        <ProgressBar
-            android:id="@+id/progress_loading"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:visibility="gone"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <TextView
+                android:id="@+id/artistName"
+                android:layout_width="336dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="12dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/hint_artist"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/songImage"
+                app:layout_constraintTop_toBottomOf="@id/songTitle" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+            <ProgressBar
+                android:id="@+id/progress_loading"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:visibility="gone"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

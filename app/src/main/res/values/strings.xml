@@ -107,4 +107,14 @@
     <string name="lbl_select_genre">Select genre</string>
     <string name="lbl_edit_playlist">Edit playlist</string>
     <string name="btn_save">Save</string>
+    <string name="msg_play_playlist">Play playlist</string>
+    <string name="msg_no_playlists">There are no songs in this playlist yet.</string>
+    <string name="hint_artist">Artist</string>
+    <string name="lbl_no_playlists">You do not have playlists yet\nclick here to create one</string>
+    <string name="hint_search">Search…</string>
+    <string name="error_http">HTTP %1$d: %2$s</string>
+    <string name="error_network">Red: %1$s</string>
+    <string name="error_unknown">Error: %1$s</string>
+    <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
+
 </resources>

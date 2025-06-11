@@ -60,12 +60,15 @@
             app:layout_constraintTop_toBottomOf="@id/tilUsername"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:counterEnabled="true"
+            app:counterMaxLength="50"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLength="50"
                 android:textColor="@color/accent_orange"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -114,7 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
             app:counterEnabled="true"
-            app:counterMaxLength="100">
+            app:counterMaxLength="50">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etAdditionalInfo"
@@ -123,7 +126,7 @@
                 android:inputType="textMultiLine"
                 android:minLines="3"
                 android:gravity="top|start"
-                android:maxLength="200"
+                android:maxLength="50"
                 android:textColor="@color/accent_orange" />
         </com.google.android.material.textfield.TextInputLayout>
 

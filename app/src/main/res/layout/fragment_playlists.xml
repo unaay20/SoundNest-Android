@@ -47,7 +47,7 @@
         android:id="@+id/tv_no_playlists_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Aún no tienes una playlist,\npresiona aquí para crear una"
+        android:text="@string/lbl_no_playlists"
         android:textColor="@color/accent_purple"
         android:textAlignment="center"
         android:visibility="gone"

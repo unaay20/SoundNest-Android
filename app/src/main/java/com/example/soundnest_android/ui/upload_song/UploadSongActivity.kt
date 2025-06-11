@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
@@ -47,11 +49,28 @@ class UploadSongActivity : AppCompatActivity() {
 
         viewModel.fetchGenres()
         viewModel.genres.observe(this, Observer { genres ->
-            val names = genres?.map { it.genreName } ?: emptyList()
-            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, names).also {
-                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
+            val realNames = genres?.map { it.genreName } ?: emptyList()
+            val namesWithHint = listOf("Select a genre") + realNames
+            val adapter =
+                ArrayAdapter(this, android.R.layout.simple_spinner_item, namesWithHint).also {
+                    it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                }
             binding.spinnerGenre.adapter = adapter
+            binding.spinnerGenre.setSelection(0, false)
+            binding.spinnerGenre.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View?,
+                        pos: Int,
+                        id: Long
+                    ) {
+                        if (pos == 0) return
+                        val selectedGenre = realNames[pos - 1]
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
         })
 
         val pickFileLauncher = registerForActivityResult(
@@ -77,7 +96,6 @@ class UploadSongActivity : AppCompatActivity() {
             ActivityResultContracts.OpenDocument()
         ) { uri: Uri? ->
             uri?.let {
-                // Guarda la URI y muestra preview
                 selectedImageUri = it
                 contentResolver.takePersistableUriPermission(
                     it,

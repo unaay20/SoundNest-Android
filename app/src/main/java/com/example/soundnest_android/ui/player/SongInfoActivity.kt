@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -75,7 +76,6 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     private val player by lazy { PlayerManager.getPlayer() }
     private val handler = Handler(Looper.getMainLooper())
-    private var lastProgress = 0
     private val updateRunnable = object : Runnable {
         override fun run() {
             try {
@@ -134,10 +134,11 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
         setupObservers()
         setupClickListeners()
-        seekBar.isEnabled = false
         handler.removeCallbacks(updateRunnable)
         setupSeekBar()
         setupGestureDetector()
+
+        resetPlayerUI()
 
         @Suppress("UNCHECKED_CAST")
         val list = intent
@@ -160,6 +161,16 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         val initialSong = intent.getSerializableExtra("EXTRA_SONG_OBJ") as Song
         updateUI(initialSong)
     }
+
+    private fun resetPlayerUI() {
+        handler.removeCallbacks(updateRunnable)
+        isPlayerPrepared = false
+        seekBar.progress = 0
+        tvCurrentTime.text = formatTime(0)
+        tvTotalTime.text = formatTime(0)
+        updatePlayPauseButton(false)
+    }
+
 
     private fun initializeViews() {
         imgBackground = findViewById(R.id.img_background_blur)
@@ -184,6 +195,12 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
             currentSong = newSong
             updateUI(newSong)
 
+            player?.apply {
+                setOnPreparedListener { mp ->
+                    onTrackStarted()
+                }
+            }
+
             file?.let {
                 PlayerManager.playFile(this, it)
                 sharedPlayer.setIsPlaying(true)
@@ -204,24 +221,48 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     private fun setupClickListeners() {
         btnRewind10.setOnClickListener {
-            player?.let { mp ->
-                try {
-                    val newPos = maxOf(0, mp.currentPosition - 10_000)
-                    mp.seekTo(newPos)
-                    tvCurrentTime.text = formatTime(newPos)
-                    seekBar.progress = newPos
-                } catch (e: IllegalStateException) {
-                    // aún no preparado → ignoro
-                }
+            if (!isPlayerPrepared) return@setOnClickListener
+
+            val mp = player ?: return@setOnClickListener
+
+            try {
+                val current = mp.currentPosition
+                val newPos = (current - 10_000).coerceAtLeast(0)
+
+                val duration = mp.duration
+                if (newPos > duration) return@setOnClickListener
+
+                mp.seekTo(newPos)
+                seekBar.progress = newPos
+                tvCurrentTime.text = formatTime(newPos)
+
+            } catch (e: IllegalStateException) {
+                Log.w("SongInfoActivity", "Seek ignorado, player no preparado", e)
+            } catch (e: Exception) {
+                Log.e("SongInfoActivity", "Error al retroceder 10s", e)
             }
         }
 
+
         btnForward10.setOnClickListener {
-            player?.let { mp ->
-                val newPos = minOf(mp.duration, mp.currentPosition + 10_000)
+            if (!isPlayerPrepared) return@setOnClickListener
+
+            val mp = player ?: return@setOnClickListener
+
+            try {
+                val current = mp.currentPosition
+                val duration = mp.duration
+
+                val newPos = (current + 10_000).coerceAtMost(duration)
+
                 mp.seekTo(newPos)
-                tvCurrentTime.text = formatTime(newPos)
                 seekBar.progress = newPos
+                tvCurrentTime.text = formatTime(newPos)
+
+            } catch (e: IllegalStateException) {
+                Log.w("SongInfoActivity", "Seek ignorado, player no preparado", e)
+            } catch (e: Exception) {
+                Log.e("SongInfoActivity", "Error al avanzar 10s", e)
             }
         }
 
@@ -266,8 +307,12 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
             override fun onStopTrackingTouch(sb: SeekBar) {
                 isUserSeeking = false
                 if (isPlayerPrepared) {
-                    player?.seekTo(sb.progress)
-                    tvCurrentTime.text = formatTime(sb.progress)
+                    try {
+                        player?.seekTo(sb.progress)
+                        tvCurrentTime.text = formatTime(sb.progress)
+                    } catch (_: IllegalStateException) {
+                        // ignoro si no está listo
+                    }
                 }
             }
 
@@ -303,6 +348,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     }
 
     private fun updateUI(newSong: Song) {
+        seekBar.progress = 0
+        tvCurrentTime.text = formatTime(0)
         infoSongTitle.text = newSong.title
         infoArtistName.text = newSong.artist
 
@@ -332,8 +379,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     private fun updateButtonVisibility() {
         if (isInPlaylistMode) {
-            btnRewind10.visibility = View.VISIBLE
-            btnForward10.visibility = View.VISIBLE
+            btnRewind10.visibility = View.GONE
+            btnForward10.visibility = View.GONE
             btnPrevious.visibility = View.VISIBLE
             btnNext.visibility = View.VISIBLE
         } else {
@@ -387,6 +434,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     override fun onTrackStarted() = runOnUiThread {
         isPlayerPrepared = true
         seekBar.isEnabled = true
+        //seekBar.progress = 0
+        tvCurrentTime.text = formatTime(0)
         initDuration()
         handler.post(updateRunnable)
     }
@@ -417,8 +466,18 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     override fun onTrackCompleted() = runOnUiThread {
         handler.removeCallbacks(updateRunnable)
-        if (isInPlaylistMode) playNext()
+
+        if (isInPlaylistMode) {
+            playNext()
+        } else {
+            player?.seekTo(0)
+            seekBar.progress = 0
+            tvCurrentTime.text = formatTime(0)
+            seekBar.isEnabled = true
+            handler.postDelayed(updateRunnable, 500)
+        }
     }
+
 
     override fun onError() = runOnUiThread {
         handler.removeCallbacks(updateRunnable)
@@ -509,32 +568,46 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     }
 
     override fun playNext() {
-        val list = sharedPlayer.playlist.value ?: return
-        val idx = sharedPlayer.currentIndex.value ?: return
-        if (idx + 1 < list.size) {
-            val next = list[idx + 1]
-            sharedPlayer.setCurrentIndex(idx + 1)
-            downloadAndPlay(next)
+        sharedPlayer.playlist.value?.let { list ->
+            val idx = sharedPlayer.currentIndex.value ?: return
+            if (idx + 1 < list.size) {
+                val next = list[idx + 1]
+                sharedPlayer.setCurrentIndex(idx + 1)
+                runOnUiThread {
+                    Toast.makeText(
+                        this, "Playing next: “${next.title}”", Toast.LENGTH_SHORT
+                    ).show()
+                }
+                resetPlayerUI()
+                downloadAndPlay(next)
+            }
         }
     }
 
     override fun playPrevious() {
-        val list = sharedPlayer.playlist.value ?: return
-        val idx = sharedPlayer.currentIndex.value ?: return
-        if (idx - 1 >= 0) {
-            val prev = list[idx - 1]
-            sharedPlayer.setCurrentIndex(idx - 1)
-            downloadAndPlay(prev)
+        sharedPlayer.playlist.value?.let { list ->
+            val idx = sharedPlayer.currentIndex.value ?: return
+            if (idx - 1 >= 0) {
+                val prev = list[idx - 1]
+                sharedPlayer.setCurrentIndex(idx - 1)
+                resetPlayerUI()
+                downloadAndPlay(prev)
+            }
         }
     }
 
+    private fun playFromCacheFile(song: Song, cacheFile: File) {
+        resetPlayerUI()
+        this.song = song
+        player?.setOnPreparedListener { onTrackStarted() }
+        PlayerManager.playFile(this, cacheFile)
+        sharedPlayer.setIsPlaying(true)
+    }
 
     private fun downloadAndPlay(song: Song) {
         val cacheFile = File(cacheDir, "song_${song.id}.mp3")
         if (cacheFile.exists()) {
-            sharedPlayer.playFromFile(song, cacheFile)
-            PlayerManager.playFile(this, cacheFile)
-            sharedPlayer.setIsPlaying(true)
+            playFromCacheFile(song, cacheFile)
             return
         }
 
@@ -546,9 +619,22 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
-                sharedPlayer.playFromFile(song, cacheFile)
+                playFromCacheFile(song, cacheFile)
+
+                player?.apply {
+                    setOnPreparedListener { mp ->
+                        onTrackStarted()
+                    }
+                }
+
                 PlayerManager.playFile(this@SongInfoActivity, cacheFile)
                 sharedPlayer.setIsPlaying(true)
+
+                isPlayerPrepared = true
+                seekBar.isEnabled = true
+                initDuration()
+                handler.post(updateRunnable)
+
 
                 val newIdx = sharedPlayer.playlist.value
                     ?.indexOfFirst { it.id == song.id } ?: -1

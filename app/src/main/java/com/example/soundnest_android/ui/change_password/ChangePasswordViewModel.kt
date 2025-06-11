@@ -1,10 +1,12 @@
 package com.example.soundnest_android.ui.change_password
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.AuthService
@@ -42,16 +44,12 @@ class ChangePasswordViewModel(
     fun sendCode(email: String) {
         _sendCodeState.value = SendCodeState.Loading
         viewModelScope.launch {
-            when (val r = authService.sendCodeToEmail(email)) {
+            when (val result = authService.sendCodeToEmail(email)) {
                 is ApiResult.Success -> _sendCodeState.value = SendCodeState.Success
-                is ApiResult.HttpError -> _sendCodeState.value =
-                    SendCodeState.Error("HTTP ${r.code}: ${r.message}")
-
-                is ApiResult.NetworkError -> _sendCodeState.value =
-                    SendCodeState.Error("Red: ${r.exception.message}")
-
-                is ApiResult.UnknownError -> _sendCodeState.value =
-                    SendCodeState.Error("Error: ${r.exception.message}")
+                else -> _changeState.value =
+                    ChangePasswordState.Error(
+                        result.toDisplayMessage(getApplication())
+                    )
             }
         }
     }
@@ -59,28 +57,23 @@ class ChangePasswordViewModel(
     fun changePassword(code: String, newPassword: String) {
         _changeState.value = ChangePasswordState.Loading
         viewModelScope.launch {
-            val result = userService.editUserPassword(code, newPassword)
-
-            when (result) {
+            when (val result = userService.editUserPassword(code, newPassword)) {
                 is ApiResult.Success -> {
                     _changeState.value = ChangePasswordState.Success
                 }
 
-                is ApiResult.HttpError -> {
-                    _changeState.value =
-                        ChangePasswordState.Error("HTTP ${result.code}: ${result.message}")
-                }
-
-                is ApiResult.NetworkError -> {
-                    _changeState.value =
-                        ChangePasswordState.Error("Red: ${result.exception.message}")
-                }
-
-                is ApiResult.UnknownError -> {
-                    _changeState.value =
-                        ChangePasswordState.Error("Error: ${result.exception.message}")
-                }
+                else -> _changeState.value =
+                    ChangePasswordState.Error(
+                        result.toDisplayMessage(getApplication())
+                    )
             }
         }
+    }
+
+    private fun ApiResult<*>.toDisplayMessage(ctx: Context): String = when (this) {
+        is ApiResult.HttpError -> ctx.getString(R.string.error_http, code, message)
+        is ApiResult.NetworkError -> ctx.getString(R.string.error_network, exception.message)
+        is ApiResult.UnknownError -> ctx.getString(R.string.error_unknown, exception.message)
+        else -> ""
     }
 }

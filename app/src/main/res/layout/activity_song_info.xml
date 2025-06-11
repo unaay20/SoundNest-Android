@@ -193,6 +193,8 @@
                 android:background="@drawable/bg_play_button"
                 android:padding="12dp"
                 android:scaleType="centerInside"
+                android:layout_marginStart="46dp"
+                android:layout_marginEnd="46dp"
                 android:src="@drawable/ic_baseline_play"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btnForward10"

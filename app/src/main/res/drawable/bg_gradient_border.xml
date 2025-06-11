@@ -4,11 +4,13 @@
     <item>
         <shape android:shape="rectangle">
             <gradient
+                android:type="linear"
+                android:useLevel="false"
                 android:angle="0"
                 android:startColor="@color/accent_orange"
                 android:centerColor="@color/accent_pink"
-                android:endColor="@color/accent_purple"/>
-            <corners android:radius="8dp" />
+                android:endColor="@color/accent_purple" />
+            <corners android:radius="16dp" />
         </shape>
     </item>
 
@@ -18,8 +20,8 @@
         android:right="2dp"
         android:bottom="2dp">
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/transparent" />
-            <corners android:radius="6dp" />
+            <solid android:color="@color/accent_purple" />
+            <corners android:radius="14dp" />
         </shape>
     </item>
 
