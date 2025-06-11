@@ -75,6 +75,9 @@
                     android:padding="12dp">
 
                     <TextView
+                        android:id="@+id/tvPopular"
+                        android:background="@drawable/searchview_border"
+                        android:textColor="@color/black"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/lbl_popular"
@@ -104,7 +107,10 @@
                     android:padding="12dp">
 
                     <TextView
+                        android:id="@+id/tvRecent"
+                        android:background="@drawable/searchview_border"
                         android:layout_width="match_parent"
+                        android:textColor="@color/black"
                         android:layout_height="wrap_content"
                         android:text="@string/lbl_recent"
                         android:textSize="16sp"

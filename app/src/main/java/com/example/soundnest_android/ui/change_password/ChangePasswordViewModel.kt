@@ -1,17 +1,16 @@
 package com.example.soundnest_android.ui.change_password
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
+import com.example.soundnest_android.utils.toDisplayMessage
 import kotlinx.coroutines.launch
 
 sealed class SendCodeState {
@@ -54,10 +53,10 @@ class ChangePasswordViewModel(
         }
     }
 
-    fun changePassword(code: String, newPassword: String) {
+    fun changePassword(email: String, code: String, newPassword: String) {
         _changeState.value = ChangePasswordState.Loading
         viewModelScope.launch {
-            when (val result = userService.editUserPassword(code, newPassword)) {
+            when (val result = userService.editUserPassword(email, code, newPassword)) {
                 is ApiResult.Success -> {
                     _changeState.value = ChangePasswordState.Success
                 }
@@ -68,12 +67,5 @@ class ChangePasswordViewModel(
                     )
             }
         }
-    }
-
-    private fun ApiResult<*>.toDisplayMessage(ctx: Context): String = when (this) {
-        is ApiResult.HttpError -> ctx.getString(R.string.error_http, code, message)
-        is ApiResult.NetworkError -> ctx.getString(R.string.error_network, exception.message)
-        is ApiResult.UnknownError -> ctx.getString(R.string.error_unknown, exception.message)
-        else -> ""
     }
 }

@@ -29,7 +29,7 @@
     <string name="btn_save_changes">Guardar cambios</string>
     <string name="btn_change_password">Cambiar contraseña</string>
     <string name="btn_edit_profile">Editar perfil</string>
-    
+
     <string name="hint_code">Código</string>
     <string name="action_verify">Verificar</string>
     <string name="action_cancel">Cancelar</string>
@@ -75,7 +75,9 @@
     <string name="msg_error_login">Hubo un error al iniciar sesión, intente de nuevo más tarde</string>
     <string name="msg_credentials_login">Credenciales inválidas</string>
     <string name="lbl_delete_notification">Eliminar notificación</string>
+    <string name="lbl_delete_comment">Eliminar comentario</string>
     <string name="msg_delete_notification">¿Estás seguro de eliminar esta notificación?</string>
+    <string name="msg_delete_comment">¿Estás seguro de eliminar el comentario de %1$s?</string>
     <string name="msg_unable_load_pfp">No ha sido posible cargar tu foto de perfil</string>
     <string name="msg_no_pfp">Aún no has seleccionado una foto de perfil</string>
     <string name="msg_login_error">Hubo un error al iniciar sesión</string>
@@ -119,6 +121,8 @@
     <string name="error_http">HTTP %1$d: %2$s</string>
     <string name="error_network">Red: %1$s</string>
     <string name="error_unknown">Error: %1$s</string>
+    <string name="error_empty">Respuesta vacía del servidor</string>
 
     <string name="exception_extra_email">Se requiere EXTRA_EMAIL en el Intent</string>
+    <string name="btn_delete">Eliminar</string>
 </resources>

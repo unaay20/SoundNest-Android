@@ -26,9 +26,10 @@ import com.example.soundnest_android.business_logic.Song
 class SongCommentsActivity : AppCompatActivity() {
 
     private val viewModel: SongCommentsViewModel by viewModels {
-        val provider = SharedPrefsTokenProvider(this)
-        Log.d("SongCommentsActivity", "JWT Token: ${provider.getToken()}")
-        SongCommentsViewModelFactory(provider)
+        SongCommentsViewModelFactory(
+            application,
+            SharedPrefsTokenProvider(this)
+        )
     }
     private lateinit var commentsAdapter: CommentsAdapter
     private lateinit var song: Song
@@ -62,13 +63,14 @@ class SongCommentsActivity : AppCompatActivity() {
 
         commentsAdapter = CommentsAdapter().apply {
             onDeleteComment = { comment ->
+                val message = getString(R.string.msg_delete_comment, comment.user)
                 AlertDialog.Builder(this@SongCommentsActivity)
-                    .setTitle("Confirmar eliminación")
-                    .setMessage("¿Estás seguro de que deseas eliminar el comentario de ‘${comment.user}’?")
-                    .setPositiveButton("Eliminar") { _, _ ->
+                    .setTitle(R.string.lbl_delete_comment)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.btn_delete) { _, _ ->
                         viewModel.deleteComment(comment.id)
                     }
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton(R.string.btn_cancel, null)
                     .show()
             }
             onReplyComment = { comment ->

@@ -31,22 +31,26 @@ class NotificationsAdapter(
             tv.text = notification.title?.takeIf { it.isNotBlank() }
                 ?: "New notification"
 
+            var lowText = "low"
+            var mediumText = "medium"
+            var highText = "high"
+
             when (notification.relevance) {
-                "low" -> container.setBackgroundColor(
+                lowText -> container.setBackgroundColor(
                     ContextCompat.getColor(
                         itemView.context,
                         R.color.purple_200
                     )
                 )
 
-                "medium" -> container.setBackgroundColor(
+                mediumText -> container.setBackgroundColor(
                     ContextCompat.getColor(
                         itemView.context,
                         R.color.purple_500
                     )
                 )
 
-                "high" -> container.setBackgroundColor(
+                highText -> container.setBackgroundColor(
                     ContextCompat.getColor(
                         itemView.context,
                         R.color.purple_700

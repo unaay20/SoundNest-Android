@@ -65,16 +65,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btnChangePassword"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="24dp"
-            android:textColor="@color/red"
-            android:text="@string/btn_change_password" />
-
-        <Button
             android:id="@+id/btnSaveProfile"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
@@ -83,5 +73,15 @@
             android:layout_marginTop="24dp"
             android:textColor="@color/black"
             android:text="@string/btn_save_changes" />
+
+        <Button
+            android:id="@+id/btnChangePassword"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/red"
+            android:text="@string/btn_change_password" />
     </LinearLayout>
 </ScrollView>

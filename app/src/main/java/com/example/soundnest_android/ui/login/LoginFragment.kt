@@ -67,10 +67,6 @@ class LoginFragment : Fragment() {
             binding.loginButton.isEnabled = enabled
             binding.registerButton.isEnabled = enabled
 
-            val invalidCredentialsText = getString(R.string.lbl_invalid_credentials)
-            val userNotFoundText = getString(R.string.lbl_user_not_found)
-            val failedToConnectText = getString(R.string.lbl_failed_to_connect)
-
             when (state) {
                 is LoginState.Success -> {
                     tokenProvider.saveToken(state.data.token)
@@ -78,22 +74,17 @@ class LoginFragment : Fragment() {
                 }
 
                 is LoginState.Error -> {
-                    if (state.msg.contains(invalidCredentialsText)) {
-                        Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
-                    } else if (state.msg.contains(userNotFoundText)) {
-                        Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG).show()
-                    } else if (state.msg.contains(failedToConnectText)) {
+                    val failedToConnectText = getString(R.string.lbl_failed_to_connect)
+                    if (state.msg.contains(failedToConnectText)) {
                         Toast.makeText(
                             requireContext(),
                             R.string.msg_server_error,
                             Toast.LENGTH_LONG
                         ).show()
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            R.string.msg_login_error,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        val raw = state.msg
+                        val displayMsg = raw.substringAfter(": ").takeIf { it.isNotBlank() } ?: raw
+                        Toast.makeText(requireContext(), displayMsg, Toast.LENGTH_LONG).show()
                         Log.d(Constants.LOGIN_ACTIVITY, "Error: ${state.msg}")
                     }
                 }

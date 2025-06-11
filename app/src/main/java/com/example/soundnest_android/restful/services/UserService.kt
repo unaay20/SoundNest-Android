@@ -45,10 +45,12 @@ class UserService(
     }
 
     suspend fun editUserPassword(
+        email: String,
         code: String,
         newPassword: String
     ): ApiResult<Unit?> {
         val editUserPasswordRequest = EditUserPasswordRequest(
+            email = email,
             code = code,
             newPassword = newPassword
         )

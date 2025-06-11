@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
+import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityChangePasswordBinding
 import com.example.soundnest_android.utils.Constants
 
@@ -62,7 +63,14 @@ class ChangePasswordActivity : AppCompatActivity() {
                 newPass != repeat ->
                     Toast.makeText(this, R.string.msg_password_match, Toast.LENGTH_SHORT).show()
 
-                else -> vm.changePassword(code, newPass)
+                else -> {
+                    val email = SharedPrefsTokenProvider(this).email
+                    if (email.isNullOrBlank()) {
+                        Toast.makeText(this, "No email in token", Toast.LENGTH_SHORT).show()
+                    } else {
+                        vm.changePassword(email, code, newPass)
+                    }
+                }
             }
         }
 

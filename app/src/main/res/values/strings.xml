@@ -71,7 +71,9 @@
     <string name="msg_error_login">There was an error logging in, try again later</string>
     <string name="msg_credentials_login">Invalid credentials</string>
     <string name="lbl_delete_notification">Delete notification</string>
+    <string name="lbl_delete_comment">Delete comment</string>
     <string name="msg_delete_notification">Are you sure you want to delete this notification?</string>
+    <string name="msg_delete_comment">Are you sure you want to delete the comment from %1$s?</string>
     <string name="msg_unable_load_pfp">Unable to load profile picture</string>
     <string name="msg_no_pfp">You have not uploaded a profile picture yet</string>
     <string name="msg_login_error">There was an error logging in</string>
@@ -113,8 +115,10 @@
     <string name="lbl_no_playlists">You do not have playlists yet\nclick here to create one</string>
     <string name="hint_search">Search…</string>
     <string name="error_http">HTTP %1$d: %2$s</string>
-    <string name="error_network">Red: %1$s</string>
+    <string name="error_network">Network: %1$s</string>
     <string name="error_unknown">Error: %1$s</string>
+    <string name="error_empty">Empty response from server</string>
     <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
+    <string name="btn_delete">Delete</string>
 
 </resources>

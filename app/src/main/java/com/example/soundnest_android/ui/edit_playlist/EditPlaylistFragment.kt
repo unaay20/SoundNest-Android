@@ -30,7 +30,6 @@ class EditPlaylistDialogFragment : DialogFragment() {
         etName = view.findViewById(R.id.editPlaylistName)
         etDescription = view.findViewById(R.id.editPlaylistDescription)
 
-        // Rellenar con los valores actuales
         arguments?.let {
             etName.setText(it.getString(ARG_NAME))
             etDescription.setText(it.getString(ARG_DESC))

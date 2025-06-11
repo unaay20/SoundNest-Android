@@ -1,8 +1,9 @@
 package com.example.soundnest_android.ui.edit_profile
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.UserProfile
@@ -13,14 +14,16 @@ import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.utils.SingleLiveEvent
+import com.example.soundnest_android.utils.toDisplayMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class EditProfileViewModel(
+    application: Application,
     private val userService: UserService,
     private val tokenProvider: SharedPrefsTokenProvider
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
     private val imageService by lazy {
         UserImageGrpcService(
@@ -31,7 +34,7 @@ class EditProfileViewModel(
     }
 
     private val _profile = MutableLiveData<UserProfile?>()
-    val profile: MutableLiveData<UserProfile?> = _profile
+    val profile: LiveData<UserProfile?> = _profile
 
     private val _photoBytes = MutableLiveData<ByteArray?>()
     val photoBytes: LiveData<ByteArray?> = _photoBytes
@@ -44,31 +47,24 @@ class EditProfileViewModel(
 
     init {
         loadProfile()
-        val id = tokenProvider.id
-        if (id != -1) id?.let { loadProfileImage(it) }
+        tokenProvider.id?.takeIf { it != -1 }?.let { loadProfileImage(it) }
     }
 
     private fun loadProfile() {
         viewModelScope.launch(Dispatchers.IO) {
             val username = tokenProvider.username
-                ?: throw IllegalStateException("No hay username")
+                ?: throw IllegalStateException("There is no username")
             val email = tokenProvider.email
-                ?: throw IllegalStateException("No hay email")
+                ?: throw IllegalStateException("There is no email")
 
-            val additionalInfoString: String = when (val r = userService.getAdditionalInfo()) {
-                is ApiResult.Success -> {
-                    val info = r.data?.info
-                    if (!info.isNullOrBlank()) {
-                        tokenProvider.saveAdditionalInformation(info)
-                        info
-                    } else {
-                        tokenProvider.getAdditionalInformation()
-                    }
-                }
+            val additionalInfoString = when (val r = userService.getAdditionalInfo()) {
+                is ApiResult.Success ->
+                    r.data?.info?.takeIf(String::isNotBlank)
+                        ?.also { tokenProvider.saveAdditionalInformation(it) }
+                        ?: tokenProvider.getAdditionalInformation()
 
-                else -> {
+                else ->
                     tokenProvider.getAdditionalInformation()
-                }
             }
 
             val uiModel = UserProfile(
@@ -87,11 +83,9 @@ class EditProfileViewModel(
 
     fun saveProfile(newUsername: String, info: AdditionalInformation) {
         viewModelScope.launch(Dispatchers.IO) {
-            val nameUser = newUsername
             val email = tokenProvider.email.orEmpty()
-            val additionalInformation = info
 
-            when (val resp = userService.editUser(nameUser, email, additionalInformation)) {
+            when (val resp = userService.editUser(newUsername, email, info)) {
                 is ApiResult.Success -> {
                     tokenProvider.setUserName(newUsername)
                     withContext(Dispatchers.Main) {
@@ -99,22 +93,8 @@ class EditProfileViewModel(
                     }
                 }
 
-                is ApiResult.HttpError -> {
-                    val msg = "Error ${resp.code}: ${resp.message}"
-                    withContext(Dispatchers.Main) {
-                        _errorEvent.value = msg
-                    }
-                }
-
-                is ApiResult.NetworkError -> {
-                    val msg = "Network error: ${resp.exception.message}"
-                    withContext(Dispatchers.Main) {
-                        _errorEvent.value = msg
-                    }
-                }
-
-                is ApiResult.UnknownError -> {
-                    val msg = "Unknown error: ${resp.exception.message}"
+                else -> {
+                    val msg = resp.toDisplayMessage(getApplication())
                     withContext(Dispatchers.Main) {
                         _errorEvent.value = msg
                     }
@@ -122,7 +102,6 @@ class EditProfileViewModel(
             }
         }
     }
-
 
     fun loadProfileImage(userId: Int) = viewModelScope.launch {
         when (val res = imageService.downloadImage(userId)) {

@@ -13,6 +13,7 @@ import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.utils.Constants
+import com.example.soundnest_android.utils.toDisplayMessage
 import kotlinx.coroutines.launch
 
 sealed class LoginState {
@@ -37,19 +38,19 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 is ApiResult.Success -> {
                     result.data?.let {
                         tokenProvider.saveToken(it.token)
-
-                        when (val addInfoResult = userService.getAdditionalInfo()) {
-                            is ApiResult.Success -> {
-                                addInfoResult.data?.info?.let { infoString ->
-                                    Log.d(Constants.LOGIN_ACTIVITY, "Additional info: $infoString")
-                                    tokenProvider.saveAdditionalInformation(infoString)
+                        when (val addInfo = userService.getAdditionalInfo()) {
+                            is ApiResult.Success ->
+                                addInfo.data?.info?.let { info ->
+                                    Log.d(Constants.LOGIN_ACTIVITY, "Additional info: $info")
+                                    tokenProvider.saveAdditionalInformation(info)
                                 }
-                            }
 
                             else -> { /* ignoro */
                             }
                         }
-                        //tokenProvider.getToken()?.let { it1 -> Log.d(Constants.LOGIN_ACTIVITY, it1) }
+                        tokenProvider.getToken()?.let { token ->
+                            Log.d(Constants.LOGIN_ACTIVITY, token)
+                        }
                         _state.value = LoginState.Success(it)
                     } ?: run {
                         _state.value = LoginState.Error("Respuesta vacía del servidor")
@@ -57,18 +58,33 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 is ApiResult.HttpError -> {
-                    _state.value = LoginState.Error(result.message)
-                    Log.d(Constants.LOGIN_ACTIVITY, "HTTP ${result.code}: ${result.message}")
+                    _state.value = LoginState.Error(
+                        result.toDisplayMessage(getApplication())
+                    )
+                    Log.d(
+                        Constants.LOGIN_ACTIVITY,
+                        "HTTP ${result.code}: ${result.message}"
+                    )
                 }
 
                 is ApiResult.NetworkError -> {
-                    _state.value = result.exception.message?.let { LoginState.Error(it) }
-                    Log.d(Constants.LOGIN_ACTIVITY, "Red: ${result.exception.message}")
+                    _state.value = LoginState.Error(
+                        result.toDisplayMessage(getApplication())
+                    )
+                    Log.d(
+                        Constants.LOGIN_ACTIVITY,
+                        "Red: ${result.exception.message}"
+                    )
                 }
 
                 is ApiResult.UnknownError -> {
-                    _state.value = result.exception.message?.let { LoginState.Error(it) }
-                    Log.d(Constants.LOGIN_ACTIVITY, "Desconocido: ${result.exception.message}")
+                    _state.value = LoginState.Error(
+                        result.toDisplayMessage(getApplication())
+                    )
+                    Log.d(
+                        Constants.LOGIN_ACTIVITY,
+                        "Desconocido: ${result.exception.message}"
+                    )
                 }
             }
         }
