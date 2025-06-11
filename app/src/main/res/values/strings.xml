@@ -120,5 +120,6 @@
     <string name="error_empty">Empty response from server</string>
     <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
     <string name="btn_delete">Delete</string>
+    <string name="msg_no_song_loaded">Click on a song to play it!</string>
 
 </resources>

@@ -1,6 +1,5 @@
 package com.example.soundnest_android.ui.player
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -63,16 +63,32 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         }
 
         shared.currentIndex.observe(viewLifecycleOwner) { idx ->
+            // Solo actualiza la UI, no reproduzcas automáticamente
             shared.playlist.value?.getOrNull(idx)?.let { song ->
-                val file = File(requireContext().cacheDir, "song_${song.id}.mp3")
-                shared.playFromFile(song, file)
-                if (file.exists()) {
-                    PlayerManager.playFile(requireContext(), file)
+                // Solo actualiza si no hay una canción pendiente ya establecida
+                if (currentSong?.id != song.id) {
+                    val file = File(requireContext().cacheDir, "song_${song.id}.mp3")
+                    if (file.exists()) {
+                        // NO llames a playFromFile aquí, solo actualiza la referencia
+                        currentSong = song
+                        currentFile = file
+                        updateSongInfo(song, file)
+                    }
                 }
             }
         }
 
+        setControlsEnabled(false)
+        
+        shared.playlist.observe(viewLifecycleOwner) { playlist ->
+            // Actualiza los controles cuando cambie la playlist
+            if (currentSong != null) {
+                setControlsEnabled(true)
+            }
+        }
+
         shared.pendingFile.observe(viewLifecycleOwner) { (song, file) ->
+            setControlsEnabled(true)
             currentSong = song
             currentFile = file
             songTitle.text = song.title
@@ -116,26 +132,61 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
 
         root.setOnClickListener {
             currentSong?.let { song ->
-                val intent = Intent(requireContext(), SongInfoActivity::class.java).apply {
-                    putExtra("EXTRA_SONG_OBJ", song)
-                    currentFile?.absolutePath
-                        ?.let { path -> putExtra("EXTRA_FILE_PATH", path) }
-
-                    val playlist = ArrayList(shared.playlist.value ?: emptyList<Song>())
-                    putExtra("EXTRA_PLAYLIST", playlist as java.io.Serializable)
-                    putExtra("EXTRA_INDEX", shared.currentIndex.value ?: 0)
-                }
-                startActivity(intent)
-                requireActivity().overridePendingTransition(
-                    R.anim.slide_in_up_fadein,
-                    R.anim.fade_none
-                )
+                val filePath = currentFile?.absolutePath
+                val playlist = shared.playlist.value ?: emptyList()
+                val idx = shared.currentIndex.value ?: 0
+                (requireActivity() as? PlayerHost)
+                    ?.openSongInfo(song, filePath, playlist, idx)
             }
         }
 
 
         updatePlayPauseButton()
     }
+
+    private fun setControlsEnabled(enabled: Boolean) {
+        root.alpha = if (enabled) 1f else 0.5f
+        btnPlayPause.isEnabled = enabled
+
+        if (enabled) {
+            // Verifica si hay una playlist activa para habilitar Next/Previous
+            val playlist = shared.playlist.value
+            val hasPlaylist = !playlist.isNullOrEmpty() && playlist.size > 1
+
+            btnNext.isEnabled = hasPlaylist
+            btnPrevious.isEnabled = hasPlaylist
+
+            // Cambia la opacidad de los botones según su estado
+            btnNext.alpha = if (hasPlaylist) 1f else 0.5f
+            btnPrevious.alpha = if (hasPlaylist) 1f else 0.5f
+        } else {
+            btnNext.isEnabled = false
+            btnPrevious.isEnabled = false
+            btnNext.alpha = 0.5f
+            btnPrevious.alpha = 0.5f
+        }
+
+        if (!enabled) {
+            root.setOnClickListener {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.msg_no_song_loaded),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            root.setOnClickListener {
+                currentSong?.let { song ->
+                    val filePath = currentFile?.absolutePath
+                    val playlist = shared.playlist.value ?: emptyList()
+                    val idx = shared.currentIndex.value ?: 0
+                    (requireActivity() as? PlayerHost)
+                        ?.openSongInfo(song, filePath, playlist, idx)
+                }
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -190,5 +241,16 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         } else {
             btnPlayPause.setImageResource(R.drawable.ic_baseline_play)
         }
+    }
+
+    private fun updateSongInfo(song: Song, file: File?) {
+        songTitle.text = song.title
+        artistName.text = song.artist
+        Glide.with(this)
+            .load(song.coverUrl)
+            .placeholder(R.drawable.img_soundnest_logo_svg)
+            .error(R.drawable.img_soundnest_logo_svg)
+            .circleCrop()
+            .into(songImage)
     }
 }

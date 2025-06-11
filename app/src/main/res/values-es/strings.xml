@@ -125,4 +125,5 @@
 
     <string name="exception_extra_email">Se requiere EXTRA_EMAIL en el Intent</string>
     <string name="btn_delete">Eliminar</string>
+    <string name="msg_no_song_loaded">¡Da clic en una canción para iniciar a escuchar!</string>
 </resources>

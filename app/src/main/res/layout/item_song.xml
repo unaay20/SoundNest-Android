@@ -49,6 +49,17 @@
                 android:text="Artista"
                 android:textSize="14sp"
                 android:textColor="@android:color/darker_gray" />
+
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_play_gradient"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_play"
+            card_view:tint="@color/black" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -2,4 +2,21 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="grid_spacing">8dp</dimen>
+
+    <dimen name="song_cover_size_normal">56dp</dimen>
+    <dimen name="song_play_icon_size_normal">40dp</dimen>
+    <dimen name="song_padding_normal">12dp</dimen>
+    <dimen name="song_title_text_size_normal">16sp</dimen>
+    <dimen name="song_artist_text_size_normal">14sp</dimen>
+    <dimen name="song_card_elevation_normal">4dp</dimen>
+    <dimen name="song_card_radius_normal">8dp</dimen>
+
+    <dimen name="song_cover_size_compact">40dp</dimen>
+    <dimen name="song_play_icon_size_compact">32dp</dimen>
+    <dimen name="song_padding_compact">8dp</dimen>
+    <dimen name="song_title_text_size_compact">14sp</dimen>
+    <dimen name="song_artist_text_size_compact">12sp</dimen>
+    <dimen name="song_card_elevation_compact">2dp</dimen>
+    <dimen name="song_card_radius_compact">6dp</dimen>
 </resources>

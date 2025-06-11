@@ -1,11 +1,14 @@
 package com.example.soundnest_android.ui.songs
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +25,7 @@ import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.ui.player.PlayerControlFragment
 import com.example.soundnest_android.ui.player.PlayerManager
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.soundnest_android.ui.player.SongInfoActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,6 +35,8 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
 
     private lateinit var songAdapter: SongAdapter
     private var playlistSongs: List<Song> = emptyList()
+    private var lastFilePath: String? = null
+    private var currentIdx: Int = 0
 
     private val sharedPlayer: SharedPlayerViewModel by viewModels()
 
@@ -49,6 +54,23 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
     private val visitService by lazy {
         VisitService(RestfulRoutes.getBaseUrl(), SharedPrefsTokenProvider(this))
     }
+
+    private val songInfoLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data ?: return@registerForActivityResult
+                val song = data.getSerializableExtra("EXTRA_PLAYING_SONG") as? Song
+                val path = data.getStringExtra("EXTRA_PLAYING_PATH")
+                val idx = data.getIntExtra("EXTRA_INDEX", -1)
+                song?.let {
+                    path?.let { p ->
+                        val f = File(p)
+                        if (f.exists()) sharedPlayer.playFromFile(it, f)
+                    }
+                }
+                if (idx >= 0) sharedPlayer.setCurrentIndex(idx)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,8 +96,10 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         val tvPlaylistName = findViewById<TextView>(R.id.tvPlaylistName)
 
         songAdapter = SongAdapter(
+            showPlayIcon = false,
             onSongClick = { },
-            isScrollingProvider = { false }
+            isScrollingProvider = { false },
+            isCompact = false
         )
         rvSongs.apply {
             layoutManager = LinearLayoutManager(this@PlaylistDetailActivity)
@@ -97,9 +121,17 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
             rvSongs.visibility = View.VISIBLE
         }
 
-        val fabPlay = findViewById<FloatingActionButton>(R.id.fab_play_playlist)
+        sharedPlayer.currentIndex.observe(this) { idx ->
+            currentIdx = idx
+        }
+
+        val fabPlay = findViewById<AppCompatImageButton>(R.id.btn_play_playlist)
         fabPlay.setOnClickListener {
             playPlaylist()
+        }
+
+        sharedPlayer.pendingFile.observe(this) { (song, file) ->
+            lastFilePath = file?.absolutePath
         }
 
         lifecycleScope.launch {
@@ -225,5 +257,44 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
 
     private fun toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun openSongInfo(
+        song: Song,
+        filePath: String?,
+        playlist: List<Song>,
+        index: Int
+    ) {
+        val intent = Intent(this, SongInfoActivity::class.java).apply {
+            putExtra("EXTRA_SONG_OBJ", song)
+            filePath?.let { putExtra("EXTRA_FILE_PATH", it) }
+            putExtra("EXTRA_PLAYLIST", ArrayList(playlist) as java.io.Serializable)
+            putExtra("EXTRA_INDEX", index)
+        }
+        songInfoLauncher.launch(intent)
+    }
+
+    private fun finishWithResult() {
+        val currentIndex = sharedPlayer.currentIndex.value ?: 0
+        val currentSong = playlistSongs.getOrNull(currentIndex)
+
+        val data = Intent().apply {
+            putExtra("EXTRA_PLAYLIST", ArrayList(playlistSongs))
+            putExtra("EXTRA_INDEX", currentIndex)
+
+            currentSong?.let { song ->
+                val cacheFile = File(cacheDir, "song_${song.id}.mp3")
+                if (cacheFile.exists()) {
+                    putExtra("EXTRA_PLAYING_PATH", cacheFile.absolutePath)
+                }
+            }
+        }
+        setResult(RESULT_OK, data)
+        finish()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishWithResult()
     }
 }

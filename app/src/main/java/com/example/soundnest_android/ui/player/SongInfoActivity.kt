@@ -596,6 +596,10 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         }
     }
 
+    override fun openSongInfo(song: Song, filePath: String?, playlist: List<Song>, index: Int) {
+        TODO("Not yet implemented")
+    }
+
     private fun playFromCacheFile(song: Song, cacheFile: File) {
         resetPlayerUI()
         this.song = song
@@ -646,5 +650,17 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (gestureDetector.onTouchEvent(ev)) return true
         return super.dispatchTouchEvent(ev)
+    }
+
+    private fun buildResultIntent(): Intent = Intent().apply {
+        currentSong?.let { putExtra("EXTRA_PLAYING_SONG", it) }
+        localFilePath?.let { putExtra("EXTRA_PLAYING_PATH", it) }
+        sharedPlayer.currentIndex.value?.let { putExtra("EXTRA_INDEX", it) }
+    }
+
+    override fun finish() {
+        setResult(RESULT_OK, buildResultIntent())
+        super.finish()
+        overridePendingTransition(0, R.anim.slide_out_down)
     }
 }

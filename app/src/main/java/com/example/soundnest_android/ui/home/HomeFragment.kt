@@ -11,8 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.soundnest_android.MainActivity
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
@@ -30,6 +31,7 @@ import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongAdapter
 import com.example.soundnest_android.ui.songs.SongDialogFragment
 import com.example.soundnest_android.ui.upload_song.UploadSongActivity
+import com.example.soundnest_android.utils.GridSpacingItemDecoration
 import com.example.soundnest_android.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,25 +85,31 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
         var isScrollingRecent = false
 
         popularAdapter = SongAdapter(
+            showPlayIcon = true,
             onSongClick = { song -> showSongFragment(song) },
-            isScrollingProvider = { isScrollingPopular }
+            isScrollingProvider = { isScrollingPopular },
+            isCompact = true
         )
         recentAdapter = SongAdapter(
+            showPlayIcon = true,
             onSongClick = { song -> showSongFragment(song) },
-            isScrollingProvider = { isScrollingRecent }
+            isScrollingProvider = { isScrollingRecent },
+            isCompact = true
         )
 
         binding.rvPopular.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2, RecyclerView.VERTICAL, false)
             adapter = popularAdapter
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            isNestedScrollingEnabled = false
+
+            val spacing = resources.getDimensionPixelSize(R.dimen.grid_spacing)
+            addItemDecoration(GridSpacingItemDecoration(2, spacing, true))
         }
         binding.rvRecent.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2, RecyclerView.VERTICAL, false)
             adapter = recentAdapter
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            isNestedScrollingEnabled = false
+
+            val spacing = resources.getDimensionPixelSize(R.dimen.grid_spacing)
+            addItemDecoration(GridSpacingItemDecoration(2, spacing, true))
         }
         viewModel.popular.observe(viewLifecycleOwner) { rawList ->
             val baseUrl = RestfulRoutes.getBaseUrl().removeSuffix("/")
@@ -187,6 +195,21 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             seekTo(0)
             start()
         }
+    }
+
+    override fun openSongInfo(
+        song: Song,
+        filePath: String?,
+        playlist: List<Song>,
+        index: Int
+    ) {
+        (requireActivity() as? MainActivity)
+            ?.openPlaylistDetail(
+                playlist = playlist,
+                playingSong = song,
+                playingPath = filePath,
+                playingIndex = index
+            )
     }
 
     private fun downloadAndQueue(song: Song) {

@@ -60,8 +60,10 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
         setContentView(binding.root)
 
         adapter = SongAdapter(
+            showPlayIcon = true,
             onSongClick = { song -> playSong(song) },
-            isScrollingProvider = { false }
+            isScrollingProvider = { false },
+            isCompact = false
         )
 
         binding.rvResults.apply {
@@ -174,6 +176,10 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
             seekTo(0)
             start()
         }
+    }
+
+    override fun openSongInfo(song: Song, filePath: String?, playlist: List<Song>, index: Int) {
+        TODO("Not yet implemented")
     }
 
     private fun showLoading() {

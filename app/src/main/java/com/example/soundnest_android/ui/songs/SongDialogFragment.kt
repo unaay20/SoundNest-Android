@@ -69,4 +69,10 @@ interface PlayerHost {
     fun playSong(song: Song)
     fun playNext()
     fun playPrevious()
+    fun openSongInfo(
+        song: Song,
+        filePath: String?,
+        playlist: List<Song>,
+        index: Int
+    )
 }

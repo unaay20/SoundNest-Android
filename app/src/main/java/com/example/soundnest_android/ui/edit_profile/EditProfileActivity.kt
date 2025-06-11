@@ -20,6 +20,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var tokenProvider: SharedPrefsTokenProvider
     private val factory by lazy {
         EditProfileViewModelFactory(
+            application,
             UserService(RestfulRoutes.getBaseUrl(), tokenProvider),
             SharedPrefsTokenProvider(this)
         )

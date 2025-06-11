@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Playlist
@@ -44,9 +45,9 @@ class PlaylistAdapter(
             .centerCrop()
             .into(holder.ivImage)
 
-        holder.itemView.setOnClickListener { onItemClick(playlist) }
+        holder.cardView.setOnClickListener { onItemClick(playlist) }
 
-        holder.itemView.setOnLongClickListener {
+        holder.cardView.setOnLongClickListener {
             PopupMenu(it.context, it).apply {
                 menuInflater.inflate(R.menu.playlist_menu, menu)
                 setOnMenuItemClickListener { mi ->
@@ -63,6 +64,7 @@ class PlaylistAdapter(
     }
 
     class PlaylistVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val cardView: CardView = itemView.findViewById(R.id.cardPlaylist)
         val ivImage: ImageView = itemView.findViewById(R.id.iv_playlist_image)
         val tvName: TextView = itemView.findViewById(R.id.tv_playlist_name)
         val tvCount: TextView = itemView.findViewById(R.id.tv_song_count)
