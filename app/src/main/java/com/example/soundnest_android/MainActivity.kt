@@ -54,21 +54,17 @@ class MainActivity : AppCompatActivity(), PlayerHost {
                 val returnedIdx = data.getIntExtra("EXTRA_INDEX", 0)
                 val returnedPath = data.getStringExtra("EXTRA_PLAYING_PATH")
 
-                // Primero actualiza la playlist y el índice
                 returnedPlaylist?.let { playlist ->
                     sharedPlayer.setPlaylist(playlist)
                     sharedPlayer.setCurrentIndex(returnedIdx)
 
-                    // Obtén la canción actual basada en el índice
                     val currentSong = playlist.getOrNull(returnedIdx)
 
                     if (currentSong != null && returnedPath != null) {
                         val file = File(returnedPath)
                         if (file.exists()) {
-                            // Dispara el pendingFile para actualizar el fragment
                             sharedPlayer.playFromFile(currentSong, file)
 
-                            // Asegúrate de que el PlayerManager también tenga el archivo correcto
                             PlayerManager.playFile(this, file)
                         }
                     }
@@ -84,10 +80,8 @@ class MainActivity : AppCompatActivity(), PlayerHost {
                 val path = data.getStringExtra("EXTRA_PLAYING_PATH")
                 val idx = data.getIntExtra("EXTRA_INDEX", -1)
 
-                // actualiza índice (para que la flechita Next/Prev funcione)
                 if (idx >= 0) sharedPlayer.setCurrentIndex(idx)
 
-                // re-dispara pendingFile para que el fragment refresque UI
                 if (song != null && path != null) {
                     val file = File(path)
                     if (file.exists()) sharedPlayer.playFromFile(song, file)
@@ -174,14 +168,12 @@ class MainActivity : AppCompatActivity(), PlayerHost {
     }
 
     override fun playSong(song: Song) {
-        // Implementa la lógica similar a HomeFragment
         val cacheFile = File(cacheDir, "song_${song.id}.mp3")
         if (cacheFile.exists()) {
             sharedPlayer.playFromFile(song, cacheFile)
             return
         }
 
-        // Si no existe en caché, podrías descargarla o mostrar un mensaje
         Log.d("MainActivity", "Song not in cache: ${song.title}")
     }
 
@@ -218,7 +210,6 @@ class MainActivity : AppCompatActivity(), PlayerHost {
                 PlayerManager.playFile(this, cacheFile)
             }
         } else {
-            // Principio de la playlist, reinicia la canción actual
             PlayerManager.getPlayer()?.seekTo(0)
         }
     }

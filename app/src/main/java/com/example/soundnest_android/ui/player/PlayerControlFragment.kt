@@ -63,25 +63,22 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         }
 
         shared.currentIndex.observe(viewLifecycleOwner) { idx ->
-            // Solo actualiza la UI, no reproduzcas automáticamente
             shared.playlist.value?.getOrNull(idx)?.let { song ->
-                // Solo actualiza si no hay una canción pendiente ya establecida
-                if (currentSong?.id != song.id) {
-                    val file = File(requireContext().cacheDir, "song_${song.id}.mp3")
-                    if (file.exists()) {
-                        // NO llames a playFromFile aquí, solo actualiza la referencia
-                        currentSong = song
-                        currentFile = file
-                        updateSongInfo(song, file)
-                    }
+                val file = File(requireContext().cacheDir, "song_${song.id}.mp3")
+                if (file.exists()) {
+                    currentSong = song
+                    currentFile = file
+                    updateSongInfo(song, file)
+
+                    shared.setIsPlaying(true)
+                    PlayerManager.playFile(requireContext(), file)
                 }
             }
         }
 
         setControlsEnabled(false)
-        
+
         shared.playlist.observe(viewLifecycleOwner) { playlist ->
-            // Actualiza los controles cuando cambie la playlist
             if (currentSong != null) {
                 setControlsEnabled(true)
             }
@@ -119,7 +116,6 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
             shared.setIsPlaying(playing)
         }
 
-
         btnNext.setOnClickListener {
             (activity as? PlayerHost)?.playNext()
         }
@@ -127,8 +123,6 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         btnPrevious.setOnClickListener {
             (activity as? PlayerHost)?.playPrevious()
         }
-
-
 
         root.setOnClickListener {
             currentSong?.let { song ->
@@ -140,7 +134,6 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
             }
         }
 
-
         updatePlayPauseButton()
     }
 
@@ -149,14 +142,12 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         btnPlayPause.isEnabled = enabled
 
         if (enabled) {
-            // Verifica si hay una playlist activa para habilitar Next/Previous
             val playlist = shared.playlist.value
             val hasPlaylist = !playlist.isNullOrEmpty() && playlist.size > 1
 
             btnNext.isEnabled = hasPlaylist
             btnPrevious.isEnabled = hasPlaylist
 
-            // Cambia la opacidad de los botones según su estado
             btnNext.alpha = if (hasPlaylist) 1f else 0.5f
             btnPrevious.alpha = if (hasPlaylist) 1f else 0.5f
         } else {
@@ -187,14 +178,12 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         }
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         if (PlayerManager.playerStateListener == this) {
             PlayerManager.playerStateListener = null
         }
     }
-
 
     override fun onTrackStarted() {
         Log.d("PlayerControlFragment", "onTrackStarted called")

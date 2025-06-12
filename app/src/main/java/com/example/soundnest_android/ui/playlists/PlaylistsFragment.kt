@@ -18,6 +18,7 @@ import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.ui.edit_playlist.EditPlaylistDialogFragment
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlaylistDetailActivity
+import com.example.soundnest_android.utils.SkeletonAdapter
 import com.example.soundnest_android.utils.UriToFileUtil
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -44,6 +45,24 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentPlaylistsBinding.bind(view)
+
+        val shimmerLayout = binding.shimmerContainer
+        val rvSkeletons = binding.rvSkeletons.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            adapter = SkeletonAdapter(count = 4)
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
+                shimmerLayout.startShimmer()
+                shimmerLayout.visibility = View.VISIBLE
+                binding.rvPlaylists.visibility = View.GONE
+            } else {
+                shimmerLayout.stopShimmer()
+                shimmerLayout.visibility = View.GONE
+                binding.rvPlaylists.visibility = View.VISIBLE
+            }
+        }
 
         adapter = PlaylistAdapter(
             items = emptyList(),
@@ -121,6 +140,11 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
             .show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadPlaylists()
+    }
+    
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

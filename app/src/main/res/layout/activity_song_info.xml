@@ -195,6 +195,7 @@
                 android:scaleType="centerInside"
                 android:layout_marginStart="46dp"
                 android:layout_marginEnd="46dp"
+                android:tint="@color/black"
                 android:src="@drawable/ic_baseline_play"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btnForward10"

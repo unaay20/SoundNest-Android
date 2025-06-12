@@ -40,10 +40,12 @@ import com.example.soundnest_android.ui.playlists.PlaylistPopupAdapter
 import com.example.soundnest_android.ui.playlists.PlaylistsViewModel
 import com.example.soundnest_android.ui.playlists.PlaylistsViewModelFactory
 import com.example.soundnest_android.ui.songs.PlayerHost
+import com.example.soundnest_android.utils.FullMessageDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import kotlin.math.abs
 
 class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener, PlayerHost {
     private val grpcService by lazy {
@@ -74,7 +76,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     private val sharedPlayer: SharedPlayerViewModel by viewModels()
 
-    private val player by lazy { PlayerManager.getPlayer() }
+    private val player
+        get() = PlayerManager.getPlayer()
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
@@ -83,12 +86,11 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                     val pos = player!!.currentPosition
                     seekBar.progress = pos
                     tvCurrentTime.text = formatTime(pos)
-                    handler.postDelayed(this, 100)
-                } else {
-                    handler.postDelayed(this, 500)
                 }
             } catch (_: IllegalStateException) {
-                handler.postDelayed(this, 500)
+                // ignoramos si isPlaying o currentPosition falla
+            } finally {
+                handler.postDelayed(this, 100)
             }
         }
     }
@@ -166,6 +168,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         handler.removeCallbacks(updateRunnable)
         isPlayerPrepared = false
         seekBar.progress = 0
+        seekBar.max = 100
+        seekBar.isEnabled = false
         tvCurrentTime.text = formatTime(0)
         tvTotalTime.text = formatTime(0)
         updatePlayPauseButton(false)
@@ -201,10 +205,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                 }
             }
 
-            file?.let {
-                PlayerManager.playFile(this, it)
-                sharedPlayer.setIsPlaying(true)
-            }
+            
         }
 
         sharedPlayer.currentIndex.observe(this) { idx ->
@@ -302,22 +303,29 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(sb: SeekBar) {
                 isUserSeeking = true
+                handler.removeCallbacks(updateRunnable)
             }
 
             override fun onStopTrackingTouch(sb: SeekBar) {
                 isUserSeeking = false
-                if (isPlayerPrepared) {
+                if (isPlayerPrepared && player != null) {
                     try {
-                        player?.seekTo(sb.progress)
+                        player!!.seekTo(sb.progress)
                         tvCurrentTime.text = formatTime(sb.progress)
-                    } catch (_: IllegalStateException) {
-                        // ignoro si no está listo
+                        Log.d("SongInfoActivity", "Seek a posición: ${formatTime(sb.progress)}")
+
+                        handler.postDelayed(updateRunnable, 100)
+                    } catch (e: IllegalStateException) {
+                        Log.w("SongInfoActivity", "Error en seek", e)
+                        handler.postDelayed(updateRunnable, 100)
                     }
                 }
             }
 
             override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser) tvCurrentTime.text = formatTime(progress)
+                if (fromUser) {
+                    tvCurrentTime.text = formatTime(progress)
+                }
             }
         })
     }
@@ -325,27 +333,53 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupGestureDetector() {
+        val SWIPE_THRESHOLD = 200
+        val SWIPE_VELOCITY_THRESHOLD = 200
+
         gestureDetector = GestureDetectorCompat(this,
             object : GestureDetector.SimpleOnGestureListener() {
-                private val SWIPE_THRESHOLD = 100
-                private val SWIPE_VELOCITY_THRESHOLD = 100
+                private var hasSwiped = false
+
+                override fun onDown(e: MotionEvent): Boolean {
+                    hasSwiped = false
+                    return true
+                }
 
                 override fun onFling(
-                    e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    velocityX: Float,
+                    velocityY: Float
                 ): Boolean {
-                    if (e1 != null &&
-                        kotlin.math.abs(e2.y - e1.y) > SWIPE_THRESHOLD &&
-                        kotlin.math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD &&
-                        e2.y - e1.y > 0
+                    if (e1 == null || hasSwiped) return false
+
+                    val deltaX = e2.x - e1.x
+                    val deltaY = e2.y - e1.y
+
+                    if (abs(deltaX) > abs(deltaY)
+                        && abs(deltaX) > SWIPE_THRESHOLD
+                        && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD
+                    ) {
+                        if (deltaX > 0) playPrevious() else playNext()
+                        hasSwiped = true
+                        return true
+                    }
+
+                    if (abs(deltaY) > abs(deltaX)
+                        && abs(deltaY) > SWIPE_THRESHOLD
+                        && deltaY > 0
                     ) {
                         finishAfterTransition()
                         overridePendingTransition(0, R.anim.slide_out_down)
+                        hasSwiped = true
                         return true
                     }
+
                     return false
                 }
             })
     }
+
 
     private fun updateUI(newSong: Song) {
         seekBar.progress = 0
@@ -434,26 +468,54 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     override fun onTrackStarted() = runOnUiThread {
         isPlayerPrepared = true
         seekBar.isEnabled = true
-        //seekBar.progress = 0
+
+        seekBar.progress = 0
         tvCurrentTime.text = formatTime(0)
-        initDuration()
+
+        val dur = try {
+            player?.duration ?: 0
+        } catch (_: IllegalStateException) {
+            0
+        }
+        if (dur > 0) {
+            seekBar.max = dur
+            tvTotalTime.text = formatTime(dur)
+        }
+
+        handler.removeCallbacks(updateRunnable)
         handler.post(updateRunnable)
     }
 
-    private fun initDuration() {
+
+    private fun initDuration(retryCount: Int = 0) {
+        if (retryCount >= 10) { // Máximo 10 reintentos (2 segundos)
+            Log.w("SongInfoActivity", "No se pudo obtener la duración después de 10 reintentos")
+            return
+        }
+
         handler.postDelayed({
             try {
                 val dur = player?.duration ?: 0
                 if (dur > 0) {
                     seekBar.max = dur
                     tvTotalTime.text = formatTime(dur)
+                    Log.d("SongInfoActivity", "Duración establecida: ${formatTime(dur)}")
                 } else {
-                    initDuration()
+                    Log.d(
+                        "SongInfoActivity",
+                        "Duración aún no disponible, reintentando... (${retryCount + 1}/10)"
+                    )
+                    initDuration(retryCount + 1)
                 }
-            } catch (_: IllegalStateException) {
-                initDuration()
+            } catch (e: IllegalStateException) {
+                Log.w(
+                    "SongInfoActivity",
+                    "Error obteniendo duración, reintentando... (${retryCount + 1}/10)",
+                    e
+                )
+                initDuration(retryCount + 1)
             }
-        }, 100)
+        }, 200)
     }
 
     override fun onTrackResumed() = runOnUiThread {
@@ -540,7 +602,18 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
         popupWindow.showAsDropDown(anchor, 0, 0)
 
         playlistViewModel.playlists.observe(this) { list ->
-            recycler.adapter = PlaylistPopupAdapter(list) { playlist ->
+            val canAdd = list.filter { it.songs.size <= 9 }
+
+            if (canAdd.isEmpty()) {
+                FullMessageDialogFragment.newInstance(
+                    getString(R.string.msg_playlists_full)
+                ).show(supportFragmentManager, "full_message")
+                popupWindow.dismiss()
+                return@observe
+            }
+
+
+            recycler.adapter = PlaylistPopupAdapter(canAdd) { playlist ->
                 lifecycleScope.launch {
                     try {
                         playlistViewModel.addSongToPlaylist(playlist.id, song.id)
@@ -561,6 +634,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                 }
             }
         }
+
     }
 
     override fun playSong(song: Song) {
@@ -573,11 +647,6 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
             if (idx + 1 < list.size) {
                 val next = list[idx + 1]
                 sharedPlayer.setCurrentIndex(idx + 1)
-                runOnUiThread {
-                    Toast.makeText(
-                        this, "Playing next: “${next.title}”", Toast.LENGTH_SHORT
-                    ).show()
-                }
                 resetPlayerUI()
                 downloadAndPlay(next)
             }
@@ -603,6 +672,7 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
     private fun playFromCacheFile(song: Song, cacheFile: File) {
         resetPlayerUI()
         this.song = song
+
         player?.setOnPreparedListener { onTrackStarted() }
         PlayerManager.playFile(this, cacheFile)
         sharedPlayer.setIsPlaying(true)
@@ -623,33 +693,24 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
 
             withContext(Dispatchers.Main) {
                 sharedPlayer.setLoading(false)
-                playFromCacheFile(song, cacheFile)
-
-                player?.apply {
-                    setOnPreparedListener { mp ->
-                        onTrackStarted()
-                    }
+                if (cacheFile.exists()) {
+                    player?.setOnPreparedListener { onTrackStarted() }
+                    PlayerManager.playFile(this@SongInfoActivity, cacheFile)
+                    sharedPlayer.setIsPlaying(true)
+                } else {
+                    Toast.makeText(
+                        this@SongInfoActivity,
+                        "Error al descargar: ${song.title}", Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-                PlayerManager.playFile(this@SongInfoActivity, cacheFile)
-                sharedPlayer.setIsPlaying(true)
-
-                isPlayerPrepared = true
-                seekBar.isEnabled = true
-                initDuration()
-                handler.post(updateRunnable)
-
-
-                val newIdx = sharedPlayer.playlist.value
-                    ?.indexOfFirst { it.id == song.id } ?: -1
-                if (newIdx >= 0) sharedPlayer.setCurrentIndex(newIdx)
             }
         }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (gestureDetector.onTouchEvent(ev)) return true
-        return super.dispatchTouchEvent(ev)
+        super.dispatchTouchEvent(ev)
+        gestureDetector.onTouchEvent(ev)
+        return true
     }
 
     private fun buildResultIntent(): Intent = Intent().apply {

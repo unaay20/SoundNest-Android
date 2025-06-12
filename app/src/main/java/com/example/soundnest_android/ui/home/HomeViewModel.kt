@@ -44,8 +44,9 @@ class HomeViewModel(
     fun loadSongs() {
         viewModelScope.launch {
             val now = LocalDate.now()
-
-            when (val r = songService.getPopularByMonth(5, now.year, now.monthValue)) {
+            val amountPopular = 6
+            val amountRecent = 12
+            when (val r = songService.getPopularByMonth(amountPopular, now.year, now.monthValue)) {
                 is ApiResult.Success<List<GetPopularSongResponse>?> -> {
                     val list = r.data.orEmpty()
                     Log.d("HomeViewModel", "POPULARES ▶ servidor devolvió: $list")
@@ -68,7 +69,7 @@ class HomeViewModel(
                 }
             }
 
-            when (val r = songService.getRecent(10)) {
+            when (val r = songService.getRecent(amountRecent)) {
                 is ApiResult.Success<List<GetRecentSongResponse>?> -> {
                     val list = r.data.orEmpty()
                     Log.d("HomeViewModel", "RECIENTES ▶ servidor devolvió: $list")

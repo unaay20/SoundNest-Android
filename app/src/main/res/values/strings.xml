@@ -121,5 +121,5 @@
     <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
     <string name="btn_delete">Delete</string>
     <string name="msg_no_song_loaded">Click on a song to play it!</string>
-
+    <string name="msg_playlists_full">All your playlist are full.\nCreate a new one to add more.</string>
 </resources>

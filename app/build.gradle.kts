@@ -77,6 +77,7 @@ dependencies {
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
     implementation("com.auth0.android:jwtdecode:2.0.1")
     implementation("io.grpc:grpc-okhttp:1.63.0")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
     val composeBom = platform("androidx.compose:compose-bom:2025.05.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)

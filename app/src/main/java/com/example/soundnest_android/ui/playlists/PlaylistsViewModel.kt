@@ -26,12 +26,15 @@ class PlaylistsViewModel(
     private val service: PlaylistService,
     private val userId: String
 ) : AndroidViewModel(application) {
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
 
     companion object {
         private const val TAG = "PlaylistsViewModel"
     }
 
     private val _playlists = MutableLiveData<List<Playlist>>()
+
     val playlists: LiveData<List<Playlist>> = _playlists
 
     private val _error = MutableLiveData<String?>()
@@ -96,7 +99,7 @@ class PlaylistsViewModel(
                 return@launch
             }
 
-            val mimeType = getMimeType(imageFile) ?: "image/jpeg" // Default MIME type
+            val mimeType = getMimeType(imageFile) ?: "image/jpeg"
             val requestBody = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())
             val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
             val namePart = name.toRequestBody("text/plain".toMediaTypeOrNull())
