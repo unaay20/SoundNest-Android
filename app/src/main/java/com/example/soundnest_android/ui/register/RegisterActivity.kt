@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
 import com.example.soundnest_android.databinding.ActivityRegisterBinding
-import com.example.soundnest_android.restful.models.user.AdditionalInformation
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -47,16 +46,14 @@ class RegisterActivity : AppCompatActivity() {
                 is SendCodeState.Success -> {
                     binding.btnSend.isEnabled = true
                     showCodeDialog { code ->
-                        val rawInfo = binding.etAdditionalInfo.text.toString().trim()
-
-                        val additionalInfo = AdditionalInformation(rawInfo)
+                        val additionalInformation = binding.etAdditionalInfo.text.toString().trim()
 
                         vm.register(
                             username = binding.etUsername.text.toString().trim(),
                             email = binding.etEmail.text.toString().trim(),
                             password = binding.etPassword.text.toString(),
                             code = code,
-                            additionalInformation = additionalInfo
+                            additionalInformation = additionalInformation
                         )
                     }
                 }
@@ -115,7 +112,7 @@ class RegisterActivity : AppCompatActivity() {
             .setPositiveButton(R.string.action_verify) { dlg, _ ->
                 val code = input.text.toString().trim()
                 if (code.isBlank()) {
-                    Toast.makeText(this, "Introduce un código válido", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Enter a valid code", Toast.LENGTH_SHORT).show()
                 } else {
                     onConfirm(code)
                     dlg.dismiss()

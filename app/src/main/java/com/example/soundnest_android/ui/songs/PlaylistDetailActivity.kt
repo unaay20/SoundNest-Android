@@ -149,6 +149,17 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                     playlistSongs = fullSongs
                     songAdapter.submitList(fullSongs)
                     sharedPlayer.setPlaylist(playlistSongs)
+
+                    sharedPlayer.setPlaylist(playlistSongs)
+                    fullSongs.firstOrNull()?.let { first ->
+                        val f = File(cacheDir, "song_${first.id}.mp3")
+                        if (f.exists()) {
+                            sharedPlayer.playFromFile(first, f)
+                            val frag = supportFragmentManager
+                                .findFragmentByTag("PLAYER_CONTROL") as? PlayerControlFragment
+                            frag?.skipNextPendingFile()
+                        }
+                    }
                 }
 
                 is ApiResult.HttpError -> toast("HTTP ${r.code}: ${r.message}")

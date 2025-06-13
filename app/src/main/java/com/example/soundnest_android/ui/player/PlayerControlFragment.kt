@@ -10,14 +10,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.soundnest_android.R
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.ui.songs.PlayerHost
 import com.google.android.material.card.MaterialCardView
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 
 class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
@@ -33,7 +30,7 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
     private lateinit var btnPrevious: ImageButton
     private var currentSong: Song? = null
     private var currentFile: File? = null
-    private var isFirstPlaybackAttemptInFragment: Boolean = true
+    private var skipNextPendingFile = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,14 +95,8 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
                 .into(songImage)
 
 
-            if (isFirstPlaybackAttemptInFragment) {
-                Log.d("PlayerControlFragment", "First playback attempt, delaying...")
-                viewLifecycleOwner.lifecycleScope.launch {
-                    delay(500)
-                    shared.playFromFile(song, file)
-                    PlayerManager.playFile(requireContext(), file)
-                }
-                isFirstPlaybackAttemptInFragment = false
+            if (skipNextPendingFile) {
+                skipNextPendingFile = false
             } else {
                 PlayerManager.playFile(requireContext(), file)
             }
@@ -185,6 +176,10 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         }
     }
 
+    fun skipNextPendingFile() {
+        skipNextPendingFile = true
+    }
+
     override fun onTrackStarted() {
         Log.d("PlayerControlFragment", "onTrackStarted called")
         activity?.runOnUiThread {
@@ -232,6 +227,21 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
         }
     }
 
+    private fun refreshUIFromViewModel() {
+        val idx = shared.currentIndex.value ?: return
+        val list = shared.playlist.value ?: return
+        list.getOrNull(idx)?.let { song ->
+            val file = File(requireContext().cacheDir, "song_${song.id}.mp3")
+            if (file.exists()) {
+                currentSong = song
+                currentFile = file
+                updateSongInfo(song, file)
+                updatePlayPauseButton()
+                setControlsEnabled(true)
+            }
+        }
+    }
+
     private fun updateSongInfo(song: Song, file: File?) {
         songTitle.text = song.title
         artistName.text = song.artist
@@ -241,5 +251,10 @@ class PlayerControlFragment : Fragment(R.layout.fragment_player_control),
             .error(R.drawable.img_soundnest_logo_svg)
             .circleCrop()
             .into(songImage)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshUIFromViewModel()
     }
 }

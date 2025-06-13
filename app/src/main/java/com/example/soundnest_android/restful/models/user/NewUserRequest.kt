@@ -16,7 +16,7 @@ data class NewUserRequest(
     val code: String,
 
     @Json(name = "additionalInformation")
-    val additionalInformation: AdditionalInformation
+    val additionalInformation: String
 )
 
 data class AdditionalInformation(

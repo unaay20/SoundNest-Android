@@ -55,17 +55,13 @@ class MainActivity : AppCompatActivity(), PlayerHost {
                 val returnedPath = data.getStringExtra("EXTRA_PLAYING_PATH")
 
                 returnedPlaylist?.let { playlist ->
-                    sharedPlayer.setPlaylist(playlist)
                     sharedPlayer.setCurrentIndex(returnedIdx)
-
-                    val currentSong = playlist.getOrNull(returnedIdx)
-
-                    if (currentSong != null && returnedPath != null) {
-                        val file = File(returnedPath)
-                        if (file.exists()) {
-                            sharedPlayer.playFromFile(currentSong, file)
-
-                            PlayerManager.playFile(this, file)
+                    playlist.getOrNull(returnedIdx)?.let { song ->
+                        returnedPath?.let { path ->
+                            val file = File(path)
+                            if (file.exists()) {
+                                sharedPlayer.playFromFile(song, file)
+                            }
                         }
                     }
                 }

@@ -10,7 +10,6 @@ import com.example.soundnest_android.business_logic.UserProfile
 import com.example.soundnest_android.grpc.constants.GrpcRoutes
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.UserImageGrpcService
-import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
 import com.example.soundnest_android.utils.SingleLiveEvent
@@ -81,7 +80,7 @@ class EditProfileViewModel(
     }
 
 
-    fun saveProfile(newUsername: String, info: AdditionalInformation) {
+    fun saveProfile(newUsername: String, info: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val email = tokenProvider.email.orEmpty()
 

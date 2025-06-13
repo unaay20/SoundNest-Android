@@ -122,4 +122,7 @@
     <string name="btn_delete">Delete</string>
     <string name="msg_no_song_loaded">Click on a song to play it!</string>
     <string name="msg_playlists_full">All your playlist are full.\nCreate a new one to add more.</string>
+    <string name="msg_profile_edited">Your profile has been updated. To apply the changes, you need to log in again.</string>
+    <string name="msg_password_changed">Your password has been changed. To apply the changes, you need to log in again.</string>
+
 </resources>

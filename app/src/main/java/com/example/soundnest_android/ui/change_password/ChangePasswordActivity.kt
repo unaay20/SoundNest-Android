@@ -1,5 +1,6 @@
 package com.example.soundnest_android.ui.change_password
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -8,9 +9,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityChangePasswordBinding
+import com.example.soundnest_android.ui.login.LoginActivity
 import com.example.soundnest_android.utils.Constants
+import com.example.soundnest_android.utils.FullMessageDialogFragment
 
-class ChangePasswordActivity : AppCompatActivity() {
+class ChangePasswordActivity : AppCompatActivity(),
+    FullMessageDialogFragment.OnFullMessageDialogListener {
     private lateinit var binding: ActivityChangePasswordBinding
     private val vm by lazy { ViewModelProvider(this).get(ChangePasswordViewModel::class.java) }
 
@@ -82,9 +86,9 @@ class ChangePasswordActivity : AppCompatActivity() {
                 }
 
                 is ChangePasswordState.Success -> {
-                    Toast.makeText(this, R.string.msg_exit_change_password, Toast.LENGTH_LONG)
-                        .show()
-                    finish()
+                    FullMessageDialogFragment.newInstance(
+                        getString(R.string.msg_password_changed),
+                    ).show(supportFragmentManager, "RELOGIN_DIALOG")
                 }
 
                 is ChangePasswordState.Error -> {
@@ -107,5 +111,12 @@ class ChangePasswordActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_EMAIL = "extra_email"
+    }
+
+    override fun onFullMessageOk() {
+        SharedPrefsTokenProvider(this).clearSession()
+        Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }.also(::startActivity)
     }
 }

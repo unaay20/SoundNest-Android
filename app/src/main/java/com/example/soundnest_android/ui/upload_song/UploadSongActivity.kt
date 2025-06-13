@@ -1,6 +1,7 @@
 package com.example.soundnest_android.ui.upload_song
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -125,18 +126,21 @@ class UploadSongActivity : AppCompatActivity() {
             val desc = binding.etDescription.text.toString()
             val pos = binding.spinnerGenre.selectedItemPosition
             val genreId = viewModel.genres.value?.getOrNull(pos)?.idSongGenre ?: 0
+            binding.progressBar.visibility = View.VISIBLE
             viewModel.onUploadClicked(this, name, desc, genreId)
         }
 
         viewModel.uploadSuccess.observe(this, Observer { success ->
+            binding.progressBar.visibility = View.GONE
             if (success) {
                 Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
-                setResult(RESULT_OK)
+                setResult(Activity.RESULT_OK)
                 finish()
             }
         })
 
         viewModel.uploadError.observe(this, Observer { err ->
+            binding.progressBar.visibility = View.GONE
             err?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
         })
     }

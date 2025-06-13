@@ -85,14 +85,16 @@
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="0dp"
-                android:layout_height="28dp"
+                android:layout_height="16dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
                 android:progressDrawable="@drawable/seekbar_track"
                 android:splitTrack="false"
-                android:thumbTint="@color/accent_purple"
                 android:thumbOffset="0dp"
+                android:thumbTint="@color/accent_purple"
                 app:layout_constraintEnd_toStartOf="@id/tvTotalTime"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@id/tvCurrentTime"
                 app:layout_constraintTop_toTopOf="parent" />
 

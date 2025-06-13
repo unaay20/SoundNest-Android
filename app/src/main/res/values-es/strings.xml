@@ -127,4 +127,6 @@
     <string name="btn_delete">Eliminar</string>
     <string name="msg_no_song_loaded">¡Da clic en una canción para iniciar a escuchar!</string>
     <string name="msg_playlists_full">Todas tus playlists están llenas (10 canciones).\nCrea una nueva si quieres añadir más.</string>
+    <string name="msg_profile_edited">Tu perfil ha sido actualizado. Para aplicar los cambios, debes iniciar sesión de nuevo.</string>
+    <string name="msg_password_changed">Tu contraseña ha sido cambiada. Para aplicar los cambios, debes volver a iniciar sesión.</string>
 </resources>

@@ -1,11 +1,13 @@
 package com.example.soundnest_android.ui.home
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -43,6 +45,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
     private val binding get() = _binding!!
     private val sharedPlayer: SharedPlayerViewModel by activityViewModels()
     private var isFirstSongEverPlayed: Boolean = true
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val uploadLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.loadSongs()
+        }
+    }
+
     private val songGrpc by lazy {
         SongFileGrpcService(
             GrpcRoutes.getHost(),
@@ -157,9 +169,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
         })
 
         binding.fabAddSong.setOnClickListener {
-            startActivity(Intent(requireContext(), UploadSongActivity::class.java))
+            val intent = Intent(requireContext(), UploadSongActivity::class.java)
+            uploadLauncher.launch(intent)
         }
-        viewModel.loadSongs()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

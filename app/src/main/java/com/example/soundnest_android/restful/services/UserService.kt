@@ -19,7 +19,7 @@ class UserService(
         email: String,
         password: String,
         code: String,
-        additionalInformation: AdditionalInformation
+        additionalInformation: String
     ): ApiResult<Unit?> {
         val newUserRequest = NewUserRequest(
             nameUser = username,
@@ -34,7 +34,7 @@ class UserService(
     suspend fun editUser(
         username: String,
         email: String,
-        additionalInformation: AdditionalInformation
+        additionalInformation: String
     ): ApiResult<Unit?> {
         val editUserRequest = EditUserRequest(
             nameUser = username,

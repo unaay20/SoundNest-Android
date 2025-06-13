@@ -10,11 +10,13 @@ import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityEditProfileBinding
 import com.example.soundnest_android.restful.constants.RestfulRoutes
-import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.ui.change_password.ChangePasswordActivity
+import com.example.soundnest_android.ui.login.LoginActivity
+import com.example.soundnest_android.utils.FullMessageDialogFragment
 
-class EditProfileActivity : AppCompatActivity() {
+class EditProfileActivity : AppCompatActivity(),
+    FullMessageDialogFragment.OnFullMessageDialogListener {
 
     private lateinit var binding: ActivityEditProfileBinding
     private lateinit var tokenProvider: SharedPrefsTokenProvider
@@ -60,17 +62,19 @@ class EditProfileActivity : AppCompatActivity() {
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
 
+
+
         viewModel.saveResult.observe(this) { success ->
             if (success) {
-                Toast.makeText(this, R.string.msg_profile_saved, Toast.LENGTH_SHORT).show()
-                finish()
+                FullMessageDialogFragment.newInstance(
+                    getString(R.string.msg_profile_edited),
+                ).show(supportFragmentManager, "RELOGIN_DIALOG")
             }
         }
 
         binding.btnSaveProfile.setOnClickListener {
             val newUsername = binding.etUsername.text.toString().trim()
-            val infoText = binding.etAdditionalInfo.text.toString()
-            val additionalInfo = AdditionalInformation(infoText)
+            val additionalInfo = binding.etAdditionalInfo.text.toString()
             viewModel.saveProfile(newUsername, additionalInfo)
         }
 
@@ -80,4 +84,13 @@ class EditProfileActivity : AppCompatActivity() {
                 .also(::startActivity)
         }
     }
+
+    override fun onFullMessageOk() {
+        SharedPrefsTokenProvider(this).clearSession()
+
+        Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }.also { startActivity(it) }
+    }
+
 }

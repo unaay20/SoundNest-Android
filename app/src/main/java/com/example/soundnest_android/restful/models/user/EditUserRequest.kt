@@ -10,5 +10,5 @@ data class EditUserRequest(
     val email: String,
 
     @Json(name = "additionalInformation")
-    val additionalInformation: AdditionalInformation
+    val additionalInformation: String
 )

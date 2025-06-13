@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
-import com.example.soundnest_android.restful.models.user.AdditionalInformation
 import com.example.soundnest_android.restful.services.AuthService
 import com.example.soundnest_android.restful.services.UserService
 import com.example.soundnest_android.restful.utils.ApiResult
@@ -62,7 +61,7 @@ class RegisterViewModel(
         email: String,
         password: String,
         code: String,
-        additionalInformation: AdditionalInformation
+        additionalInformation: String
     ) {
         _state.value = RegisterState.Loading
         viewModelScope.launch {
