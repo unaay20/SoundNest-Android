@@ -127,11 +127,17 @@ class UploadSongActivity : AppCompatActivity() {
             val pos = binding.spinnerGenre.selectedItemPosition
             val genreId = viewModel.genres.value?.getOrNull(pos)?.idSongGenre ?: 0
             binding.progressBar.visibility = View.VISIBLE
+            binding.btnSelectFile.isEnabled = false
+            binding.btnSelectImage.isEnabled = false
+            binding.btnUpload.isEnabled = false
             viewModel.onUploadClicked(this, name, desc, genreId)
         }
 
         viewModel.uploadSuccess.observe(this, Observer { success ->
             binding.progressBar.visibility = View.GONE
+            binding.btnSelectFile.isEnabled = true
+            binding.btnSelectImage.isEnabled = true
+            binding.btnUpload.isEnabled = true
             if (success) {
                 Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
@@ -141,6 +147,9 @@ class UploadSongActivity : AppCompatActivity() {
 
         viewModel.uploadError.observe(this, Observer { err ->
             binding.progressBar.visibility = View.GONE
+            binding.btnSelectFile.isEnabled = true
+            binding.btnSelectImage.isEnabled = true
+            binding.btnUpload.isEnabled = true
             err?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
         })
     }

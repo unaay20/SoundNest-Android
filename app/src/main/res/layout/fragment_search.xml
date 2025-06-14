@@ -72,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="130dp"
+        android:layout_marginBottom="150dp"
         android:contentDescription="@string/desc_random_song"
         android:elevation="8dp"
         android:src="@drawable/baseline_card_giftcard_24"

@@ -30,7 +30,7 @@ class SounNestFirebaseService : FirebaseMessagingService() {
     private fun showNotification(title: String?, message: String?) {
         val channelId = "default_channel"
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+            .setSmallIcon(R.drawable.img_soundnest_logo_svg)
             .setContentTitle(title ?: "Título")
             .setContentText(message ?: "Mensaje")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
