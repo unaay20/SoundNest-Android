@@ -5,8 +5,7 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:background="@drawable/rounded_dialog">
+    android:gravity="center_vertical">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPlaylistName"
@@ -54,7 +53,7 @@
         android:layout_height="wrap_content"
         android:text="@string/hint_select_image"
         android:textSize="16sp"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         android:gravity="center" />

@@ -1,12 +1,16 @@
 package com.example.soundnest_android.ui.notifications
 
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.soundnest_android.R
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class NotificationDetailDialogFragment : DialogFragment() {
 
@@ -60,6 +64,23 @@ class NotificationDetailDialogFragment : DialogFragment() {
         view.findViewById<TextView>(R.id.tvDetailBody).text = body
         view.findViewById<TextView>(R.id.tvDetailSender).text = "From: $sender"
         view.findViewById<TextView>(R.id.tvDetailRelevance).text = "Relevance: $relevance"
-        view.findViewById<TextView>(R.id.tvDetailDate).text = date
+
+        val timestamp = date
+        val relative = formatRelativeTime(timestamp)
+        view.findViewById<TextView>(R.id.tvDetailDate).text = relative
+    }
+
+    fun formatRelativeTime(dateStr: String): CharSequence {
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        val date = formatter.parse(dateStr) ?: return "Fecha inválida"
+        val millis = date.time
+
+        return DateUtils.getRelativeTimeSpanString(
+            millis,
+            System.currentTimeMillis(),
+            DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.FORMAT_ABBREV_RELATIVE
+        )
     }
 }

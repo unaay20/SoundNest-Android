@@ -125,7 +125,7 @@
         android:id="@+id/tvFileName"
         android:layout_width="268dp"
         android:layout_height="63dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="24dp"
         android:text=""
         android:textColor="?attr/colorOnBackground"
         app:layout_constraintEnd_toEndOf="parent"

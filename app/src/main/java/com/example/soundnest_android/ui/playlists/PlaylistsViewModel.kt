@@ -98,6 +98,12 @@ class PlaylistsViewModel(
                 }
                 return@launch
             }
+            if (name.isBlank() or description.isBlank()) {
+                withContext(Dispatchers.Main) {
+                    _error.value = "La playlist debe tener un nombre y una descripción"
+                }
+                return@launch
+            }
 
             val mimeType = getMimeType(imageFile) ?: "image/jpeg"
             val requestBody = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())

@@ -204,8 +204,6 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                     onTrackStarted()
                 }
             }
-
-            
         }
 
         sharedPlayer.currentIndex.observe(this) { idx ->

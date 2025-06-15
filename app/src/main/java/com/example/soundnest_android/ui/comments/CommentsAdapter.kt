@@ -1,6 +1,8 @@
 package com.example.soundnest_android.ui.comments
 
 import android.content.Context
+import android.os.Build
+import android.text.format.DateUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +10,13 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Comment
+import java.time.Instant
 
 class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
 
@@ -43,10 +47,21 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
         return ViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val (comment, depth) = items[position]
 
-        holder.tvAuthor.text = comment.user
+        val timestampString = comment.timestamp ?: return
+        val instant = Instant.parse(timestampString)
+        val millis = instant.toEpochMilli()
+
+        val relativeTime = DateUtils.getRelativeTimeSpanString(
+            millis,
+            System.currentTimeMillis(),
+            DateUtils.MINUTE_IN_MILLIS
+        )
+
+        holder.tvAuthor.text = comment.user + " - " + relativeTime
         holder.tvText.text = comment.message
 
         val lp = holder.card.layoutParams as ViewGroup.MarginLayoutParams

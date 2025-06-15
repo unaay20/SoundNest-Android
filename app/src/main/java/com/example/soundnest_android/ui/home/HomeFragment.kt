@@ -128,7 +128,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             val uiList = rawList.map { resp ->
                 Song(
                     id = resp.idSong,
-                    title = resp.songName.orEmpty(),
+                    title = resp.songName,
                     artist = resp.userName.orEmpty(),
                     coverUrl = resp.pathImageUrl?.let { "$baseUrl$it" }
                 )

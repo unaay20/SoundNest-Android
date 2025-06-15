@@ -33,6 +33,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
         val descEt = view.findViewById<EditText>(R.id.editTextPlaylistDescription)
         playlistImageView = view.findViewById(R.id.editTextPlaylistImage)
         playlistImageView.setOnClickListener { pickImageLauncher.launch("image/*") }
+        isCancelable = false
 
         builder
             .setView(view)
