@@ -48,9 +48,12 @@ open class BaseService(baseUrl: String, tokenProvider: TokenProvider? = null) {
                 ApiResult.Success(response.body())
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorMessage =
-                    parseErrorBody(errorBody) ?: "HTTP ${response.code()} - ${response.errorBody()}"
-                ApiResult.HttpError(response.code(), errorMessage)
+                val errorMessage = parseErrorBody(errorBody) ?: "HTTP ${response.code()}"
+                ApiResult.HttpError(
+                    code = response.code(),
+                    message = errorMessage,
+                    errorBody = errorBody
+                )
             }
         } catch (e: IOException) {
             ApiResult.NetworkError(e)
@@ -58,6 +61,7 @@ open class BaseService(baseUrl: String, tokenProvider: TokenProvider? = null) {
             ApiResult.UnknownError(e)
         }
     }
+
 
     private fun parseErrorBody(errorBody: String?): String? {
         return try {

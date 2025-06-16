@@ -3,11 +3,10 @@ package com.example.soundnest_android.ui.songs
 import android.annotation.SuppressLint
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -20,8 +19,11 @@ import com.google.android.material.card.MaterialCardView
 class SongAdapter(
     private val showPlayIcon: Boolean,
     private val onSongClick: (Song) -> Unit,
+    private val onItemDelete: (Song) -> Unit,
     private val isScrollingProvider: () -> Boolean,
-    private val isCompact: Boolean
+    private val isCompact: Boolean,
+    private val currentRole: String,
+    private val currentUsername: String?
 ) : ListAdapter<Song, SongAdapter.SongViewHolder>(SongDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
@@ -31,7 +33,16 @@ class SongAdapter(
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        holder.bind(getItem(position), showPlayIcon, onSongClick, isScrollingProvider, isCompact)
+        holder.bind(
+            getItem(position),
+            showPlayIcon,
+            onSongClick,
+            onItemDelete,
+            isScrollingProvider,
+            isCompact,
+            currentRole,
+            currentUsername
+        )
     }
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -45,10 +56,14 @@ class SongAdapter(
         fun bind(
             song: Song,
             showPlayIcon: Boolean,
+            onItemDelete: (Song) -> Unit,
             onSongClick: (Song) -> Unit,
             isScrollingProvider: () -> Boolean,
-            isCompact: Boolean
+            isCompact: Boolean,
+            currentRole: String,
+            currentUsername: String?
         ) {
+            card.isLongClickable = true
             tvTitle.text = song.title
             tvArtist.text = song.artist
             if (!song.coverUrl.isNullOrEmpty()) {
@@ -62,50 +77,35 @@ class SongAdapter(
 
             ivPlay.visibility = if (showPlayIcon) View.VISIBLE else View.GONE
 
-            var startX = 0f
-            var startY = 0f
-            val touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop
 
-            card.setOnTouchListener { v, event ->
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        startX = event.x
-                        startY = event.y
-                        v.animate()
-                            .scaleX(0.97f)
-                            .scaleY(0.97f)
-                            .translationZ(2f)
-                            .setDuration(100)
-                            .start()
-                    }
+            card.setOnClickListener { view ->
+                PopupMenu(view.context, view).apply {
+                    menuInflater.inflate(R.menu.song_menu, menu)
 
-                    MotionEvent.ACTION_UP -> {
-                        v.animate()
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .translationZ(8f)
-                            .setDuration(100)
-                            .withEndAction {
-                                val dx = Math.abs(event.x - startX)
-                                val dy = Math.abs(event.y - startY)
-                                if (dx < touchSlop && dy < touchSlop && !isScrollingProvider()) {
-                                    onSongClick(song)
-                                }
+                    val deleteItem = menu.findItem(R.id.menu_song_info)
+                    deleteItem.isVisible =
+                        (currentRole == view.context.getString(R.string.lbl_rol_moderator))
+                                || (song.artist == currentUsername)
+
+                    setOnMenuItemClickListener {
+                        when (it.itemId) {
+                            R.id.menu_song_info -> {
+                                onSongClick(song)
+                                true
                             }
-                            .start()
-                    }
 
-                    MotionEvent.ACTION_CANCEL -> {
-                        v.animate()
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .translationZ(8f)
-                            .setDuration(100)
-                            .start()
+                            R.id.menu_delete_song -> {
+                                onItemDelete(song)
+                                true
+                            }
+
+                            else -> false
+                        }
                     }
+                    show()
                 }
-                true
             }
+
             val ctx = itemView.context
             val coverSize = if (isCompact)
                 ctx.resources.getDimensionPixelSize(R.dimen.song_cover_size_compact)
@@ -142,14 +142,12 @@ class SongAdapter(
             else
                 ctx.resources.getDimension(R.dimen.song_card_radius_normal)
 
-            // 1) Ajustar portada
             ivCover.layoutParams = ivCover.layoutParams.apply {
                 width = coverSize
                 height = coverSize
             }
             ivCover.requestLayout()
 
-            // 2) Ajustar play icon
             ivPlay.layoutParams = ivPlay.layoutParams.apply {
                 width = playSize
                 height = playSize
@@ -157,15 +155,12 @@ class SongAdapter(
             ivPlay.setPadding(padding / 2, padding / 2, padding / 2, padding / 2)
             ivPlay.requestLayout()
 
-            // 3) Ajustar card
             card.cardElevation = cardElevation
             card.radius = cardRadius.toFloat()
 
-            // 4) Ajustar textos
             tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, titleTextSize)
             tvArtist.setTextSize(TypedValue.COMPLEX_UNIT_PX, artistTextSize)
 
-            // 5) Ajustar padding interno
             (itemView as ViewGroup).setPadding(padding, padding, padding, padding)
         }
     }

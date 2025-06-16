@@ -1,5 +1,6 @@
 package com.example.soundnest_android.ui.search
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.business_logic.Song
 import com.example.soundnest_android.databinding.ActivitySearchResultBinding
@@ -23,6 +25,7 @@ import com.example.soundnest_android.ui.player.PlayerManager
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlayerHost
 import com.example.soundnest_android.ui.songs.SongAdapter
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,6 +34,10 @@ import java.io.File
 class SearchResultActivity : AppCompatActivity(), PlayerHost {
     private lateinit var binding: ActivitySearchResultBinding
     private val sharedPlayer: SharedPlayerViewModel by viewModels()
+
+    private lateinit var sharedPrefs: SharedPrefsTokenProvider
+    private lateinit var role: String
+    private lateinit var username: String
 
     private val songGrpc by lazy {
         SongFileGrpcService(
@@ -59,11 +66,18 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        sharedPrefs = SharedPrefsTokenProvider(this)
+        role = sharedPrefs.role
+        username = sharedPrefs.username.toString()
+
         adapter = SongAdapter(
             showPlayIcon = true,
             onSongClick = { song -> playSong(song) },
+            onItemDelete = { song -> confirmDelete(song) },
             isScrollingProvider = { false },
-            isCompact = false
+            isCompact = false,
+            currentRole = role,
+            currentUsername = username
         )
 
         binding.rvResults.apply {
@@ -180,6 +194,22 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
 
     override fun openSongInfo(song: Song, filePath: String?, playlist: List<Song>, index: Int) {
         TODO("Not yet implemented")
+    }
+
+    private fun confirmDelete(s: Song) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.hint_delete_song)
+            .setMessage("Delete song “${s.title}”?")
+            .setPositiveButton(R.string.btn_delete) { _, _ ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        songService.deleteSong(s.id.toInt())
+                    }
+                    Snackbar.make(binding.root, "Song deleted", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(R.string.btn_cancel, null)
+            .show()
     }
 
     private fun showLoading() {

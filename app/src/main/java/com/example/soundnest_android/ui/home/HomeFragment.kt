@@ -1,6 +1,7 @@
 package com.example.soundnest_android.ui.home
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +36,7 @@ import com.example.soundnest_android.ui.songs.SongDialogFragment
 import com.example.soundnest_android.ui.upload_song.UploadSongActivity
 import com.example.soundnest_android.utils.GridSpacingItemDecoration
 import com.example.soundnest_android.utils.SingleLiveEvent
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,6 +47,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
     private val binding get() = _binding!!
     private val sharedPlayer: SharedPlayerViewModel by activityViewModels()
     private var isFirstSongEverPlayed: Boolean = true
+
+    private lateinit var role: String
+    private var username: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val uploadLauncher = registerForActivityResult(
@@ -88,10 +93,14 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
         super.onViewCreated(view, savedInstanceState)
         val name =
             SharedPrefsTokenProvider(requireContext()).username ?: getString(R.string.lbl_mandatory)
-        binding.textHome.text = getString(R.string.hello_user, name)
+        binding.textHome.text = getString(R.string.msg_hello_user, name)
         binding.btnNotifications.setOnClickListener {
             startActivity(Intent(requireContext(), NotificationsActivity::class.java))
         }
+
+        val sharedPrefs = SharedPrefsTokenProvider(requireContext())
+        role = sharedPrefs.role
+        username = sharedPrefs.username
 
         var isScrollingPopular = false
         var isScrollingRecent = false
@@ -99,14 +108,20 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
         popularAdapter = SongAdapter(
             showPlayIcon = true,
             onSongClick = { song -> showSongFragment(song) },
+            onItemDelete = { song -> confirmDelete(song) },
             isScrollingProvider = { isScrollingPopular },
-            isCompact = true
+            isCompact = true,
+            currentRole = role,
+            currentUsername = username
         )
         recentAdapter = SongAdapter(
             showPlayIcon = true,
             onSongClick = { song -> showSongFragment(song) },
+            onItemDelete = { song -> confirmDelete(song) },
             isScrollingProvider = { isScrollingRecent },
-            isCompact = true
+            isCompact = true,
+            currentRole = role,
+            currentUsername = username
         )
 
         binding.rvPopular.apply {
@@ -173,6 +188,25 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
             uploadLauncher.launch(intent)
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun confirmDelete(s: Song) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.hint_delete_song)
+            .setMessage("Delete song “${s.title}”?")
+            .setPositiveButton(R.string.btn_delete) { _, _ ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        songService.deleteSong(s.id.toInt())
+                    }
+                    viewModel.loadSongs()
+                    Snackbar.make(binding.root, "Song deleted", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(R.string.btn_cancel, null)
+            .show()
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {

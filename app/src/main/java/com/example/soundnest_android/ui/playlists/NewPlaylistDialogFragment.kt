@@ -3,10 +3,12 @@ package com.example.soundnest_android.ui.playlists
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -18,7 +20,9 @@ class NewPlaylistDialogFragment : DialogFragment() {
 
     var onPlaylistCreated: ((String, String, String?) -> Unit)? = null
     private lateinit var playlistImageView: ImageView
+    private lateinit var placeholderLayout: View
     private var selectedImageUri: Uri? = null
+    private var selectedImageBitmap: Bitmap? = null
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
@@ -31,8 +35,15 @@ class NewPlaylistDialogFragment : DialogFragment() {
         val view = requireActivity().layoutInflater.inflate(R.layout.fragment_new_playlist, null)
         val nameEt = view.findViewById<EditText>(R.id.editTextPlaylistName)
         val descEt = view.findViewById<EditText>(R.id.editTextPlaylistDescription)
-        playlistImageView = view.findViewById(R.id.editTextPlaylistImage)
-        playlistImageView.setOnClickListener { pickImageLauncher.launch("image/*") }
+        playlistImageView = view.findViewById(R.id.iv_playlist_image)
+        placeholderLayout = view.findViewById(R.id.layoutImagePlaceholder)
+
+        playlistImageView.scaleType = ImageView.ScaleType.CENTER_CROP
+
+        val cardView =
+            view.findViewById<androidx.cardview.widget.CardView>(R.id.cardViewPlaylistImage)
+        cardView.setOnClickListener { pickImageLauncher.launch("image/*") }
+
         isCancelable = false
 
         builder
@@ -65,7 +76,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
 
         cursor.use {
             if (it.moveToFirst()) {
-                name = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                name = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME)) ?: ""
                 size = it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
             }
         }
@@ -81,12 +92,72 @@ class NewPlaylistDialogFragment : DialogFragment() {
             return
         }
 
-        resolver.openInputStream(uri)?.use { stream ->
-            val bitmap = BitmapFactory.decodeStream(stream)
-            playlistImageView.scaleType = ImageView.ScaleType.CENTER_CROP
-            playlistImageView.setImageBitmap(bitmap)
-            selectedImageUri = uri
+        try {
+            resolver.openInputStream(uri)?.use { stream ->
+                val bitmap = BitmapFactory.decodeStream(stream)
+                if (bitmap != null) {
+                    val resizedBitmap = resizeBitmap(bitmap, 300, 300)
+
+
+                    playlistImageView.setImageDrawable(null)
+
+                    playlistImageView.setImageBitmap(resizedBitmap)
+                    playlistImageView.scaleType = ImageView.ScaleType.CENTER_CROP
+
+                    try {
+                        placeholderLayout.visibility = android.view.View.GONE
+                        playlistImageView.visibility = android.view.View.VISIBLE
+                    } catch (e: Exception) {
+                        android.util.Log.e("NewPlaylist", "Error updating visibility", e)
+                    }
+
+                    playlistImageView.invalidate()
+                    playlistImageView.requestLayout()
+
+                    selectedImageUri = uri
+                    selectedImageBitmap = resizedBitmap
+
+                    if (bitmap != resizedBitmap) {
+                        bitmap.recycle()
+                    } else {
+
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "No se pudo cargar la imagen",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } catch (e: Exception) {
+            Toast.makeText(
+                requireContext(),
+                "Error al cargar la imagen: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
+    }
+
+    private fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+
+        if (width <= maxWidth && height <= maxHeight) {
+            return bitmap
+        }
+
+        val scale = minOf(maxWidth.toFloat() / width, maxHeight.toFloat() / height)
+        val newWidth = (width * scale).toInt()
+        val newHeight = (height * scale).toInt()
+
+        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        selectedImageBitmap?.recycle()
+        selectedImageBitmap = null
     }
 
     companion object {

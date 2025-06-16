@@ -1,5 +1,6 @@
 package com.example.soundnest_android.ui.songs
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -26,6 +27,8 @@ import com.example.soundnest_android.ui.player.PlayerControlFragment
 import com.example.soundnest_android.ui.player.PlayerManager
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.player.SongInfoActivity
+import com.example.soundnest_android.ui.playlists.PlaylistsViewModel
+import com.example.soundnest_android.ui.playlists.PlaylistsViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,7 +41,24 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
     private var lastFilePath: String? = null
     private var currentIdx: Int = 0
 
+    private lateinit var sharedPrefs: SharedPrefsTokenProvider
+    private lateinit var role: String
+    private lateinit var username: String
+
+    private val playlistId: String by lazy {
+        intent.getStringExtra("EXTRA_PLAYLIST_ID") ?: ""
+    }
+
     private val sharedPlayer: SharedPlayerViewModel by viewModels()
+
+    private val playlistsViewModel: PlaylistsViewModel by viewModels {
+        PlaylistsViewModelFactory(
+            application = application,
+            baseUrl = RestfulRoutes.getBaseUrl(),
+            tokenProvider = SharedPrefsTokenProvider(this),
+            userId = (SharedPrefsTokenProvider(this).id ?: "").toString()
+        )
+    }
 
     private val grpcService by lazy {
         SongFileGrpcService(
@@ -76,6 +96,10 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playlist_detail)
 
+        sharedPrefs = SharedPrefsTokenProvider(this)
+        role = sharedPrefs.role
+        username = sharedPrefs.username.toString()
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.player_fragment_container, PlayerControlFragment(), "PLAYER_CONTROL")
@@ -98,8 +122,11 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
         songAdapter = SongAdapter(
             showPlayIcon = false,
             onSongClick = { },
+            onItemDelete = ::confirmDelete,
             isScrollingProvider = { false },
-            isCompact = false
+            isCompact = false,
+            currentRole = role,
+            currentUsername = username
         )
         rvSongs.apply {
             layoutManager = LinearLayoutManager(this@PlaylistDetailActivity)
@@ -269,6 +296,24 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
     private fun toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
+
+    private fun confirmDelete(s: Song) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.hint_delete_song)
+            .setMessage("Remove song “${s.title}”?")
+            .setPositiveButton(R.string.btn_delete) { _, _ ->
+                playlistsViewModel.removeSongFromPlaylist(playlistId, s.id.toInt())
+
+                val updatedList = playlistSongs.toMutableList().apply { remove(s) }
+                playlistSongs = updatedList
+                songAdapter.submitList(updatedList)
+
+                Toast.makeText(this, "Song removed successfully", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton(R.string.btn_cancel, null)
+            .show()
+    }
+
 
     override fun openSongInfo(
         song: Song,

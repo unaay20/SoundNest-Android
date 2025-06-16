@@ -85,8 +85,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
 
                 is RegisterState.Error -> {
-                    Toast.makeText(this, "Error registering: ${state.msg}", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(this, state.msg, Toast.LENGTH_LONG).show()
                     binding.btnSend.isEnabled = true
                     binding.btnCancel.isEnabled = true
                 }

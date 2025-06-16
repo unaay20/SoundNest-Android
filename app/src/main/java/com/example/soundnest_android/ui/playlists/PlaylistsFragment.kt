@@ -107,6 +107,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     private fun openDetail(p: Playlist) {
         val songIds = ArrayList(p.songs.map { it.id })
         val intent = Intent(requireContext(), PlaylistDetailActivity::class.java).apply {
+            putExtra("EXTRA_PLAYLIST_ID", p.id)
             putExtra("EXTRA_PLAYLIST_NAME", p.name)
             putExtra("EXTRA_PLAYLIST_IMAGE", p.imageUri)
             putIntegerArrayListExtra("EXTRA_PLAYLIST_SONG_IDS", songIds)
@@ -144,7 +145,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
         super.onResume()
         viewModel.loadPlaylists()
     }
-    
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

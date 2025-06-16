@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.AuthService
@@ -69,8 +70,20 @@ class RegisterViewModel(
                 username, email, password, code, additionalInformation
             )) {
                 is ApiResult.Success -> _state.value = RegisterState.Success
-                is ApiResult.HttpError -> _state.value =
-                    RegisterState.Error("HTTP ${r.code}: ${r.message}")
+                is ApiResult.HttpError -> {
+                    val body = r.errorBody ?: ""
+
+                    val errorRes = when {
+                        body.contains("Email already exists") -> R.string.error_email_exists
+                        body.contains("User name already exists") -> R.string.error_username_exists
+                        body.contains("Code not valid") -> R.string.error_invalid_code
+                        else -> R.string.error_registration_generic
+                    }
+
+                    _state.value =
+                        RegisterState.Error(getApplication<Application>().getString(errorRes))
+                }
+
 
                 is ApiResult.NetworkError -> _state.value =
                     RegisterState.Error("Red: ${r.exception.message}")

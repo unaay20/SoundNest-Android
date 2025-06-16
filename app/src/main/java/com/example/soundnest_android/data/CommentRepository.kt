@@ -32,7 +32,12 @@ class CommentRepository(
                 ApiResult.Success(domain)
             }
 
-            is ApiResult.HttpError -> ApiResult.HttpError(apiResult.code, apiResult.message)
+            is ApiResult.HttpError -> ApiResult.HttpError(
+                code = apiResult.code,
+                message = apiResult.message,
+                errorBody = apiResult.errorBody
+            )
+
             is ApiResult.NetworkError -> ApiResult.NetworkError(apiResult.exception)
             is ApiResult.UnknownError -> ApiResult.UnknownError(apiResult.exception)
         }

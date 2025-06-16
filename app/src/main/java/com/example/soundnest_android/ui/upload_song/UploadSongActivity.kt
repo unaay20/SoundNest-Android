@@ -139,7 +139,8 @@ class UploadSongActivity : AppCompatActivity() {
             binding.btnSelectImage.isEnabled = true
             binding.btnUpload.isEnabled = true
             if (success) {
-                Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.msg_upload_success), Toast.LENGTH_SHORT)
+                    .show()
                 setResult(Activity.RESULT_OK)
                 finish()
             }
