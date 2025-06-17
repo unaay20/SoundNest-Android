@@ -112,6 +112,7 @@
     <string name="hint_delete_song">Delete song</string>
     <string name="hint_song_info">Information</string>
     <string name="hint_touch_select_image">Touch to\nselect</string>
+    <string name="hint_forgot_password">Did you forget your password?</string>
 
     <string name="desc_profile_photo">Profile picture</string>
     <string name="desc_add_song">Publish song</string>
@@ -141,4 +142,6 @@
     <string name="error_registration_generic">There was an error registering, try again later.</string>
     <string name="error_saving_profile">There was an error saving the information</string>
     <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
+    <string name="hint_recover_password">Enter your email to recover your password</string>
+
 </resources>

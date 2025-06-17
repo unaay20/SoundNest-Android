@@ -44,14 +44,28 @@ class ChangePasswordViewModel(
         _sendCodeState.value = SendCodeState.Loading
         viewModelScope.launch {
             when (val result = authService.sendCodeToEmail(email)) {
-                is ApiResult.Success -> _sendCodeState.value = SendCodeState.Success
-                else -> _changeState.value =
-                    ChangePasswordState.Error(
-                        result.toDisplayMessage(getApplication())
-                    )
+                is ApiResult.Success -> {
+                    _sendCodeState.value = SendCodeState.Success
+                }
+
+                is ApiResult.HttpError -> {
+                    val message = result.errorBody ?: "Error desconocido"
+                    if (message.contains("A code was already sent", ignoreCase = true)) {
+                        _sendCodeState.value = SendCodeState.Error(
+                            "Ya se envió un código a este correo. Por favor espera o verifica tu correo."
+                        )
+                    } else {
+                        _sendCodeState.value = SendCodeState.Error(message)
+                    }
+                }
+
+                else -> {
+                    _sendCodeState.value = SendCodeState.Error("Error desconocido")
+                }
             }
         }
     }
+
 
     fun changePassword(email: String, code: String, newPassword: String) {
         _changeState.value = ChangePasswordState.Loading

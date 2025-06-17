@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.databinding.ActivityLoginBinding
+import com.example.soundnest_android.recover_password.RecoverPasswordDialogFragment
 import com.example.soundnest_android.ui.register.RegisterActivity
 import com.example.soundnest_android.utils.Constants
 
@@ -61,6 +62,12 @@ class LoginFragment : Fragment() {
         binding.registerButton.setOnClickListener {
             startActivity(Intent(requireContext(), RegisterActivity::class.java))
         }
+
+        binding.forgotPasswordText.setOnClickListener {
+            val dialog = RecoverPasswordDialogFragment()
+            dialog.show(parentFragmentManager, "RecoverPasswordDialog")
+        }
+
 
         vm.state.observe(viewLifecycleOwner) { state ->
             val enabled = state !is LoginState.Loading

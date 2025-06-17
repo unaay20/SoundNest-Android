@@ -20,7 +20,7 @@ class ChangePasswordActivity : AppCompatActivity(),
 
     private val email: String by lazy {
         intent.getStringExtra(EXTRA_EMAIL)
-            ?: throw IllegalArgumentException(R.string.exception_extra_email.toString())
+            ?: throw IllegalArgumentException(getString(R.string.exception_extra_email))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,18 +39,19 @@ class ChangePasswordActivity : AppCompatActivity(),
                 is SendCodeState.Success -> {
                     binding.btnChangePassword.isEnabled = true
                     val message = getString(R.string.msg_code_sent, email)
-                    Toast.makeText(this, (message), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 }
 
                 is SendCodeState.Error -> {
                     binding.btnChangePassword.isEnabled = true
-                    Toast.makeText(this, R.string.msg_code_error, Toast.LENGTH_LONG).show()
-                    Log.d(Constants.CHANGE_PASSWORD_ACTIVITY, state.msg)
+                    FullMessageDialogFragment.newInstance(state.msg)
+                        .show(supportFragmentManager, "SEND_CODE_ERROR")
                 }
 
                 else -> Unit
             }
         }
+
 
         binding.btnChangePassword.setOnClickListener {
             val code = binding.etVerificationCode.text.toString().trim()
@@ -68,15 +69,12 @@ class ChangePasswordActivity : AppCompatActivity(),
                     Toast.makeText(this, R.string.msg_password_match, Toast.LENGTH_SHORT).show()
 
                 else -> {
-                    val email = SharedPrefsTokenProvider(this).email
-                    if (email.isNullOrBlank()) {
-                        Toast.makeText(this, "No email in token", Toast.LENGTH_SHORT).show()
-                    } else {
-                        vm.changePassword(email, code, newPass)
-                    }
+                    vm.changePassword(email, code, newPass)
                 }
             }
         }
+
+
 
         vm.changeState.observe(this) { state ->
             when (state) {

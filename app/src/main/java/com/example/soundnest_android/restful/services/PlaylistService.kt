@@ -30,14 +30,14 @@ class PlaylistService(
         safeCall { api.deletePlaylist(playlistId) }
 
     suspend fun createPlaylist(
+        image: MultipartBody.Part,
         playlistName: RequestBody,
-        description: RequestBody?,
-        image: MultipartBody.Part
+        description: RequestBody?
     ): ApiResult<CreatePlaylistResponse?> = safeCall {
         api.createPlaylist(
+            image = image,
             playlistName = playlistName,
-            description = description,
-            image = image
+            description = description
         )
     }
 

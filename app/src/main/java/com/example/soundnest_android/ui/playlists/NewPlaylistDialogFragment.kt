@@ -50,11 +50,41 @@ class NewPlaylistDialogFragment : DialogFragment() {
             .setView(view)
             .setTitle(R.string.lbl_create_playlist)
             .setPositiveButton(R.string.btn_create) { _, _ ->
-                onPlaylistCreated?.invoke(
-                    nameEt.text.toString(),
-                    descEt.text.toString(),
-                    selectedImageUri?.toString()
-                )
+                val name = nameEt.text.toString().trim()
+                val description = descEt.text.toString().trim()
+
+                when {
+                    name.isBlank() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "El nombre es obligatorio",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+
+                    description.isBlank() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "La descripción es obligatoria",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+
+                    selectedImageUri == null -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Selecciona una imagen",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+
+                    else -> {
+                        onPlaylistCreated?.invoke(name, description, selectedImageUri.toString())
+                    }
+                }
             }
             .setNegativeButton(R.string.btn_cancel) { dialog, _ -> dialog.dismiss() }
         return builder.create()

@@ -2,9 +2,10 @@ package com.example.soundnest_android.ui.playlists
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -19,7 +20,6 @@ import com.example.soundnest_android.ui.edit_playlist.EditPlaylistDialogFragment
 import com.example.soundnest_android.ui.player.SharedPlayerViewModel
 import com.example.soundnest_android.ui.songs.PlaylistDetailActivity
 import com.example.soundnest_android.utils.SkeletonAdapter
-import com.example.soundnest_android.utils.UriToFileUtil
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
@@ -94,15 +94,51 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
             NewPlaylistDialogFragment().apply {
                 onPlaylistCreated = { name, desc, uriStr ->
                     lifecycleScope.launch {
-                        val imageFile = uriStr
-                            ?.let(Uri::parse)
-                            ?.let { UriToFileUtil.getFileFromUri(requireContext(), it) }
-                        viewModel.createPlaylist(name, desc ?: "", imageFile)
+                        try {
+                            // Validación previa
+                            if (name.isBlank()) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "El nombre es obligatorio",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
+
+                            if (desc.isBlank()) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "La descripción es obligatoria",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
+
+                            if (uriStr.isNullOrBlank()) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Selecciona una imagen",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
+
+                            viewModel.createPlaylist(name, desc, uriStr)
+
+                        } catch (e: Exception) {
+                            Log.e("PlaylistFragment", "Error creating playlist", e)
+                            Toast.makeText(
+                                requireContext(),
+                                "Error al crear playlist: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             }.show(parentFragmentManager, "NewPlaylistDialog")
         }
     }
+
 
     private fun openDetail(p: Playlist) {
         val songIds = ArrayList(p.songs.map { it.id })
