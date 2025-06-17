@@ -93,7 +93,9 @@
     <string name="msg_playlists_full">All your playlist are full.\nCreate a new one to add more.</string>
     <string name="msg_profile_edited">Your profile has been updated. To apply the changes, you need to log in again.</string>
     <string name="msg_password_changed">Your password has been changed. To apply the changes, you need to log in again.</string>
+    <string name="msg_no_changes_made">No changes were made.</string>
 
+    <string name="hint_recover_password">Enter your email to recover your password</string>
     <string name="hint_code">Code</string>
     <string name="hint_publish_song">Publish song</string>
     <string name="hint_song_name">Song name</string>
@@ -142,6 +144,6 @@
     <string name="error_registration_generic">There was an error registering, try again later.</string>
     <string name="error_saving_profile">There was an error saving the information</string>
     <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
-    <string name="hint_recover_password">Enter your email to recover your password</string>
+
 
 </resources>

@@ -33,7 +33,7 @@ class RecoverPasswordDialogFragment : BottomSheetDialogFragment() {
             } else {
                 binding.tilEmail.error = null
                 val intent = Intent(requireContext(), ChangePasswordActivity::class.java)
-                intent.putExtra("extra_email", email)
+                intent.putExtra(ChangePasswordActivity.EXTRA_EMAIL, email)
                 startActivity(intent)
                 dismiss()
             }

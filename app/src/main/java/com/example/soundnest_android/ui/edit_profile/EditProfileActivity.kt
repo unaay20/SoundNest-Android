@@ -18,6 +18,8 @@ import com.example.soundnest_android.utils.FullMessageDialogFragment
 class EditProfileActivity : AppCompatActivity(),
     FullMessageDialogFragment.OnFullMessageDialogListener {
 
+    private var originalUsername: String = ""
+    private var originalAdditionalInfo: String = ""
     private lateinit var binding: ActivityEditProfileBinding
     private lateinit var tokenProvider: SharedPrefsTokenProvider
     private val factory by lazy {
@@ -37,12 +39,15 @@ class EditProfileActivity : AppCompatActivity(),
 
         viewModel.profile.observe(this) { profile ->
             if (profile != null) {
-                binding.etUsername.setText(profile.username)
+                val username = profile.username
+                val info = profile.additionalInformation.orEmpty()
+
+                originalUsername = username
+                originalAdditionalInfo = info
+
+                binding.etUsername.setText(username)
+                binding.etAdditionalInfo.setText(info.trimEnd())
             }
-
-            val info = profile?.additionalInformation
-
-            binding.etAdditionalInfo.setText(info.toString().trimEnd())
         }
 
         viewModel.photoBytes.observe(this) { bytes ->
@@ -62,8 +67,6 @@ class EditProfileActivity : AppCompatActivity(),
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
 
-
-
         viewModel.saveResult.observe(this) { success ->
             if (success) {
                 FullMessageDialogFragment.newInstance(
@@ -74,8 +77,14 @@ class EditProfileActivity : AppCompatActivity(),
 
         binding.btnSaveProfile.setOnClickListener {
             val newUsername = binding.etUsername.text.toString().trim()
-            val additionalInfo = binding.etAdditionalInfo.text.toString()
-            viewModel.saveProfile(newUsername, additionalInfo)
+            val newInfo = binding.etAdditionalInfo.text.toString()
+
+            if (newUsername == originalUsername && newInfo == originalAdditionalInfo) {
+                Toast.makeText(this, R.string.msg_no_changes_made, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            viewModel.saveProfile(newUsername, newInfo)
         }
 
         binding.btnChangePassword.setOnClickListener {

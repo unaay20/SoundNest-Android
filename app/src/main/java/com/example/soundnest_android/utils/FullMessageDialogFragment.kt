@@ -29,6 +29,11 @@ class FullMessageDialogFragment : DialogFragment() {
         listener = context as? OnFullMessageDialogListener
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        isCancelable = false
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val message = requireArguments().getString(ARG_MSG)
         val view = requireActivity().layoutInflater.inflate(R.layout.fragment_full_message, null)
@@ -43,6 +48,7 @@ class FullMessageDialogFragment : DialogFragment() {
             dialog.dismiss()
             listener?.onFullMessageOk()
         }
+
         return dialog
     }
 
@@ -51,3 +57,4 @@ class FullMessageDialogFragment : DialogFragment() {
         listener = null
     }
 }
+

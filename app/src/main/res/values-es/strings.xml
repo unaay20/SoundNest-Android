@@ -74,6 +74,8 @@
     <string name="hint_select_file">Seleccionar archivo</string>
     <string name="hint_artist">Artista</string>
     <string name="hint_search">Buscar…</string>
+    <string name="hint_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="hint_recover_password">Ingresa el correo al que te enviaremos un código de verificación para cambiar tu contraseña</string>
 
     <string name="action_verify">Verificar</string>
     <string name="action_cancel">Cancelar</string>
@@ -85,6 +87,7 @@
     <string name="desc_add_playlist">Crear nueva playlist</string>
     <string name="desc_random_song">Canción aleatoria</string>
 
+    <string name="msg_no_changes_made">No hiciste ningún cambio al perfil.</string>
     <string name="msg_back">Anterior</string>
     <string name="msg_play_pause">Reproducir/Pausar</string>
     <string name="msg_next">Siguiente</string>
@@ -140,6 +143,5 @@
     <string name="error_saving_profile">Hubo un error al guardar la información</string>
     <string name="error_loading_notifications">Hubo un error al cargar tus notificaciones</string>
     <string name="exception_extra_email">Se requiere EXTRA_EMAIL en el Intent</string>
-    <string name="hint_forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="hint_recover_password">Ingresa el correo al que te enviaremos un código de verificación para cambiar tu contraseña</string>
+
 </resources>
