@@ -28,12 +28,14 @@ class NotificationsAdapter(
         }
 
         fun bind(notification: NotificationResponse) {
-            tv.text = notification.title?.takeIf { it.isNotBlank() }
-                ?: "New notification"
+            val ctx = itemView.context
 
-            var lowText = "low"
-            var mediumText = "medium"
-            var highText = "high"
+            tv.text = notification.title?.takeIf { it.isNotBlank() }
+                ?: ctx.getString(R.string.msg_new_notification)
+
+            val lowText = ctx.getString(R.string.priority_low)
+            val mediumText = ctx.getString(R.string.priority_medium)
+            val highText = ctx.getString(R.string.priority_high)
 
             when (notification.relevance) {
                 lowText -> container.setBackgroundColor(

@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.grpc.http.GrpcResult
 import com.example.soundnest_android.grpc.services.SongFileGrpcService
@@ -50,18 +51,22 @@ class UploadSongViewModel(
     private val _uploadedSongId = MutableLiveData<Int?>()
     val uploadedSongId: LiveData<Int?> = _uploadedSongId
 
-    fun fetchGenres() {
+    fun fetchGenres(context: Context) {
         viewModelScope.launch {
             when (val result = restService.getGenres()) {
                 is ApiResult.Success -> _genres.postValue(result.data)
-                is ApiResult.HttpError -> _uploadError.postValue("Error HTTP al cargar géneros: ${result.message}")
-                is ApiResult.NetworkError -> _uploadError.postValue("Error de red al cargar géneros")
-                is ApiResult.UnknownError -> _uploadError.postValue("Error desconocido al cargar géneros")
+                is ApiResult.HttpError -> _uploadError.postValue(
+                    context.getString(R.string.msg_http_error_load_genres, result.message)
+                )
+                is ApiResult.NetworkError -> _uploadError.postValue(
+                    context.getString(R.string.msg_network_error_load_genres)
+                )
+                is ApiResult.UnknownError -> _uploadError.postValue(
+                    context.getString(R.string.msg_unknown_error_load_genres)
+                )
             }
         }
     }
-
-
     fun onFilePicked(uri: Uri) {
         _fileUri.value = uri
     }
@@ -78,15 +83,15 @@ class UploadSongViewModel(
         genreId: Int
     ) {
         val uri = _fileUri.value ?: run {
-            _uploadError.value = "Falta seleccionar fichero"
+            _uploadError.value = context.getString(R.string.msg_file_not_selected)
             return
         }
         if (songName.isBlank()) {
-            _uploadError.value = "El nombre no puede estar vacío"
+            _uploadError.value = context.getString(R.string.msg_name_required)
             return
         }
         if (!isValidMp3(context, uri)) {
-            _uploadError.value = "El fichero no es un MP3 válido"
+            _uploadError.value = context.getString(R.string.msg_invalid_mp3)
             return
         }
 
@@ -106,13 +111,13 @@ class UploadSongViewModel(
                         fetchLatestAndUploadImage(context)
                     } else {
                         _uploadSuccess.postValue(false)
-                        _uploadError.postValue(resp?.message ?: "Error en servidor gRPC")
+                        _uploadError.postValue(resp?.message ?: context.getString(R.string.msg_grpc_server_error))
                     }
                 }
 
-                is GrpcResult.GrpcError -> _uploadError.postValue("gRPC Error ${grpcResult.statusCode}")
-                is GrpcResult.NetworkError -> _uploadError.postValue("Error de red gRPC")
-                is GrpcResult.UnknownError -> _uploadError.postValue("Error desconocido gRPC")
+                is GrpcResult.GrpcError -> _uploadError.postValue(context.getString(R.string.msg_grpc_error_with_code, grpcResult.statusCode))
+                is GrpcResult.NetworkError -> _uploadError.postValue(context.getString(R.string.msg_grpc_network_error))
+                is GrpcResult.UnknownError -> _uploadError.postValue(context.getString(R.string.msg_grpc_unknown_error))
             }
         }
     }
@@ -120,14 +125,14 @@ class UploadSongViewModel(
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun fetchLatestAndUploadImage(context: Context) {
         val userId = (tokenProvider as? SharedPrefsTokenProvider)?.id ?: run {
-            _uploadError.postValue("Usuario no autenticado")
+            _uploadError.postValue(context.getString(R.string.msg_user_not_authenticated))
             return
         }
         when (val result = restService.getLatest(userId)) {
             is ApiResult.Success -> {
                 val song = result.data
                 val songId = song?.idSong ?: run {
-                    _uploadError.postValue("No se obtuvo ID de la canción")
+                    _uploadError.postValue(context.getString(R.string.msg_no_song_id))
                     return
                 }
                 _uploadedSongId.postValue(songId)
@@ -138,18 +143,18 @@ class UploadSongViewModel(
                     val base64 = "data:$mime;base64," + Base64.getEncoder().encodeToString(bytes)
                     when (val up = restService.uploadSongImage(songId, base64)) {
                         is ApiResult.Success -> _uploadSuccess.postValue(true)
-                        is ApiResult.HttpError -> _uploadError.postValue("Error HTTP al subir imagen")
-                        is ApiResult.NetworkError -> _uploadError.postValue("Error de red al subir imagen")
-                        is ApiResult.UnknownError -> _uploadError.postValue("Error desconocido al subir imagen")
+                        is ApiResult.HttpError -> _uploadError.postValue(context.getString(R.string.msg_http_upload_image))
+                        is ApiResult.NetworkError -> _uploadError.postValue(context.getString(R.string.msg_network_upload_image))
+                        is ApiResult.UnknownError -> _uploadError.postValue(context.getString(R.string.msg_unknown_upload_image))
                     }
                 } ?: run {
-                    _uploadError.postValue("Falta seleccionar imagen")
+                    _uploadError.postValue(context.getString(R.string.msg_image_not_selected))
                 }
             }
 
-            is ApiResult.HttpError -> _uploadError.postValue("Error HTTP al obtener última canción")
-            is ApiResult.NetworkError -> _uploadError.postValue("Error de red al obtener última canción")
-            is ApiResult.UnknownError -> _uploadError.postValue("Error desconocido al obtener última canción")
+            is ApiResult.HttpError -> _uploadError.postValue(context.getString(R.string.msg_http_get_latest))
+            is ApiResult.NetworkError -> _uploadError.postValue(context.getString(R.string.msg_network_get_latest))
+            is ApiResult.UnknownError -> _uploadError.postValue(context.getString(R.string.msg_unknown_get_latest))
         }
     }
 

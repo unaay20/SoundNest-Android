@@ -231,6 +231,42 @@
     <string name="title_top_global_genres">Top Genres (Global)</string>
     <string name="msg_no_data">No data to display</string>
 
+    <string name="hint_select_genre">Select a genre</string>
+    <string name="msg_invalid_file_format">Only PNG or JPG files are allowed</string>
+    <string name="msg_http_error_load_genres">HTTP error loading genres: %1$s</string>
+    <string name="msg_network_error_load_genres">Network error loading genres</string>
+    <string name="msg_unknown_error_load_genres">Unknown error loading genres</string>
+    <string name="msg_file_not_selected">Please select a file</string>
+    <string name="msg_invalid_mp3">The file is not a valid MP3</string>
+    <string name="msg_grpc_server_error">gRPC server error</string>
+    <string name="msg_grpc_error_with_code">gRPC error: %1$s</string>
+    <string name="msg_grpc_network_error">gRPC network error</string>
+    <string name="msg_grpc_unknown_error">Unknown gRPC error</string>
+    <string name="msg_no_song_id">Could not retrieve song ID</string>
+    <string name="msg_image_not_selected">Please select an image</string>
+
+    <string name="msg_http_upload_image">HTTP error while uploading image</string>
+    <string name="msg_network_upload_image">Network error while uploading image</string>
+    <string name="msg_unknown_upload_image">Unknown error while uploading image</string>
+
+    <string name="msg_http_get_latest">HTTP error while fetching latest song</string>
+    <string name="msg_network_get_latest">Network error while fetching latest song</string>
+    <string name="msg_unknown_get_latest">Unknown error while fetching latest song</string>
+    <string name="msg_new_notification">New notification</string>
+    <string name="label_from">From: %1$s</string>
+    <string name="label_relevance">Relevance: %1$s</string>
+    <string name="msg_invalid_date">Invalid date</string>
+    <string name="sender_unknown">Unknown</string>
+    <string name="priority_low">low</string>
+    <string name="priority_medium">medium</string>
+    <string name="priority_high">high</string>
+
+    <string name="msg_song_not_found">Song not found</string>
+
+
+
+
+
 
 
 

@@ -54,7 +54,7 @@ class NotificationDetailDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val title =
-            arguments?.getString(ARG_TITLE).takeIf { !it.isNullOrBlank() } ?: "New notification"
+            arguments?.getString(ARG_TITLE).takeIf { !it.isNullOrBlank() } ?: getString(R.string.msg_new_notification)
         val body = requireArguments().getString(ARG_BODY)!!
         val sender = requireArguments().getString(ARG_SENDER)!!
         val relevance = requireArguments().getString(ARG_RELEVANCE)!!
@@ -62,8 +62,8 @@ class NotificationDetailDialogFragment : DialogFragment() {
 
         view.findViewById<TextView>(R.id.tvDetailTitle).text = title
         view.findViewById<TextView>(R.id.tvDetailBody).text = body
-        view.findViewById<TextView>(R.id.tvDetailSender).text = "From: $sender"
-        view.findViewById<TextView>(R.id.tvDetailRelevance).text = "Relevance: $relevance"
+        view.findViewById<TextView>(R.id.tvDetailSender).text = getString(R.string.label_from, sender)
+        view.findViewById<TextView>(R.id.tvDetailRelevance).text = getString(R.string.label_relevance, relevance)
 
         val timestamp = date
         val relative = formatRelativeTime(timestamp)
@@ -73,7 +73,7 @@ class NotificationDetailDialogFragment : DialogFragment() {
     fun formatRelativeTime(dateStr: String): CharSequence {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
         formatter.timeZone = TimeZone.getTimeZone("UTC")
-        val date = formatter.parse(dateStr) ?: return "Fecha inválida"
+        val date = formatter.parse(dateStr) ?: return getString(R.string.msg_invalid_date)
         val millis = date.time
 
         return DateUtils.getRelativeTimeSpanString(

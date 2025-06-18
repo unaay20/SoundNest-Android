@@ -48,10 +48,10 @@ class UploadSongActivity : AppCompatActivity() {
         val restService = SongService(RestfulRoutes.getBaseUrl(), tokenProvider)
         factory = UploadSongViewModelFactory(grpcService, restService, tokenProvider)
 
-        viewModel.fetchGenres()
+        viewModel.fetchGenres(this)
         viewModel.genres.observe(this, Observer { genres ->
             val realNames = genres?.map { it.genreName } ?: emptyList()
-            val namesWithHint = listOf("Select a genre") + realNames
+            val namesWithHint = listOf(getString(R.string.hint_select_genre)) + realNames
             val adapter =
                 ArrayAdapter(this, android.R.layout.simple_spinner_item, namesWithHint).also {
                     it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -175,12 +175,12 @@ class UploadSongActivity : AppCompatActivity() {
             }
         }
         if (size > 20 * 1024 * 1024) {
-            Toast.makeText(this, "El archivo excede 20 MB", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_file_too_large), Toast.LENGTH_SHORT).show()
             return false
         }
         val ext = name.substringAfterLast('.', "").lowercase()
         if (ext != "jpg" && ext != "jpeg" && ext != "png") {
-            Toast.makeText(this, "Solo PNG o JPG", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_invalid_file_format), Toast.LENGTH_SHORT).show()
             return false
         }
         return true

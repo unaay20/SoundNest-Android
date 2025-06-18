@@ -163,7 +163,7 @@ class NotificationsActivity : AppCompatActivity() {
         val frag = NotificationDetailDialogFragment.newInstance(
             title = n.title,
             body = n.notification ?: "",
-            sender = n.sender ?: "Unknown",
+            sender = n.sender ?: getString(R.string.sender_unknown),
             relevance = n.relevance,
             date = n.createdAt ?: ""
         )

@@ -55,7 +55,7 @@ class SongCommentsActivity : AppCompatActivity() {
         val btnCancel = findViewById<Button>(R.id.btnCancelComment)
 
         song = intent.getSerializableExtra("EXTRA_SONG_OBJ") as? Song ?: run {
-            Toast.makeText(this, "Canción no encontrada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_song_not_found), Toast.LENGTH_SHORT).show()
             finish()
             return
         }

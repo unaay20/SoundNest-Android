@@ -230,6 +230,39 @@
     <string name="title_top_global_genres">Top Géneros (Global)</string>
     <string name="msg_no_data">No hay datos para mostrar</string>
 
+    <string name="hint_select_genre">Selecciona un género</string>
+    <string name="msg_invalid_file_format">Solo se permiten archivos PNG o JPG</string>
+    <string name="msg_http_error_load_genres">Error HTTP al cargar géneros: %1$s</string>
+    <string name="msg_network_error_load_genres">Error de red al cargar géneros</string>
+    <string name="msg_unknown_error_load_genres">Error desconocido al cargar géneros</string>
+    <string name="msg_file_not_selected">Falta seleccionar fichero</string>
+    <string name="msg_invalid_mp3">El fichero no es un MP3 válido</string>
+    <string name="msg_grpc_server_error">Error en servidor gRPC</string>
+    <string name="msg_grpc_error_with_code">Error de gRPC: %1$s</string>
+    <string name="msg_grpc_network_error">Error de red gRPC</string>
+    <string name="msg_grpc_unknown_error">Error desconocido gRPC</string>
+    <string name="msg_no_song_id">No se obtuvo ID de la canción</string>
+    <string name="msg_image_not_selected">Falta seleccionar imagen</string>
+
+    <string name="msg_http_upload_image">Error HTTP al subir imagen</string>
+    <string name="msg_network_upload_image">Error de red al subir imagen</string>
+    <string name="msg_unknown_upload_image">Error desconocido al subir imagen</string>
+
+    <string name="msg_http_get_latest">Error HTTP al obtener última canción</string>
+    <string name="msg_network_get_latest">Error de red al obtener última canción</string>
+    <string name="msg_unknown_get_latest">Error desconocido al obtener última canción</string>
+    <string name="msg_new_notification">Nueva notificación</string>
+    <string name="label_from">De: %1$s</string>
+    <string name="label_relevance">Relevancia: %1$s</string>
+    <string name="msg_invalid_date">Fecha inválida</string>
+    <string name="sender_unknown">Desconocido</string>
+    <string name="priority_low">baja</string>
+    <string name="priority_medium">media</string>
+    <string name="priority_high">alta</string>
+
+    <string name="msg_song_not_found">Canción no encontrada</string>
+
+
 
 
 
