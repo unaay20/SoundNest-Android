@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.soundnest_android.R
 import com.example.soundnest_android.auth.SharedPrefsTokenProvider
 import com.example.soundnest_android.restful.constants.RestfulRoutes
 import com.example.soundnest_android.restful.services.VisitService
@@ -64,20 +65,22 @@ fun StatsScreenAll() {
                 }
 
                 is ApiResult.HttpError -> {
-                    errorUser = "Error en la petición (canciones usuario): código ${result.code}"
+                    errorUser = context.getString(R.string.msg_http_error_user_songs, result.code)
                 }
 
                 is ApiResult.NetworkError -> {
-                    errorUser = "Error de red. Por favor comprueba tu conexión."
+                    errorUser = context.getString(R.string.msg_network_error)
                 }
 
                 is ApiResult.UnknownError -> {
-                    errorUser =
-                        "Error desconocido: ${result.exception?.localizedMessage ?: "Ocurrió un error inesperado"}"
+                    errorUser = context.getString(
+                        R.string.msg_unknown_error,
+                        result.exception?.localizedMessage ?: context.getString(R.string.msg_unexpected_error)
+                    )
                 }
             }
         } else {
-            errorUser = "Usuario no autenticado"
+            errorUser = context.getString(R.string.msg_user_not_authenticated)
         }
         isLoadingUser = false
 
@@ -89,16 +92,22 @@ fun StatsScreenAll() {
             }
 
             is ApiResult.HttpError -> {
-                errorGlobal = "Error en la petición (canciones globales): código ${result.code}"
+                errorGlobal = context.getString(
+                    R.string.msg_http_error_global_songs,
+                    result.code
+                )
             }
 
             is ApiResult.NetworkError -> {
-                errorGlobal = "Error de red. Por favor comprueba tu conexión."
+                errorGlobal = context.getString(R.string.msg_network_error_check_connection)
             }
 
             is ApiResult.UnknownError -> {
-                errorGlobal =
-                    "Error desconocido: ${result.exception?.localizedMessage ?: "Ocurrió un error inesperado"}"
+                errorGlobal = context.getString(
+                    R.string.msg_unknown_error_generic,
+                    result.exception?.localizedMessage
+                        ?: context.getString(R.string.msg_unexpected_error_generic)
+                )
             }
         }
         isLoadingGlobal = false
@@ -111,16 +120,22 @@ fun StatsScreenAll() {
             }
 
             is ApiResult.HttpError -> {
-                errorGenres = "Error en la petición (géneros globales): código ${result.code}"
+                errorGenres = context.getString(
+                    R.string.msg_http_error_global_genres,
+                    result.code
+                )
             }
 
             is ApiResult.NetworkError -> {
-                errorGenres = "Error de red. Por favor comprueba tu conexión."
+                errorGenres = context.getString(R.string.msg_network_error_check_connection)
             }
 
             is ApiResult.UnknownError -> {
-                errorGenres =
-                    "Error desconocido: ${result.exception?.localizedMessage ?: "Ocurrió un error inesperado"}"
+                errorGenres = context.getString(
+                    R.string.msg_unknown_error_generic,
+                    result.exception?.localizedMessage
+                        ?: context.getString(R.string.msg_unexpected_error_generic)
+                )
             }
         }
         isLoadingGenres = false
@@ -133,7 +148,7 @@ fun StatsScreenAll() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Top Canciones (Usuario)",
+            text = context.getString(R.string.title_top_user_songs),
             fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 8.dp),
             color = Color.Unspecified
@@ -153,7 +168,7 @@ fun StatsScreenAll() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Top Canciones (Global)",
+            text = context.getString(R.string.title_top_global_songs),
             fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -172,7 +187,7 @@ fun StatsScreenAll() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Top Géneros (Global)",
+            text = context.getString(R.string.title_top_global_genres),
             fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -224,7 +239,7 @@ fun BarChartCompose(
 ) {
     if (labels.isEmpty() || values.isEmpty() || labels.size != values.size) {
         Box(modifier = modifier, contentAlignment = Alignment.Center) {
-            Text(text = "No hay datos para mostrar", fontSize = 16.sp)
+            Text(text = LocalContext.current.getString(R.string.msg_no_data), fontSize = 16.sp)
         }
         return
     }

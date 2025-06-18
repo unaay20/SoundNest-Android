@@ -212,6 +212,23 @@
     <string name="msg_unknown_error">Error: %1$s</string>
     <string name="dialog_msg_delete_song">¿Eliminar la canción “%1$s”?</string>
     <string name="msg_song_deleted">Canción eliminada</string>
+    <string name="artist_unknown">Desconocido</string>
+    <string name="msg_network_error_full">Red: %1$s</string>
+    <string name="dialog_msg_remove_song">¿Quitar la canción “%1$s”?</string>
+    <string name="msg_song_removed">Canción eliminada correctamente</string>
+
+    <string name="msg_http_error_user_songs">Error en la petición (canciones usuario): código %1$d</string>
+    <string name="msg_network_error_check_connection">Error de red. Por favor comprueba tu conexión.</string>
+    <string name="msg_unknown_error_user_songs">Error desconocido: %1$s</string>
+    <string name="msg_unexpected_error">Ocurrió un error inesperado</string>
+    <string name="msg_http_error_global_songs">Error en la petición (canciones globales): código %1$d</string>
+    <string name="msg_unknown_error_generic">Error desconocido: %1$s</string>
+    <string name="msg_unexpected_error_generic">Ocurrió un error inesperado</string>
+    <string name="msg_http_error_global_genres">Error en la petición (géneros globales): código %1$d</string>
+    <string name="title_top_user_songs">Top Canciones (Usuario)</string>
+    <string name="title_top_global_songs">Top Canciones (Global)</string>
+    <string name="title_top_global_genres">Top Géneros (Global)</string>
+    <string name="msg_no_data">No hay datos para mostrar</string>
 
 
 

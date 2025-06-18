@@ -169,7 +169,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                         Song(
                             id = dto.idSong,
                             title = dto.songName,
-                            artist = dto.userName ?: "Desconocido",
+                            artist = dto.userName ?: getString(R.string.artist_unknown),
                             coverUrl = dto.pathImageUrl?.let { "$base$it" }
                         )
                     }
@@ -190,7 +190,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                 }
 
                 is ApiResult.HttpError -> toast("HTTP ${r.code}: ${r.message}")
-                is ApiResult.NetworkError -> toast("Red: ${r.exception.message}")
+                is ApiResult.NetworkError -> toast(getString(R.string.msg_network_error_full, r.exception.message ?: ""))
                 is ApiResult.UnknownError -> toast("Error: ${r.exception.message}")
             }
         }
@@ -300,7 +300,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
     private fun confirmDelete(s: Song) {
         AlertDialog.Builder(this)
             .setTitle(R.string.hint_delete_song)
-            .setMessage("Remove song “${s.title}”?")
+            .setMessage(getString(R.string.dialog_msg_remove_song, s.title))
             .setPositiveButton(R.string.btn_delete) { _, _ ->
                 playlistsViewModel.removeSongFromPlaylist(playlistId, s.id.toInt())
 
@@ -308,7 +308,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                 playlistSongs = updatedList
                 songAdapter.submitList(updatedList)
 
-                Toast.makeText(this, "Song removed successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.msg_song_removed), Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton(R.string.btn_cancel, null)
             .show()

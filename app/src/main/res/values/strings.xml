@@ -213,6 +213,26 @@
     <string name="msg_unknown_error">Error: %1$s</string>
     <string name="dialog_msg_delete_song">Delete song “%1$s”?</string>
     <string name="msg_song_deleted">Song deleted</string>
+    <string name="artist_unknown">Unknown</string>
+    <string name="msg_network_error_full">Network: %1$s</string>
+    <string name="dialog_msg_remove_song">Remove song “%1$s”?</string>
+    <string name="msg_song_removed">Song removed successfully</string>
+
+    <string name="msg_http_error_user_songs">HTTP error (user songs): code %1$d</string>
+    <string name="msg_network_error_check_connection">Network error. Please check your connection.</string>
+    <string name="msg_unknown_error_user_songs">Unknown error: %1$s</string>
+    <string name="msg_unexpected_error">An unexpected error occurred</string>
+    <string name="msg_http_error_global_songs">HTTP error (global songs): code %1$d</string>
+    <string name="msg_unknown_error_generic">Unknown error: %1$s</string>
+    <string name="msg_unexpected_error_generic">An unexpected error occurred</string>
+    <string name="msg_http_error_global_genres">HTTP error (global genres): code %1$d</string>
+    <string name="title_top_user_songs">Top Songs (User)</string>
+    <string name="title_top_global_songs">Top Songs (Global)</string>
+    <string name="title_top_global_genres">Top Genres (Global)</string>
+    <string name="msg_no_data">No data to display</string>
+
+
+
 
 
 
