@@ -119,7 +119,11 @@ class SearchFragment : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (query.isBlank()) {
-                    Toast.makeText(requireContext(), "Introduce texto", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.msg_enter_text),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return false
                 }
                 doSearch(query)
@@ -136,7 +140,7 @@ class SearchFragment : Fragment() {
             val auto = findViewById<SearchView.SearchAutoComplete>(
                 androidx.appcompat.R.id.search_src_text
             )
-            auto.hint = "Type your search here..."
+            auto.hint = getString(R.string.hint_type_search)
             auto.isFocusable = true
             auto.isFocusableInTouchMode = true
 
@@ -212,7 +216,7 @@ class SearchFragment : Fragment() {
 
                 else -> Toast.makeText(
                     requireContext(),
-                    "Error al cargar géneros",
+                    getString(R.string.msg_error_loading_genres),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -229,7 +233,8 @@ class SearchFragment : Fragment() {
             if (songName == null && artistName == null && genreId == null) {
                 Toast.makeText(
                     requireContext(),
-                    "Selecciona al menos un filtro", Toast.LENGTH_SHORT
+                    getString(R.string.msg_select_at_least_one_filter),
+                    Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
@@ -269,7 +274,7 @@ class SearchFragment : Fragment() {
                     } else {
                         Toast.makeText(
                             requireContext(),
-                            "No hay canción aleatoria",
+                            getString(R.string.msg_no_random_song),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -277,7 +282,7 @@ class SearchFragment : Fragment() {
 
                 else -> Toast.makeText(
                     requireContext(),
-                    "Error al obtener canción aleatoria",
+                    getString(R.string.msg_error_getting_random_song),
                     Toast.LENGTH_SHORT
                 ).show()
             }

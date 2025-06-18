@@ -99,7 +99,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
                             if (name.isBlank()) {
                                 Toast.makeText(
                                     requireContext(),
-                                    "El nombre es obligatorio",
+                                    getString(R.string.msg_name_required),
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@launch
@@ -108,7 +108,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
                             if (desc.isBlank()) {
                                 Toast.makeText(
                                     requireContext(),
-                                    "La descripción es obligatoria",
+                                    getString(R.string.msg_description_required),
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@launch
@@ -117,7 +117,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
                             if (uriStr.isNullOrBlank()) {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Selecciona una imagen",
+                                    getString(R.string.msg_image_required),
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@launch
@@ -129,7 +129,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
                             Log.e("PlaylistFragment", "Error creating playlist", e)
                             Toast.makeText(
                                 requireContext(),
-                                "Error al crear playlist: ${e.message}",
+                                getString(R.string.msg_error_creating_playlist, e.message ?: ""),
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -167,13 +167,13 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
 
     private fun confirmDelete(p: Playlist) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Confirmar eliminación")
-            .setMessage("¿Eliminar playlist “${p.name}”?")
-            .setPositiveButton("Eliminar") { _, _ ->
+            .setTitle(getString(R.string.dialog_title_confirm_delete))
+            .setMessage(getString(R.string.dialog_msg_confirm_delete, p.name))
+            .setPositiveButton(getString(R.string.action_delete)) { _, _ ->
                 viewModel.deletePlaylist(p)
-                Snackbar.make(binding.root, "Playlist eliminada", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, getString(R.string.msg_playlist_deleted), Snackbar.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.action_cancel), null)
             .show()
     }
 

@@ -563,12 +563,14 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                 contentResolver.openOutputStream(newFile.uri).use { out ->
                     File(localFilePath!!).inputStream().use { input -> input.copyTo(out!!) }
                 }
-                Toast.makeText(this, "Saved in ${newFile.uri}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.msg_file_saved, newFile.uri), Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Toast.makeText(this, "Error downloading: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.msg_download_error, e.message ?: ""), Toast.LENGTH_LONG).show()
             }
         } else {
-            Toast.makeText(this, "Impossible to create file.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.msg_cannot_create_file, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -617,14 +619,14 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                         playlistViewModel.addSongToPlaylist(playlist.id, song.id)
                         Toast.makeText(
                             this@SongInfoActivity,
-                            "Añadido a ${playlist.name}",
+                            getString(R.string.msg_added_to_playlist, playlist.name),
                             Toast.LENGTH_SHORT
                         ).show()
                         playlistViewModel.loadPlaylists()
                     } catch (e: Exception) {
                         Toast.makeText(
                             this@SongInfoActivity,
-                            "Error: ${e.message}",
+                            getString(R.string.msg_generic_error, e.message ?: ""),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -698,7 +700,8 @@ class SongInfoActivity : AppCompatActivity(), PlayerManager.PlayerStateListener,
                 } else {
                     Toast.makeText(
                         this@SongInfoActivity,
-                        "Error al descargar: ${song.title}", Toast.LENGTH_SHORT
+                        getString(R.string.msg_error_downloading_song, song.title),
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }

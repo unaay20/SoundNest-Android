@@ -57,7 +57,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
                     name.isBlank() -> {
                         Toast.makeText(
                             requireContext(),
-                            "El nombre es obligatorio",
+                            getString(R.string.msg_name_required),
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setPositiveButton
@@ -66,7 +66,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
                     description.isBlank() -> {
                         Toast.makeText(
                             requireContext(),
-                            "La descripción es obligatoria",
+                            getString(R.string.msg_description_required),
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setPositiveButton
@@ -75,7 +75,7 @@ class NewPlaylistDialogFragment : DialogFragment() {
                     selectedImageUri == null -> {
                         Toast.makeText(
                             requireContext(),
-                            "Selecciona una imagen",
+                            getString(R.string.msg_image_required),
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setPositiveButton
@@ -112,13 +112,21 @@ class NewPlaylistDialogFragment : DialogFragment() {
         }
 
         if (size > MAX_SIZE_BYTES) {
-            Toast.makeText(requireContext(), "El archivo excede 20 MB", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.msg_file_too_large),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
         val ext = name.substringAfterLast('.', "").lowercase()
         if (ext !in listOf("jpg", "jpeg", "png")) {
-            Toast.makeText(requireContext(), "Solo PNG o JPG", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.msg_invalid_image_format),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -155,17 +163,19 @@ class NewPlaylistDialogFragment : DialogFragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "No se pudo cargar la imagen",
+                        getString(R.string.msg_image_load_failed),
                         Toast.LENGTH_SHORT
                     ).show()
+
                 }
             }
         } catch (e: Exception) {
             Toast.makeText(
                 requireContext(),
-                "Error al cargar la imagen: ${e.message}",
+                getString(R.string.msg_image_load_error, e.message ?: ""),
                 Toast.LENGTH_SHORT
             ).show()
+
         }
     }
 

@@ -60,8 +60,11 @@ class RegisterActivity : AppCompatActivity() {
 
                 is SendCodeState.Error -> {
                     binding.btnSend.isEnabled = true
-                    Toast.makeText(this, "Error sending code: ${state.msg}", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.msg_error_sending_code, state.msg),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
                 else -> Unit
@@ -111,7 +114,11 @@ class RegisterActivity : AppCompatActivity() {
             .setPositiveButton(R.string.action_verify) { dlg, _ ->
                 val code = input.text.toString().trim()
                 if (code.isBlank()) {
-                    Toast.makeText(this, "Enter a valid code", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.msg_enter_valid_code),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     onConfirm(code)
                     dlg.dismiss()

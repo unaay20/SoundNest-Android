@@ -144,4 +144,81 @@
     <string name="error_loading_notifications">Hubo un error al cargar tus notificaciones</string>
     <string name="exception_extra_email">Se requiere EXTRA_EMAIL en el Intent</string>
 
+    <string name="msg_file_saved">Guardado en %1$s</string>
+    <string name="msg_download_error">Error al descargar: %1$s</string>
+    <string name="msg_cannot_create_file">No se pudo crear el archivo.</string>
+    <string name="msg_added_to_playlist">Añadido a %1$s</string>
+    <string name="msg_generic_error">Error: %1$s</string>
+    <string name="msg_error_downloading_song">Error al descargar: %1$s</string>
+
+    <string name="msg_name_required">El nombre es obligatorio</string>
+    <string name="msg_description_required">La descripción es obligatoria</string>
+    <string name="msg_image_required">Selecciona una imagen</string>
+    <string name="msg_file_too_large">El archivo excede 20 MB</string>
+    <string name="msg_invalid_image_format">Solo se permiten imágenes PNG o JPG</string>
+    <string name="msg_image_load_failed">No se pudo cargar la imagen</string>
+    <string name="msg_image_load_error">Error al cargar la imagen: %1$s</string>
+    <string name="msg_error_creating_playlist">Error al crear playlist: %1$s</string>
+    <string name="dialog_title_confirm_delete">Confirmar eliminación</string>
+    <string name="dialog_msg_confirm_delete">¿Eliminar playlist “%1$s”?</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="msg_playlist_deleted">Playlist eliminada</string>
+    <string name="err_loading_playlists">Error al cargar playlists: %1$s</string>
+    <string name="err_network_loading_playlists">Problema de red al cargar playlists</string>
+    <string name="err_unknown_loading_playlists">Error desconocido al cargar playlists</string>
+
+    <string name="err_invalid_playlist_data">La playlist debe tener un nombre y una descripción</string>
+    <string name="err_missing_image">Selecciona una imagen para la playlist</string>
+    <string name="err_processing_image">Error al procesar la imagen seleccionada</string>
+    <string name="err_invalid_image_file">El archivo de imagen no es válido</string>
+
+    <string name="err_http_create_playlist">Error HTTP: %1$s</string>
+    <string name="err_network_create_playlist">Error de red al crear playlist</string>
+    <string name="err_unknown_create_playlist">Error desconocido al crear playlist</string>
+    <string name="err_unexpected_create_playlist">Error inesperado: %1$s</string>
+
+    <string name="err_http_delete_playlist">No se pudo borrar playlist: %1$s</string>
+    <string name="err_network_delete_playlist">Problema de red al borrar playlist</string>
+    <string name="err_unknown_delete_playlist">Error desconocido al borrar playlist</string>
+
+    <string name="err_network_add_song">Error de red al añadir canción</string>
+    <string name="err_unknown_add_song">Error desconocido al añadir canción</string>
+
+    <string name="err_network_remove_song">Error de red al eliminar canción</string>
+    <string name="err_unknown_remove_song">Error desconocido al eliminar canción</string>
+
+    <string name="err_http_edit_playlist">Error al editar: %1$s</string>
+    <string name="err_network_edit_playlist">Problema de red</string>
+    <string name="err_unknown_edit_playlist">Error inesperado al editar</string>
+    <string name="msg_user_not_authenticated">Usuario no autenticado</string>
+    <string name="msg_missing_user_id">No hay userId para subir foto</string>
+    <string name="msg_error_sending_code">Error al enviar el código: %1$s</string>
+    <string name="msg_enter_valid_code">Ingresa un código válido</string>
+    <string name="msg_enter_text">Introduce texto</string>
+    <string name="hint_type_search">Escribe tu búsqueda aquí...</string>
+    <string name="msg_error_loading_genres">Error al cargar géneros</string>
+    <string name="msg_select_at_least_one_filter">Selecciona al menos un filtro</string>
+    <string name="msg_no_random_song">No hay canción aleatoria</string>
+    <string name="msg_error_getting_random_song">Error al obtener canción aleatoria</string>
+
+    <string name="msg_enter_text_or_filter">Introduce texto o selecciona un filtro</string>
+    <string name="title_results">Resultados</string>
+    <string name="title_results_for">Resultados para: “%1$s”</string>
+    <string name="label_artist">Artista: %1$s</string>
+    <string name="label_genre">Género ID: %1$s</string>
+
+    <string name="msg_http_error">Error HTTP: %1$d</string>
+    <string name="msg_network_error">Error de red: %1$s</string>
+    <string name="msg_unknown_error">Error: %1$s</string>
+    <string name="dialog_msg_delete_song">¿Eliminar la canción “%1$s”?</string>
+    <string name="msg_song_deleted">Canción eliminada</string>
+
+
+
+
+
+
+
+
+
 </resources>

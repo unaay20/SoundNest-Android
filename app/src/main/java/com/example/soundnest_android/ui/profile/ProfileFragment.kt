@@ -78,7 +78,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         userId?.let { viewModel.loadProfileImage(it) }
-            ?: Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+            ?: Toast.makeText(
+                requireContext(),
+                getString(R.string.msg_user_not_authenticated),
+                Toast.LENGTH_SHORT
+            ).show()
 
         binding.fabEditProfile.setOnClickListener {
             userId?.let {
@@ -89,7 +93,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 startActivityForResult(intent, PICK_IMAGE)
             } ?: Toast.makeText(
                 requireContext(),
-                "No hay userId para subir foto",
+                getString(R.string.msg_missing_user_id),
                 Toast.LENGTH_SHORT
             ).show()
         }

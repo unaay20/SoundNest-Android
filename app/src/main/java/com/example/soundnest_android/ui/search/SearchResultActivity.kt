@@ -90,8 +90,7 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
         val filterArtist = intent.getStringExtra("FILTER_ARTIST")?.takeIf { it.isNotBlank() }
         val filterGenre = intent.getIntExtra("FILTER_GENRE", -1).takeIf { it >= 0 }
         if (query == null && filterSong == null && filterArtist == null && filterGenre == null) {
-            Toast.makeText(this, "Introduce texto o selecciona un filtro", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(this, getString(R.string.msg_enter_text_or_filter), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -99,11 +98,14 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
         val parts = mutableListOf<String>().apply {
             query?.let { add(it) }
             filterSong?.let { add(it) }
-            filterArtist?.let { add("Artista: $it") }
-            filterGenre?.let { add("Género ID: $it") }
+            filterArtist?.let { add(getString(R.string.label_artist, it)) }
+            filterArtist?.let { add(getString(R.string.label_artist, it)) }
         }
-        supportActionBar?.title =
-            if (parts.isEmpty()) "Resultados" else "Resultados para: \"${parts.joinToString(", ")}\""
+        supportActionBar?.title = if (parts.isEmpty()) {
+            getString(R.string.title_results)
+        } else {
+            getString(R.string.title_results_for, parts.joinToString(", "))
+        }
 
         binding.progress.visibility = View.VISIBLE
         binding.tvEmpty.visibility = View.GONE
@@ -130,9 +132,9 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
                     }
                 }
 
-                is ApiResult.HttpError -> showToast("Error HTTP ${res.code}")
-                is ApiResult.NetworkError -> showToast("Error de red: ${res.exception?.message}")
-                is ApiResult.UnknownError -> showToast("Error: ${res.exception?.message}")
+                is ApiResult.HttpError -> showToast(getString(R.string.msg_http_error, res.code))
+                is ApiResult.NetworkError -> showToast(getString(R.string.msg_network_error, res.exception?.message ?: ""))
+                is ApiResult.UnknownError -> showToast(getString(R.string.msg_unknown_error, res.exception?.message ?: ""))
             }
             binding.progress.visibility = View.GONE
         }
@@ -199,13 +201,17 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
     private fun confirmDelete(s: Song) {
         AlertDialog.Builder(this)
             .setTitle(R.string.hint_delete_song)
-            .setMessage("Delete song “${s.title}”?")
+            .setMessage(getString(R.string.dialog_msg_delete_song, s.title))
             .setPositiveButton(R.string.btn_delete) { _, _ ->
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) {
                         songService.deleteSong(s.id.toInt())
                     }
-                    Snackbar.make(binding.root, "Song deleted", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        binding.root,
+                        getString(R.string.msg_song_deleted),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
             .setNegativeButton(R.string.btn_cancel, null)

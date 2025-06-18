@@ -145,5 +145,83 @@
     <string name="error_saving_profile">There was an error saving the information</string>
     <string name="exception_extra_email">EXTRA_EMAIL is required in the Intent</string>
 
+    <string name="msg_file_saved">Saved in %1$s</string>
+    <string name="msg_download_error">Error downloading: %1$s</string>
+    <string name="msg_cannot_create_file">Impossible to create file.</string>
+    <string name="msg_added_to_playlist">Added to %1$s</string>
+    <string name="msg_generic_error">Error: %1$s</string>
+    <string name="msg_error_downloading_song">Error downloading: %1$s</string>
+
+    <string name="msg_name_required">Name is required</string>
+    <string name="msg_description_required">Description is required</string>
+    <string name="msg_image_required">Please select an image</string>
+    <string name="msg_file_too_large">The file exceeds 20 MB</string>
+    <string name="msg_invalid_image_format">Only PNG or JPG images are allowed</string>
+    <string name="msg_image_load_failed">Could not load the image</string>
+    <string name="msg_image_load_error">Error loading image: %1$s</string>
+    <string name="msg_error_creating_playlist">Error creating playlist: %1$s</string>
+    <string name="dialog_title_confirm_delete">Confirm deletion</string>
+    <string name="dialog_msg_confirm_delete">Delete playlist “%1$s”?</string>
+    <string name="action_delete">Delete</string>
+    <string name="msg_playlist_deleted">Playlist deleted</string>
+    <string name="err_loading_playlists">Error loading playlists: %1$s</string>
+    <string name="err_network_loading_playlists">Network problem while loading playlists</string>
+    <string name="err_unknown_loading_playlists">Unknown error while loading playlists</string>
+
+    <string name="err_invalid_playlist_data">Playlist must have a name and a description</string>
+    <string name="err_missing_image">Please select an image for the playlist</string>
+    <string name="err_processing_image">Error processing selected image</string>
+    <string name="err_invalid_image_file">Invalid image file</string>
+
+    <string name="err_http_create_playlist">HTTP error: %1$s</string>
+    <string name="err_network_create_playlist">Network error while creating playlist</string>
+    <string name="err_unknown_create_playlist">Unknown error while creating playlist</string>
+    <string name="err_unexpected_create_playlist">Unexpected error: %1$s</string>
+
+    <string name="err_http_delete_playlist">Could not delete playlist: %1$s</string>
+    <string name="err_network_delete_playlist">Network problem while deleting playlist</string>
+    <string name="err_unknown_delete_playlist">Unknown error while deleting playlist</string>
+
+    <string name="err_network_add_song">Network error while adding song</string>
+    <string name="err_unknown_add_song">Unknown error while adding song</string>
+
+    <string name="err_network_remove_song">Network error while removing song</string>
+    <string name="err_unknown_remove_song">Unknown error while removing song</string>
+
+    <string name="err_http_edit_playlist">Error editing playlist: %1$s</string>
+    <string name="err_network_edit_playlist">Network problem</string>
+    <string name="err_unknown_edit_playlist">Unexpected error while editing playlist</string>
+    <string name="msg_user_not_authenticated">User not authenticated</string>
+    <string name="msg_missing_user_id">No user ID available to upload photo</string>
+    <string name="msg_error_sending_code">Error sending code: %1$s</string>
+    <string name="msg_enter_valid_code">Enter a valid code</string>
+    <string name="msg_enter_text">Enter text</string>
+    <string name="hint_type_search">Type your search here...</string>
+    <string name="msg_error_loading_genres">Error loading genres</string>
+    <string name="msg_select_at_least_one_filter">Select at least one filter</string>
+    <string name="msg_no_random_song">No random song available</string>
+    <string name="msg_error_getting_random_song">Error getting random song</string>
+
+    <string name="msg_enter_text_or_filter">Enter text or select a filter</string>
+    <string name="title_results">Results</string>
+    <string name="title_results_for">Results for: “%1$s”</string>
+    <string name="label_artist">Artist: %1$s</string>
+    <string name="label_genre">Genre ID: %1$s</string>
+
+    <string name="msg_http_error">HTTP error: %1$d</string>
+    <string name="msg_network_error">Network error: %1$s</string>
+    <string name="msg_unknown_error">Error: %1$s</string>
+    <string name="dialog_msg_delete_song">Delete song “%1$s”?</string>
+    <string name="msg_song_deleted">Song deleted</string>
+
+
+
+
+
+
+
+
+
+
 
 </resources>
