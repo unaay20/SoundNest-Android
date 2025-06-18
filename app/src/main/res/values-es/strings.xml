@@ -204,8 +204,8 @@
     <string name="msg_enter_text_or_filter">Introduce texto o selecciona un filtro</string>
     <string name="title_results">Resultados</string>
     <string name="title_results_for">Resultados para: “%1$s”</string>
-    <string name="label_artist">Artista: %1$s</string>
-    <string name="label_genre">Género ID: %1$s</string>
+    <string name="lbl_artist">Artista: %1$s</string>
+    <string name="lbl_genre">Género ID: %1$s</string>
 
     <string name="msg_http_error">Error HTTP: %1$d</string>
     <string name="msg_network_error">Error de red: %1$s</string>
@@ -261,14 +261,6 @@
     <string name="priority_high">alta</string>
 
     <string name="msg_song_not_found">Canción no encontrada</string>
-
-
-
-
-
-
-
-
 
 
 </resources>

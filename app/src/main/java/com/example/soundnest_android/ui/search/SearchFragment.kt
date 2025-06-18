@@ -267,7 +267,10 @@ class SearchFragment : Fragment() {
                             artist = resp.userName.orEmpty(),
                             coverUrl = resp.pathImageUrl?.let {
                                 RestfulRoutes.getBaseUrl().removeSuffix("/") + it
-                            }
+                            },
+                            duration = resp.durationSeconds,
+                            releaseDate = resp.releaseDate.orEmpty(),
+                            description = null
                         )
                         SongDialogFragment.newInstance(song)
                             .show(childFragmentManager, "dlgSong")

@@ -72,7 +72,7 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
 
         adapter = SongAdapter(
             showPlayIcon = true,
-            onSongClick = { song -> playSong(song) },
+            onSongClick = { song -> showSongDialog(song) },
             onItemDelete = { song -> confirmDelete(song) },
             isScrollingProvider = { false },
             isCompact = false,
@@ -90,7 +90,8 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
         val filterArtist = intent.getStringExtra("FILTER_ARTIST")?.takeIf { it.isNotBlank() }
         val filterGenre = intent.getIntExtra("FILTER_GENRE", -1).takeIf { it >= 0 }
         if (query == null && filterSong == null && filterArtist == null && filterGenre == null) {
-            Toast.makeText(this, getString(R.string.msg_enter_text_or_filter), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_enter_text_or_filter), Toast.LENGTH_SHORT)
+                .show()
             finish()
             return
         }
@@ -98,8 +99,8 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
         val parts = mutableListOf<String>().apply {
             query?.let { add(it) }
             filterSong?.let { add(it) }
-            filterArtist?.let { add(getString(R.string.label_artist, it)) }
-            filterArtist?.let { add(getString(R.string.label_artist, it)) }
+            filterArtist?.let { add(getString(R.string.lbl_artist, it)) }
+            filterArtist?.let { add(getString(R.string.lbl_artist, it)) }
         }
         supportActionBar?.title = if (parts.isEmpty()) {
             getString(R.string.title_results)
@@ -133,8 +134,19 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
                 }
 
                 is ApiResult.HttpError -> showToast(getString(R.string.msg_http_error, res.code))
-                is ApiResult.NetworkError -> showToast(getString(R.string.msg_network_error, res.exception?.message ?: ""))
-                is ApiResult.UnknownError -> showToast(getString(R.string.msg_unknown_error, res.exception?.message ?: ""))
+                is ApiResult.NetworkError -> showToast(
+                    getString(
+                        R.string.msg_network_error,
+                        res.exception?.message ?: ""
+                    )
+                )
+
+                is ApiResult.UnknownError -> showToast(
+                    getString(
+                        R.string.msg_unknown_error,
+                        res.exception?.message ?: ""
+                    )
+                )
             }
             binding.progress.visibility = View.GONE
         }
@@ -142,6 +154,11 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
 
     private fun showToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
+
+    private fun showSongDialog(song: Song) {
+        val dialog = com.example.soundnest_android.ui.songs.SongDialogFragment.newInstance(song)
+        dialog.show(supportFragmentManager, "SONG_DETAIL_DIALOG")
     }
 
     override fun playSong(song: Song) {
@@ -232,5 +249,13 @@ class SearchResultActivity : AppCompatActivity(), PlayerHost {
 private fun GetSongDetailResponse.toBusinessSong(baseUrl: String): Song? {
     val artist = userName ?: return null
     val cover = pathImageUrl?.let { url -> baseUrl.removeSuffix("/") + url }
-    return Song(idSong, songName.orEmpty(), artist, cover)
+    return Song(
+        idSong,
+        songName.orEmpty(),
+        artist,
+        cover,
+        durationSeconds,
+        releaseDate.orEmpty(),
+        null
+    )
 }

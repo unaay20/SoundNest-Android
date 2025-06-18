@@ -62,7 +62,10 @@ class PlaylistsViewModel(
                                         id = rel.songId,
                                         title = "",
                                         artist = "",
-                                        coverUrl = null
+                                        coverUrl = null,
+                                        duration = 0,
+                                        releaseDate = "",
+                                        description = null
                                     )
                                 }
                                 Playlist(
@@ -77,19 +80,24 @@ class PlaylistsViewModel(
 
                     is ApiResult.HttpError -> {
                         Log.e(TAG, "HTTP error: ${result.message}")
-                        _error.value = getApplication<Application>().getString(R.string.err_loading_playlists, result.message)
+                        _error.value = getApplication<Application>().getString(
+                            R.string.err_loading_playlists,
+                            result.message
+                        )
 
                     }
 
                     is ApiResult.NetworkError -> {
                         Log.e(TAG, "Network error", result.exception)
-                        _error.value = getApplication<Application>().getString(R.string.err_network_loading_playlists)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_network_loading_playlists)
 
                     }
 
                     is ApiResult.UnknownError -> {
                         Log.e(TAG, "Unknown error", result.exception)
-                        _error.value = getApplication<Application>().getString(R.string.err_unknown_loading_playlists)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_unknown_loading_playlists)
 
                     }
                 }
@@ -104,7 +112,8 @@ class PlaylistsViewModel(
             try {
                 if (name.isBlank() || description.isBlank()) {
                     withContext(Dispatchers.Main) {
-                        _error.value = getApplication<Application>().getString(R.string.err_invalid_playlist_data)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_invalid_playlist_data)
                         _isLoading.value = false
                     }
                     return@launch
@@ -112,7 +121,8 @@ class PlaylistsViewModel(
 
                 if (imageUri.isNullOrBlank()) {
                     withContext(Dispatchers.Main) {
-                        _error.value = getApplication<Application>().getString(R.string.err_missing_image)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_missing_image)
                         _isLoading.value = false
                     }
                     return@launch
@@ -123,7 +133,8 @@ class PlaylistsViewModel(
                 } catch (e: Exception) {
                     Log.e(TAG, "Error converting URI to file", e)
                     withContext(Dispatchers.Main) {
-                        _error.value = getApplication<Application>().getString(R.string.err_processing_image)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_processing_image)
                         _isLoading.value = false
                     }
                     return@launch
@@ -131,7 +142,8 @@ class PlaylistsViewModel(
 
                 if (!imageFile.exists() || imageFile.length() == 0L) {
                     withContext(Dispatchers.Main) {
-                        _error.value = getApplication<Application>().getString(R.string.err_invalid_image_file)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_invalid_image_file)
                         _isLoading.value = false
                     }
                     return@launch
@@ -162,19 +174,24 @@ class PlaylistsViewModel(
 
                         is ApiResult.HttpError -> {
                             Log.e(TAG, "HTTP error creating playlist: ${result.message}")
-                            _error.value = getApplication<Application>().getString(R.string.err_http_create_playlist, result.message)
+                            _error.value = getApplication<Application>().getString(
+                                R.string.err_http_create_playlist,
+                                result.message
+                            )
 
                         }
 
                         is ApiResult.NetworkError -> {
                             Log.e(TAG, "Network error creating playlist", result.exception)
-                            _error.value = getApplication<Application>().getString(R.string.err_network_create_playlist)
+                            _error.value =
+                                getApplication<Application>().getString(R.string.err_network_create_playlist)
 
                         }
 
                         is ApiResult.UnknownError -> {
                             Log.e(TAG, "Unknown error creating playlist", result.exception)
-                            _error.value = getApplication<Application>().getString(R.string.err_unknown_create_playlist)
+                            _error.value =
+                                getApplication<Application>().getString(R.string.err_unknown_create_playlist)
                         }
                     }
                 }
@@ -182,7 +199,10 @@ class PlaylistsViewModel(
                 Log.e(TAG, "Unexpected error in createPlaylist", e)
                 withContext(Dispatchers.Main) {
                     _isLoading.value = false
-                    _error.value = getApplication<Application>().getString(R.string.err_unexpected_create_playlist, e.message ?: "")
+                    _error.value = getApplication<Application>().getString(
+                        R.string.err_unexpected_create_playlist,
+                        e.message ?: ""
+                    )
                 }
             }
         }
@@ -229,17 +249,22 @@ class PlaylistsViewModel(
 
                     is ApiResult.HttpError -> {
                         Log.e(TAG, "HTTP error deleting playlist: ${result.message}")
-                        _error.value = getApplication<Application>().getString(R.string.err_http_delete_playlist, result.message)
+                        _error.value = getApplication<Application>().getString(
+                            R.string.err_http_delete_playlist,
+                            result.message
+                        )
                     }
 
                     is ApiResult.NetworkError -> {
                         Log.e(TAG, "Network error deleting playlist", result.exception)
-                        _error.value = getApplication<Application>().getString(R.string.err_network_delete_playlist)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_network_delete_playlist)
                     }
 
                     is ApiResult.UnknownError -> {
                         Log.e(TAG, "Unknown error deleting playlist", result.exception)
-                        _error.value = getApplication<Application>().getString(R.string.err_unknown_delete_playlist)
+                        _error.value =
+                            getApplication<Application>().getString(R.string.err_unknown_delete_playlist)
                     }
                 }
             }
@@ -256,7 +281,15 @@ class PlaylistsViewModel(
                     if (playlistIndex != -1) {
                         val targetPlaylist = currentPlaylists[playlistIndex]
                         val newSong =
-                            Song(songId, /* title… */ "Unknown Title", "Unknown Artist", null)
+                            Song(
+                                songId, /* title… */
+                                "Unknown Title",
+                                "Unknown Artist",
+                                null,
+                                0,
+                                "",
+                                null
+                            )
 
                         val updatedPlaylist = targetPlaylist.copy(
                             songs = targetPlaylist.songs + newSong
@@ -275,17 +308,22 @@ class PlaylistsViewModel(
 
                 is ApiResult.HttpError -> {
                     Log.e(TAG, "addSongToPlaylist HTTP error: ${result.message}")
-                    _error.value = getApplication<Application>().getString(R.string.err_http_create_playlist, result.message)
+                    _error.value = getApplication<Application>().getString(
+                        R.string.err_http_create_playlist,
+                        result.message
+                    )
                 }
 
                 is ApiResult.NetworkError -> {
                     Log.e(TAG, "addSongToPlaylist Network error", result.exception)
-                    _error.value = getApplication<Application>().getString(R.string.err_network_add_song)
+                    _error.value =
+                        getApplication<Application>().getString(R.string.err_network_add_song)
                 }
 
                 is ApiResult.UnknownError -> {
                     Log.e(TAG, "addSongToPlaylist Unknown error", result.exception)
-                    _error.value = getApplication<Application>().getString(R.string.err_unknown_add_song)
+                    _error.value =
+                        getApplication<Application>().getString(R.string.err_unknown_add_song)
                 }
             }
         }
@@ -321,17 +359,22 @@ class PlaylistsViewModel(
 
                 is ApiResult.HttpError -> {
                     Log.e(TAG, "removeSongFromPlaylist HTTP error: ${result.message}")
-                    _error.value = getApplication<Application>().getString(R.string.err_http_create_playlist, result.message)
+                    _error.value = getApplication<Application>().getString(
+                        R.string.err_http_create_playlist,
+                        result.message
+                    )
                 }
 
                 is ApiResult.NetworkError -> {
                     Log.e(TAG, "removeSongFromPlaylist Network error", result.exception)
-                    _error.value = getApplication<Application>().getString(R.string.err_network_remove_song)
+                    _error.value =
+                        getApplication<Application>().getString(R.string.err_network_remove_song)
                 }
 
                 is ApiResult.UnknownError -> {
                     Log.e(TAG, "removeSongFromPlaylist Unknown error", result.exception)
-                    _error.value = getApplication<Application>().getString(R.string.err_unknown_remove_song)
+                    _error.value =
+                        getApplication<Application>().getString(R.string.err_unknown_remove_song)
                 }
             }
         }
@@ -344,9 +387,24 @@ class PlaylistsViewModel(
                     loadPlaylists()
                 }
 
-                is ApiResult.HttpError -> _error.postValue(getApplication<Application>().getString(R.string.err_http_edit_playlist, result.message))
-                is ApiResult.NetworkError -> _error.postValue(getApplication<Application>().getString(R.string.err_network_edit_playlist))
-                is ApiResult.UnknownError -> _error.postValue(getApplication<Application>().getString(R.string.err_unknown_edit_playlist))
+                is ApiResult.HttpError -> _error.postValue(
+                    getApplication<Application>().getString(
+                        R.string.err_http_edit_playlist,
+                        result.message
+                    )
+                )
+
+                is ApiResult.NetworkError -> _error.postValue(
+                    getApplication<Application>().getString(
+                        R.string.err_network_edit_playlist
+                    )
+                )
+
+                is ApiResult.UnknownError -> _error.postValue(
+                    getApplication<Application>().getString(
+                        R.string.err_unknown_edit_playlist
+                    )
+                )
             }
         }
     }

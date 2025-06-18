@@ -145,7 +145,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
                     id = resp.idSong,
                     title = resp.songName,
                     artist = resp.userName.orEmpty(),
-                    coverUrl = resp.pathImageUrl?.let { "$baseUrl$it" }
+                    coverUrl = resp.pathImageUrl?.let { "$baseUrl$it" },
+                    duration = resp.durationSeconds,
+                    releaseDate = resp.releaseDate,
+                    description = resp.description
                 )
             }
             popularAdapter.submitList(uiList)
@@ -157,7 +160,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), PlayerHost {
                     id = resp.idSong,
                     title = resp.songName.orEmpty(),
                     artist = resp.userName.orEmpty(),
-                    coverUrl = resp.pathImageUrl?.let { "$baseUrl$it" }
+                    coverUrl = resp.pathImageUrl?.let { "$baseUrl$it" },
+                    duration = resp.durationSeconds,
+                    releaseDate = resp.releaseDate,
+                    description = resp.description
                 )
             }
             recentAdapter.submitList(uiList)

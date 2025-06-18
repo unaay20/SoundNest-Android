@@ -170,7 +170,10 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                             id = dto.idSong,
                             title = dto.songName,
                             artist = dto.userName ?: getString(R.string.artist_unknown),
-                            coverUrl = dto.pathImageUrl?.let { "$base$it" }
+                            coverUrl = dto.pathImageUrl?.let { "$base$it" },
+                            duration = dto.durationSeconds,
+                            releaseDate = dto.releaseDate ?: "",
+                            description = dto.description
                         )
                     }
                     playlistSongs = fullSongs
@@ -190,7 +193,13 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                 }
 
                 is ApiResult.HttpError -> toast("HTTP ${r.code}: ${r.message}")
-                is ApiResult.NetworkError -> toast(getString(R.string.msg_network_error_full, r.exception.message ?: ""))
+                is ApiResult.NetworkError -> toast(
+                    getString(
+                        R.string.msg_network_error_full,
+                        r.exception.message ?: ""
+                    )
+                )
+
                 is ApiResult.UnknownError -> toast("Error: ${r.exception.message}")
             }
         }
@@ -308,7 +317,8 @@ class PlaylistDetailActivity : AppCompatActivity(), PlayerHost {
                 playlistSongs = updatedList
                 songAdapter.submitList(updatedList)
 
-                Toast.makeText(this, getString(R.string.msg_song_removed), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.msg_song_removed), Toast.LENGTH_SHORT)
+                    .show()
             }
             .setNegativeButton(R.string.btn_cancel, null)
             .show()
